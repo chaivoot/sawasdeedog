@@ -26,6 +26,14 @@ export function hasDogFriendlyRule(categorySlug: string) {
 export const farmRule = {
   banner: 'ทุกฟาร์มในนี้ออกใบเพ็ดดีกรี (Pedigree) ให้น้องได้',
   criterion: 'ออกใบเพ็ดดีกรี (Pedigree) ให้น้องได้',
+  // We can verify a pedigree, not each litter's health checks, so we say so plainly.
+  scope: 'เราตรวจสอบเฉพาะว่าฟาร์มออกใบเพ็ดดีกรีได้ ไม่ได้รับรองสุขภาพของพ่อแม่พันธุ์หรือลูกสุนัข',
+  buyerChecks: [
+    'ผลตรวจสะโพกและข้อศอกของพ่อแม่พันธุ์',
+    'ผลตรวจตาของพ่อแม่พันธุ์',
+    'ผลตรวจ DNA โรคทางพันธุกรรมตามสายพันธุ์',
+    'สมุดวัคซีนของลูกสุนัข',
+  ],
 }
 
 export const forceFreeDefinition =

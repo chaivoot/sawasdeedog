@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Icon } from '@/components/Icon'
 import { SiteHeader } from '@/components/SiteHeader'
-import { dogFriendly, forceFreeDefinition } from '@/data/criteria'
+import { dogFriendly, farmRule, forceFreeDefinition } from '@/data/criteria'
 
 export const metadata: Metadata = {
   title: 'เกณฑ์การคัดเลือก',
@@ -29,7 +29,7 @@ const rules = [
   {
     id: 'farm',
     title: 'ฟาร์ม',
-    body: 'เราลิสต์เฉพาะฟาร์มที่ออกใบเพ็ดดีกรี (Pedigree) หรือใบรับรองสายพันธุ์ให้น้องได้',
+    body: `เราลิสต์เฉพาะฟาร์มที่ออกใบเพ็ดดีกรี (Pedigree) หรือใบรับรองสายพันธุ์ให้น้องได้ ${farmRule.scope} ก่อนซื้อควรขอดูเอง เช่น ${farmRule.buyerChecks.join(', ')}`,
   },
   {
     id: 'report',

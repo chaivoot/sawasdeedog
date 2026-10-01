@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Breadcrumb } from '@/components/Breadcrumb'
 import { EmptyState } from '@/components/EmptyState'
+import { FarmBuyerNote } from '@/components/FarmBuyerNote'
 import { Icon } from '@/components/Icon'
 import { ListingCard } from '@/components/ListingCard'
 import { SiteHeader } from '@/components/SiteHeader'
@@ -66,6 +67,7 @@ export default async function FarmBreedPage({ params }: Props) {
                 <ListingCard key={p.slug} place={p} />
               ))}
             </div>
+            <FarmBuyerNote />
           </>
         ) : (
           <EmptyState

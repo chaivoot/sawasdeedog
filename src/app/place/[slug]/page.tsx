@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Breadcrumb, type Crumb } from '@/components/Breadcrumb'
 import { Checked } from '@/components/Checked'
+import { FarmBuyerNote } from '@/components/FarmBuyerNote'
 import { Icon, type IconName } from '@/components/Icon'
 import { PlaceGallery } from '@/components/PlaceGallery'
 import { RatingWidget } from '@/components/RatingWidget'
@@ -259,6 +260,8 @@ export default async function PlacePage({ params }: Props) {
                 </div>
               </section>
             )}
+
+            {isFarm && <FarmBuyerNote className="place__section place__buyer-note" />}
 
             <RatingWidget slug={place.slug} initial={place.rating} />
 
