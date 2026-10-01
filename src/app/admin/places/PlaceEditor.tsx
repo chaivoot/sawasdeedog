@@ -1,7 +1,7 @@
 'use client'
 
 import { startTransition, useActionState, useState } from 'react'
-import { categories, getCategory, trainerStyles } from '@/data/categories'
+import { categories, extraCategoryOptions, getCategory, trainerStyles } from '@/data/categories'
 import { provinces } from '@/data/areas'
 import { breeds } from '@/data/breeds'
 import { dogFriendly, hasDogFriendlyRule } from '@/data/criteria'
@@ -16,6 +16,7 @@ export type PlaceDraft = {
   name: string
   slug: string
   category: string
+  extraCategories: string[]
   type?: string
   trainerStyle?: string
   province: string
@@ -39,7 +40,13 @@ export function PlaceEditor({ draft, fromSubmission }: { draft: PlaceDraft; from
   const [photos, setPhotos] = useState(draft.photos)
   const [uploading, setUploading] = useState(false)
   const [uploadError, setUploadError] = useState('')
+  const [extras, setExtras] = useState(draft.extraCategories)
   const category = getCategory(categorySlug)
+  const extraOptions = extraCategoryOptions(categorySlug)
+  // Drop extras that stop being valid when the main category changes.
+  const activeExtras = extras.filter((s) => extraOptions.some((c) => c.slug === s))
+  const allCategories = [category, ...activeExtras.map((s) => getCategory(s))].filter((c) => !!c)
+  const hasTrainer = allCategories.some((c) => c.slug === 'trainer')
   const districts = provinces.find((p) => p.slug === province)?.districts ?? []
   const e = state.errors ?? {}
 
@@ -134,6 +141,30 @@ export function PlaceEditor({ draft, fromSubmission }: { draft: PlaceDraft; from
               ))}
             </select>
           </Field>
+          {categorySlug && categorySlug !== 'farm' && (
+            <div className="field field--full">
+              <span className="field__label">แสดงในหมวดอื่นด้วย</span>
+              <span className="field__hint">ติ๊กเฉพาะหมวดที่ที่นี้ผ่านเกณฑ์ของหมวดนั้นด้วย</span>
+              <div className="admin-checks">
+                {extraOptions.map((c) => (
+                  <label key={c.slug} className="checkbox">
+                    <input
+                      type="checkbox"
+                      name="extraCategories"
+                      value={c.slug}
+                      checked={activeExtras.includes(c.slug)}
+                      onChange={(ev) =>
+                        setExtras((prev) =>
+                          ev.target.checked ? [...prev, c.slug] : prev.filter((s) => s !== c.slug),
+                        )
+                      }
+                    />
+                    {c.name}
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
           {category?.types && (
             <Field id="type" label="ประเภท" error={e.type}>
               <select
@@ -152,7 +183,7 @@ export function PlaceEditor({ draft, fromSubmission }: { draft: PlaceDraft; from
               </select>
             </Field>
           )}
-          {categorySlug === 'trainer' && (
+          {hasTrainer && (
             <Field id="trainerStyle" label="แนวการฝึก" error={e.trainerStyle}>
               <select
                 id="trainerStyle"
@@ -233,25 +264,32 @@ export function PlaceEditor({ draft, fromSubmission }: { draft: PlaceDraft; from
         </div>
       </fieldset>
 
-      {category && category.filters.length > 0 && (
-        <fieldset className="admin-fieldset" key={`f-${categorySlug}`}>
+      {allCategories.some((c) => c.filters.length > 0) && (
+        <fieldset className="admin-fieldset">
           <legend>ผ่านเกณฑ์อะไรบ้าง</legend>
-          {hasDogFriendlyRule(category.slug) && (
+          {allCategories.some((c) => hasDogFriendlyRule(c.slug)) && (
             <p className="field__hint">ทุกรายการต้องผ่าน: {dogFriendly.criterion}</p>
           )}
-          <div className="admin-checks">
-            {category.filters.map((f) => (
-              <label key={f.slug} className="checkbox">
-                <input
-                  type="checkbox"
-                  name="attributes"
-                  value={f.slug}
-                  defaultChecked={draft.attributes.includes(f.slug)}
-                />
-                {f.label}
-              </label>
+          {allCategories
+            .filter((c) => c.filters.length > 0)
+            .map((c) => (
+              <div key={c.slug} className="admin-check-group">
+                {allCategories.length > 1 && <span className="field__label">{c.name}</span>}
+                <div className="admin-checks">
+                  {c.filters.map((f) => (
+                    <label key={f.slug} className="checkbox">
+                      <input
+                        type="checkbox"
+                        name="attributes"
+                        value={f.slug}
+                        defaultChecked={draft.attributes.includes(f.slug)}
+                      />
+                      {f.label}
+                    </label>
+                  ))}
+                </div>
+              </div>
             ))}
-          </div>
         </fieldset>
       )}
 

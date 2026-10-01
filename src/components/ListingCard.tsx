@@ -8,15 +8,19 @@ import { Icon } from './Icon'
 import { Photo } from './Photo'
 import { RatingBadge } from './Stars'
 
-/** Row card on mobile, photo-top card on desktop (M-Category / D-Category). */
-export function ListingCard({ place }: { place: Place }) {
+/**
+ * Row card on mobile, photo-top card on desktop (M-Category / D-Category).
+ * `listing` is the category page showing the card; its filters decide the tags.
+ */
+export function ListingCard({ place, listing }: { place: Place; listing?: string }) {
   const category = getCategory(place.category)
+  const tagCategory = getCategory(listing ?? place.category)
   const area = findArea(place.province, place.district)
   const typeLabel = category?.types?.find((t) => t.slug === place.type)?.label ?? category?.name ?? ''
   const tags =
     place.category === 'farm'
       ? (place.breeds ?? []).map((b) => getBreed(b)?.name).filter(Boolean)
-      : place.attributes.map((a) => category?.filters.find((f) => f.slug === a)?.label).filter(Boolean)
+      : place.attributes.map((a) => tagCategory?.filters.find((f) => f.slug === a)?.label).filter(Boolean)
 
   return (
     <Link href={`/place/${place.slug}`} className="listing-card">

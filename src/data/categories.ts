@@ -206,6 +206,11 @@ export function getCategory(slug: string): Category | undefined {
 /** Categories browsed by area (everything except farm). */
 export const areaCategories = categories.filter((c) => c.slug !== 'farm')
 
+/** Categories a place can be listed under besides its main one. Farm is browsed by breed, so it is main-only. */
+export function extraCategoryOptions(main: string): Category[] {
+  return categories.filter((c) => c.slug !== 'farm' && c.slug !== main)
+}
+
 /** Categories the home page's daily "วันนี้ชวนไป" tile rotates through. */
 const NOT_FEATURED = ['farm', 'sitter', 'boarding', 'transport', 'rehab']
 export const featuredCategories = categories.filter((c) => !NOT_FEATURED.includes(c.slug))

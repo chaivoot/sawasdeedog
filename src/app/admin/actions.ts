@@ -3,7 +3,7 @@
 import { randomBytes } from 'node:crypto'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
-import { getCategory, trainerStyles, type TrainerStyle } from '@/data/categories'
+import { extraCategoryOptions, getCategory, trainerStyles, type TrainerStyle } from '@/data/categories'
 import { findArea } from '@/data/areas'
 import { breeds } from '@/data/breeds'
 import { requireAdmin } from '@/lib/admin'
@@ -55,7 +55,12 @@ export async function savePlaceAction(_prev: PlaceFormState, form: FormData): Pr
   const category = getCategory(text(form, 'category'))
   if (!category) errors.category = 'เลือกหมวด'
   const isFarm = category?.slug === 'farm'
-  const isTrainer = category?.slug === 'trainer'
+  const extraSlugs = new Set(extraCategoryOptions(category?.slug ?? '').map((c) => c.slug))
+  const extraCategories = form
+    .getAll('extraCategories')
+    .filter((c): c is string => typeof c === 'string' && extraSlugs.has(c))
+  const allCategories = [category, ...extraCategories.map((c) => getCategory(c))].filter((c) => !!c)
+  const isTrainer = allCategories.some((c) => c.slug === 'trainer')
 
   const type = text(form, 'type')
   if (type && !category?.types?.some((t) => t.slug === type)) errors.type = 'ประเภทไม่ตรงกับหมวด'
@@ -80,7 +85,7 @@ export async function savePlaceAction(_prev: PlaceFormState, form: FormData): Pr
     if (v && !isHttpUrl(v)) errors[key] = 'ต้องเป็นลิงก์ที่ขึ้นต้นด้วย https://'
   }
 
-  const filterSlugs = new Set(category?.filters.map((f) => f.slug))
+  const filterSlugs = new Set(allCategories.flatMap((c) => c.filters.map((f) => f.slug)))
   const attributes = form
     .getAll('attributes')
     .filter((a): a is string => typeof a === 'string' && filterSlugs.has(a))
@@ -111,6 +116,7 @@ export async function savePlaceAction(_prev: PlaceFormState, form: FormData): Pr
     slug,
     name,
     category: category!.slug,
+    extra_categories: extraCategories,
     type: type || null,
     trainer_style: isTrainer ? (trainerStyle as TrainerStyle) : null,
     province,

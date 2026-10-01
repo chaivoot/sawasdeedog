@@ -15,6 +15,7 @@ export default async function NewPlace({ searchParams }: Props) {
     name: fromNew?.payload.name ?? '',
     slug: '',
     category: fromNew?.payload.category ?? '',
+    extraCategories: [],
     province: fromNew?.payload.province ?? 'bangkok',
     district: fromNew?.payload.district ?? '',
     checkedAt: todayInBangkok(),

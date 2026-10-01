@@ -2841,6 +2841,9 @@ a.guarantee:hover {
   font-weight: 500;
   font-size: 17px;
 }
+.admin-check-group + .admin-check-group {
+  margin-top: 12px;
+}
 .admin-checks {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
