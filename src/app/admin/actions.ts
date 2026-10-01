@@ -62,7 +62,7 @@ export async function savePlaceAction(_prev: PlaceFormState, form: FormData): Pr
 
   const trainerStyle = text(form, 'trainerStyle') as TrainerStyle | ''
   if (isTrainer && !trainerStyles.some((s) => s.slug === trainerStyle))
-    errors.trainerStyle = 'เลือก R+ หรือ Balance'
+    errors.trainerStyle = 'เลือก Force-Free หรือ Balance'
 
   const province = text(form, 'province')
   const district = text(form, 'district')

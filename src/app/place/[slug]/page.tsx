@@ -11,6 +11,7 @@ import { SiteHeader } from '@/components/SiteHeader'
 import { getCategory, trainerStyles } from '@/data/categories'
 import { findArea } from '@/data/areas'
 import { getBreed } from '@/data/breeds'
+import { dogFriendly, farmRule, hasDogFriendlyRule } from '@/data/criteria'
 import type { Contacts, Place } from '@/data/places'
 import { getPlace } from '@/lib/places'
 
@@ -87,7 +88,8 @@ function contactLinks(c: Contacts): ContactLink[] {
 function criteriaFor(place: Place): string[] {
   const category = getCategory(place.category)
   const items: string[] = []
-  if (category?.guaranteeCriterion) items.push(category.guaranteeCriterion)
+  if (hasDogFriendlyRule(place.category)) items.push(dogFriendly.criterion)
+  if (place.category === 'farm') items.push(farmRule.criterion)
   if (place.trainerStyle) {
     const style = trainerStyles.find((s) => s.slug === place.trainerStyle)
     if (style) items.push(`แนวการฝึก ${style.label}`)
@@ -157,17 +159,30 @@ export default async function PlacePage({ params }: Props) {
 
             {place.description && <p className="place__description">{place.description}</p>}
 
-            {(criteria.length > 0 || breedNames.length > 0) && (
+            {criteria.length > 0 && (
               <section className="place__section place__criteria">
-                <h2>{isFarm ? 'สายพันธุ์' : 'ผ่านเกณฑ์อะไรบ้าง'}</h2>
+                <h2>ผ่านเกณฑ์อะไรบ้าง</h2>
                 <ul className="criteria-list">
-                  {(isFarm ? breedNames : criteria).map((c) => (
+                  {criteria.map((c) => (
                     <li key={c}>
                       <Icon name="check" size={20} strokeWidth={2.4} />
                       {c}
                     </li>
                   ))}
                 </ul>
+              </section>
+            )}
+
+            {breedNames.length > 0 && (
+              <section className="place__section place__criteria">
+                <h2>สายพันธุ์</h2>
+                <div className="tag-list">
+                  {breedNames.map((b) => (
+                    <span key={b} className="tag">
+                      {b}
+                    </span>
+                  ))}
+                </div>
               </section>
             )}
 

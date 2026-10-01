@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     default: 'SawasdeeDog | หาที่ที่ต้อนรับหมาของคุณ',
     template: '%s | SawasdeeDog',
   },
-  description: 'ทีมครูฝึกสาย R+ เก็บและคัดเองทุกรายการ คัดมาแล้ว ไม่ใช่มีครบ',
+  description: 'ทีมครูฝึกสาย Force-Free เก็บและคัดเองทุกรายการ คัดมาแล้ว ไม่ใช่มีครบ',
 }
 
 export const viewport: Viewport = {

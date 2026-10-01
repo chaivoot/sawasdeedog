@@ -1,13 +1,15 @@
 import type { Metadata } from 'next'
 import { Breadcrumb } from '@/components/Breadcrumb'
 import { BreedSearch } from '@/components/BreedSearch'
+import Link from 'next/link'
 import { Icon } from '@/components/Icon'
+import { farmRule } from '@/data/criteria'
 import { SiteHeader } from '@/components/SiteHeader'
 import { breedsWithFarms } from '@/lib/places'
 
 export const metadata: Metadata = {
   title: 'ฟาร์ม',
-  description: 'เลือกสายพันธุ์ แล้วดูฟาร์มที่ผ่านเกณฑ์จากทุกจังหวัด',
+  description: `เลือกสายพันธุ์ แล้วดูฟาร์มที่ผ่านเกณฑ์จากทุกจังหวัด ${farmRule.banner}`,
 }
 
 export const revalidate = 3600
@@ -29,6 +31,10 @@ export default async function FarmPage() {
                 <h1>ฟาร์ม</h1>
               </div>
               <p className="lead">เลือกสายพันธุ์ แล้วดูฟาร์มที่ผ่านเกณฑ์จากทุกจังหวัด</p>
+              <Link href="/criteria#farm" className="guarantee">
+                <Icon name="checkc" size={18} strokeWidth={2} />
+                {farmRule.banner}
+              </Link>
             </div>
           }
         />

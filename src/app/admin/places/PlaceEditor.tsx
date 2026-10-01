@@ -4,6 +4,7 @@ import { startTransition, useActionState, useState } from 'react'
 import { categories, getCategory, trainerStyles } from '@/data/categories'
 import { provinces } from '@/data/areas'
 import { breeds } from '@/data/breeds'
+import { dogFriendly, hasDogFriendlyRule } from '@/data/criteria'
 import type { Contacts } from '@/data/places'
 import { Icon } from '@/components/Icon'
 import { MAX_PLACE_PHOTOS } from '@/lib/limits'
@@ -235,8 +236,8 @@ export function PlaceEditor({ draft, fromSubmission }: { draft: PlaceDraft; from
       {category && category.filters.length > 0 && (
         <fieldset className="admin-fieldset" key={`f-${categorySlug}`}>
           <legend>ผ่านเกณฑ์อะไรบ้าง</legend>
-          {category.guaranteeCriterion && (
-            <p className="field__hint">ทุกรายการในหมวดนี้: {category.guaranteeCriterion}</p>
+          {hasDogFriendlyRule(category.slug) && (
+            <p className="field__hint">ทุกรายการต้องผ่าน: {dogFriendly.criterion}</p>
           )}
           <div className="admin-checks">
             {category.filters.map((f) => (

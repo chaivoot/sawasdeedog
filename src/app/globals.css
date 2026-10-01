@@ -631,12 +631,15 @@ p {
 }
 .tabs button {
   flex: 1 1 0;
+  min-width: 0;
   height: 52px;
+  padding: 0 4px;
+  white-space: nowrap;
   background: transparent;
   border: 0;
   border-bottom: 3px solid transparent;
   font-family: var(--font-heading);
-  font-size: 17px;
+  font-size: clamp(13.5px, 3.9vw, 15.5px);
   font-weight: 500;
   color: var(--color-muted);
   cursor: pointer;
@@ -1167,6 +1170,7 @@ p {
 .guarantee {
   display: flex;
   align-items: center;
+  text-decoration: none;
   gap: 8px;
   padding: 10px 12px;
   border-radius: 12px;
@@ -1174,6 +1178,9 @@ p {
   font-size: 13.5px;
   color: var(--color-accent-text);
   font-weight: 500;
+}
+a.guarantee:hover {
+  color: var(--color-ink);
 }
 
 .result-count {
