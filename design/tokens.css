@@ -1,0 +1,21 @@
+:root {
+  --color-green: #1E5C49;
+  --color-green-dark: #154335;
+  --color-green-50: #E4EEE8;
+  --color-green-100: #CFE1D7;
+  --color-marigold: #F0A43A;
+  --color-marigold-50: #FCEFD9;
+  --color-marigold-text: #7F4C00;
+  --color-ink: #1D2B26;
+  --color-ink-2: #45534D;
+  --color-muted: #5C6A64;
+  --color-line: #E1E2DA;
+  --color-ground: #F3F4EF;
+  --color-surface: #FFFFFF;
+  --font-heading: 'Mitr', 'Noto Sans Thai', system-ui, sans-serif;
+  --font-body: 'IBM Plex Sans Thai Looped', 'Noto Sans Thai', system-ui, sans-serif;
+  --radius-chip: 999px;
+  --radius-button: 14px;
+  --radius-card: 18px;
+  --radius-featured: 24px;
+}
