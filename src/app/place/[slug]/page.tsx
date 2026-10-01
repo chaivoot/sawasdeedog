@@ -10,16 +10,18 @@ import { getCategory, trainerStyles } from '@/data/categories'
 import { findArea } from '@/data/areas'
 import { getBreed } from '@/data/breeds'
 import type { Contacts, Place } from '@/data/places'
-import { allPlaceSlugs, getPlace } from '@/lib/places'
+import { getPlace } from '@/lib/places'
 
 type Props = { params: Promise<{ slug: string }> }
 
+// Rendered on first visit and cached; admin edits call revalidatePath.
 export function generateStaticParams() {
-  return allPlaceSlugs().map((slug) => ({ slug }))
+  return []
 }
+export const revalidate = 3600
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const place = getPlace((await params).slug)
+  const place = await getPlace((await params).slug)
   if (!place) return {}
   const category = getCategory(place.category)
   const area = findArea(place.province, place.district)
@@ -96,7 +98,7 @@ function criteriaFor(place: Place): string[] {
 }
 
 export default async function PlacePage({ params }: Props) {
-  const place = getPlace((await params).slug)
+  const place = await getPlace((await params).slug)
   if (!place) notFound()
 
   const category = getCategory(place.category)

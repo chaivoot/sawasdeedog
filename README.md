@@ -1,4 +1,4 @@
-# Sawasdee Dog
+# SawasdeeDog
 
 เว็บรวมสถานที่ที่ต้อนรับหมา ทีมครูฝึกสาย R+ เก็บและคัดเองทุกรายการ
 
@@ -30,15 +30,52 @@ npm run dev        # http://localhost:3000
 
 - ตัวกรองบนหน้ารายการเก็บไว้ใน URL: `?type=cafe&f=large-dog,parking` และ `?style=balance` สำหรับครูฝึก
 - ย่านที่ผู้ใช้เลือกล่าสุดเก็บใน cookie `area` หน้าแรกเลยลิงก์ไปย่านนั้นได้ตรง ๆ
-- ข้อมูลอยู่ใน `src/data/` ส่วน `src/lib/places.ts` เป็นที่เดียวที่อ่านข้อมูล เวลาย้ายไปฐานข้อมูลหรือ CMS ให้แก้แค่ไฟล์นี้
+- ร้าน/สถานที่อยู่ในตาราง `places` ของ Supabase อ่านผ่าน `src/lib/places.ts` ที่เดียว ส่วนหมวด ย่าน สายพันธุ์ และสปอนเซอร์เป็น config ใน `src/data/`
 - ไอคอนสร้างจาก `design/icons` ถ้านักออกแบบแก้ไอคอน ให้รัน `npm run icons`
+
+## ระบบเพิ่มข้อมูล
+
+- **คนทั่วไป**: เข้าสู่ระบบด้วย LINE ที่ `/submit` แล้วเสนอสถานที่ใหม่หรือแจ้งข้อมูลผิด แนบรูปได้ ข้อมูลเข้าตาราง `submissions` สถานะ "รอตรวจ"
+- **ทีมแอดมิน** (LINE ที่อยู่ใน `ADMIN_LINE_USER_IDS`): ใช้ `/admin`
+  - ตรวจข้อมูลที่ส่งมา: กด "สร้างรายการจากข้อมูลนี้" (ข้อมูลกรอกไว้ให้แล้ว) หรือกด "ไม่ผ่านเกณฑ์"
+  - แจ้งข้อมูลผิด: แก้ที่รายการนั้นแล้วกด "แก้ข้อมูลแล้ว"
+  - รายการบนเว็บ: เพิ่ม แก้ ซ่อน หรือลบ พร้อมอัปโหลดรูป (รูปแรกเป็นรูปปก)
+- บันทึกแล้วหน้าเว็บอัปเดตทันที
+- รูปจะถูกย่อในเบราว์เซอร์ (ด้านยาวไม่เกิน 1600px) แล้วอัปโหลดตรงไป Supabase Storage ไม่ผ่านเซิร์ฟเวอร์ เพราะ Vercel รับ request ได้ไม่เกิน 4.5MB
+
+## ตั้งค่าครั้งแรก
+
+### 1. Supabase
+
+1. สร้างโปรเจกต์ที่ https://supabase.com (เลือก region Singapore)
+2. เปิด **SQL Editor** แล้วรันไฟล์ `supabase/migrations/0001_init.sql` ทั้งไฟล์ ไฟล์นี้สร้างตาราง places, submissions และที่เก็บรูป 2 bucket
+3. ไปที่ **Project Settings → API** แล้วคัดลอกค่ามาใส่ env:
+   - Project URL → `SUPABASE_URL`
+   - `service_role` key → `SUPABASE_SERVICE_ROLE_KEY` (เป็นความลับ ห้ามเปิดเผย)
+   - `anon` key → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+
+ตารางเปิด RLS ไว้และไม่มี policy คีย์ anon ที่อยู่ในเบราว์เซอร์จึงอ่านหรือเขียนตารางไม่ได้ เว็บอ่านข้อมูลผ่านเซิร์ฟเวอร์ด้วย service_role อย่างเดียว
+
+### 2. LINE Login (Channel ID 2011815341)
+
+ใน [LINE Developers Console](https://developers.line.biz/console/) → channel นี้ → แท็บ **LINE Login**:
+
+1. **Callback URL** ใส่ `https://<โดเมน>/auth/line/callback` (ถ้าจะทดสอบในเครื่องให้ใส่ `http://localhost:3000/auth/line/callback` ด้วย)
+2. แท็บ **Basic settings** → คัดลอก **Channel secret** ไปใส่ `LINE_CHANNEL_SECRET` (ใส่ใน Vercel เท่านั้น อย่าส่งในแชตหรือ commit)
+3. เปลี่ยนสถานะ channel จาก **Developing** เป็น **Published** ถ้ายังเป็น Developing จะมีแค่บัญชีที่ลงไว้เป็น tester ที่ login ได้
+
+### 3. Vercel
+
+1. Import repo นี้ที่ https://vercel.com/new (ตรวจเจอ Next.js เองอัตโนมัติ)
+2. **Settings → Environment Variables** ใส่ทุกตัวตาม `.env.example`
+   - `SESSION_SECRET` สร้างด้วยคำสั่ง `openssl rand -base64 32`
+   - `SITE_URL` คือโดเมนจริง
+3. Deploy แล้วเข้า `/admin` ด้วย LINE หน้าจะแสดง LINE user ID ของเรา (ขึ้นต้นด้วย U...) ให้เอาไปใส่ `ADMIN_LINE_USER_IDS` แล้วกด Redeploy
 
 ## สถานะ / สิ่งที่ยังรอ
 
-- **โลโก้**: ใช้โลโก้ SawasDeeDog.com (ต้นฉบับอยู่ที่ `design/logo/sawasdeedog-logo.webp`) ตัดเป็นวงกลมไว้ใช้ที่ header และ favicon (`public/logo.png`, `src/app/icon.png`, `src/app/apple-icon.png`) ถ้ามีไฟล์โลโก้ที่พื้นใส (PNG/SVG) ให้ใช้แทนจะคมกว่า
-- ข้อมูลทั้งหมดใน `src/data/` เป็น**ตัวอย่าง** (ชื่อร้าน ย่าน สายพันธุ์)
+- **โลโก้**: โลโก้ final อยู่ที่ `design/logo/sawasdeedog-logo-final.png` รูปน้องหมาในวงกลมตัดมาใช้ที่ header และ favicon (`public/logo.png`, `src/app/icon.png`, `src/app/apple-icon.png`) ส่วนโลโก้เต็ม (`public/logo-full.jpg`) ใช้ที่หน้าเข้าสู่ระบบ
+- ถ้ายังไม่ได้ตั้งค่า Supabase เว็บจะแสดงร้านตัวอย่างจาก `src/data/places.ts` ส่วนรายชื่อย่านและสายพันธุ์ใน `src/data/` ก็ยังเป็นตัวอย่าง ต้องเติมให้ครบ
 - ประเภท/ตัวกรองของหมวดอื่นนอกจากคาเฟ่และครูฝึก ร่างไว้จากคำอธิบายบนหน้าแรก ต้องเทียบกับ build-spec
 - เกณฑ์รับฟาร์มยังไม่สรุป (build-spec 4.2)
-- ฟอร์มเสนอสถานที่ยังไม่ได้ต่อที่เก็บข้อมูล (`src/lib/submissions.ts`) ตอน dev ข้อมูลจะพิมพ์ออกมาใน log ส่วน production จะแสดงว่าส่งไม่สำเร็จ ข้อมูลจะได้ไม่หายเงียบ ๆ
-- LINE Login ต้องใส่ `LINE_CHANNEL_ID` / `LINE_CHANNEL_SECRET` จริงก่อน
 - "วันนี้ชวนไป" บนหน้าแรกเปลี่ยนหมวดทุกวัน ถ้ามีสปอนเซอร์ใน `src/data/sponsors.ts` ช่องนี้จะเป็นของสปอนเซอร์และติดป้าย สปอนเซอร์

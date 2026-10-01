@@ -42,7 +42,15 @@ export const cookieOptions = {
 }
 
 export async function getSession(): Promise<Session | undefined> {
-  const s = verify<Session & { exp: number }>((await cookies()).get(SESSION_COOKIE)?.value)
+  const token = (await cookies()).get(SESSION_COOKIE)?.value
+  if (!token) return undefined
+  let s: (Session & { exp: number }) | undefined
+  try {
+    s = verify<Session & { exp: number }>(token)
+  } catch (err) {
+    console.error('[session] cannot verify session cookie', err)
+    return undefined
+  }
   if (!s || s.exp < Date.now()) return undefined
   return { sub: s.sub, name: s.name, picture: s.picture }
 }

@@ -1,11 +1,24 @@
 import { randomBytes } from 'node:crypto'
 import { NextResponse, type NextRequest } from 'next/server'
-import { LINE_AUTHORIZE_URL, callbackUrl, lineConfig } from '@/lib/line'
+import { LINE_AUTHORIZE_URL, callbackUrl, lineConfig, siteOrigin } from '@/lib/line'
 import { cookieOptions, safeNext, sessionCookie, sign } from '@/lib/session'
 
 const OAUTH_COOKIE = 'sd_oauth'
 
+function fail(request: NextRequest, code: string) {
+  return NextResponse.redirect(new URL(`/submit?error=${code}`, request.url))
+}
+
 export function GET(request: NextRequest) {
+  try {
+    return start(request)
+  } catch (err) {
+    console.error('[line-login] unexpected error in /auth/line', err)
+    return fail(request, 'server')
+  }
+}
+
+function start(request: NextRequest) {
   const next = safeNext(request.nextUrl.searchParams.get('next'))
   const config = lineConfig()
 
@@ -17,7 +30,20 @@ export function GET(request: NextRequest) {
       res.cookies.set(sessionCookie({ sub: 'dev-user', name: 'ผู้ทดสอบ (dev)' }))
       return res
     }
-    return NextResponse.redirect(new URL('/submit?error=line', request.url))
+    console.error('[line-login] LINE_CHANNEL_ID / LINE_CHANNEL_SECRET not set')
+    return fail(request, 'line_config')
+  }
+  if (process.env.NODE_ENV === 'production' && !process.env.SESSION_SECRET) {
+    console.error('[line-login] SESSION_SECRET not set')
+    return fail(request, 'session_config')
+  }
+
+  // The state cookie is set on this host and LINE returns to SITE_URL's host.
+  // Start on the canonical host (e.g. www -> apex, preview -> domain) so the
+  // cookie is there when the callback arrives.
+  const canonical = siteOrigin()
+  if (canonical && canonical !== request.nextUrl.origin) {
+    return NextResponse.redirect(new URL(`/auth/line?next=${encodeURIComponent(next)}`, canonical))
   }
 
   const state = randomBytes(16).toString('base64url')

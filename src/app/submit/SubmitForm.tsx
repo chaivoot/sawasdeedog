@@ -1,10 +1,11 @@
 'use client'
 
-import { startTransition, useActionState, useEffect, useMemo, useState } from 'react'
+import { startTransition, useActionState, useEffect, useMemo, useRef, useState } from 'react'
 import { categories } from '@/data/categories'
 import { provinces } from '@/data/areas'
 import { Icon } from '@/components/Icon'
 import { MAX_PHOTOS } from '@/lib/limits'
+import { uploadPhotos } from '@/lib/upload-client'
 import { submitAction, type FormState } from './actions'
 
 type Props = {
@@ -19,19 +20,41 @@ export function SubmitForm({ initialKind, initialCategory, reportPlace }: Props)
   const [category, setCategory] = useState(initialCategory ?? '')
   const [province, setProvince] = useState('bangkok')
   const [photos, setPhotos] = useState<File[]>([])
+  const [uploading, setUploading] = useState(false)
+  const [uploadError, setUploadError] = useState('')
+  // Files already uploaded, so a resubmit after a validation error doesn't upload twice.
+  const uploaded = useRef(new WeakMap<File, string>())
   const errors = state.errors ?? {}
+  const busy = pending || uploading
   const districts = provinces.find((p) => p.slug === province)?.districts ?? []
 
   return (
     <form
       className="form"
       noValidate
-      onSubmit={(e) => {
+      onSubmit={async (e) => {
         // Submitting manually (instead of <form action>) keeps the typed values
-        // when the server returns validation errors, and lets us attach photos.
+        // when the server returns validation errors. Photos go straight to
+        // storage first; the action only receives their paths.
         e.preventDefault()
+        if (busy) return
         const data = new FormData(e.currentTarget)
-        photos.forEach((p) => data.append('photos', p))
+        setUploadError('')
+        try {
+          const toUpload = photos.filter((p) => !uploaded.current.has(p))
+          if (toUpload.length) {
+            setUploading(true)
+            const done = await uploadPhotos(toUpload, 'submission')
+            done.forEach((u, i) => uploaded.current.set(toUpload[i], u.path))
+          }
+        } catch (err) {
+          setUploadError(err instanceof Error ? err.message : 'อัปโหลดรูปไม่สำเร็จ')
+          return
+        } finally {
+          setUploading(false)
+        }
+        const paths = photos.map((p) => uploaded.current.get(p)).filter(Boolean)
+        data.set('photoPaths', JSON.stringify(paths))
         startTransition(() => action(data))
       }}
     >
@@ -45,9 +68,9 @@ export function SubmitForm({ initialKind, initialCategory, reportPlace }: Props)
       </div>
       <input type="hidden" name="kind" value={kind} />
 
-      {state.message && (
+      {(uploadError || state.message) && (
         <p className="auth__error" role="alert">
-          {state.message}
+          {uploadError || state.message}
         </p>
       )}
 
@@ -180,8 +203,8 @@ export function SubmitForm({ initialKind, initialCategory, reportPlace }: Props)
         </div>
       )}
 
-      <button type="submit" className="btn btn--primary btn--lg btn--block" disabled={pending}>
-        {pending ? 'กำลังส่ง…' : 'ส่งให้ทีมตรวจ'}
+      <button type="submit" className="btn btn--primary btn--lg btn--block" disabled={busy}>
+        {uploading ? 'กำลังอัปโหลดรูป…' : pending ? 'กำลังส่ง…' : 'ส่งให้ทีมตรวจ'}
       </button>
     </form>
   )

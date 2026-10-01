@@ -5,7 +5,7 @@ import { SiteHeader } from '@/components/SiteHeader'
 
 export const metadata: Metadata = {
   title: 'เกณฑ์การคัดเลือก',
-  description: 'คัดมาแล้ว ไม่ใช่มีครบ วิธีที่ทีม SawasDeeDog คัดสถานที่ และนิยาม force-free ของเรา',
+  description: 'คัดมาแล้ว ไม่ใช่มีครบ วิธีที่ทีม SawasdeeDog คัดสถานที่ และนิยาม force-free ของเรา',
 }
 
 const rules = [

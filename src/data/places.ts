@@ -9,6 +9,8 @@ export type Contacts = {
 }
 
 export type Place = {
+  /** Database id; absent on the built-in sample data. */
+  id?: string
   slug: string
   name: string
   category: string
@@ -30,11 +32,12 @@ export type Place = {
   photos: string[]
   /** Farms only: breed slugs. */
   breeds?: string[]
+  /** Hidden from the site when false (admin only). */
+  published?: boolean
 }
 
-// TODO(data): everything below is sample data mirroring the mockups. Replace
-// with the team's real listings (or swap the functions in lib/places.ts for a
-// database/CMS query).
+// Sample data mirroring the mockups. Used only when Supabase is not configured
+// (local development); real listings live in the Supabase `places` table.
 const sampleDescription =
   '[คำอธิบายจากทีม 2-4 บรรทัด เช่น บรรยากาศร้าน ขนาดหมาที่เหมาะ โซนที่หมานั่งได้ และสิ่งที่ควรรู้ก่อนไป]'
 const sampleContacts: Contacts = {
@@ -44,7 +47,7 @@ const sampleContacts: Contacts = {
 }
 const maps = 'https://maps.google.com/'
 
-export const places: Place[] = [
+export const samplePlaces: Place[] = [
   {
     slug: 'sample-cafe-a',
     name: 'คาเฟ่ตัวอย่าง A',

@@ -18,8 +18,8 @@ const plexThaiLooped = IBM_Plex_Sans_Thai_Looped({
 
 export const metadata: Metadata = {
   title: {
-    default: 'SawasDeeDog | หาที่ที่ต้อนรับหมาของคุณ',
-    template: '%s | SawasDeeDog',
+    default: 'SawasdeeDog | หาที่ที่ต้อนรับหมาของคุณ',
+    template: '%s | SawasdeeDog',
   },
   description: 'ทีมครูฝึกสาย R+ เก็บและคัดเองทุกรายการ คัดมาแล้ว ไม่ใช่มีครบ',
 }

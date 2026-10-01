@@ -1,12 +1,13 @@
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import Link from 'next/link'
 import { Icon } from '@/components/Icon'
-import { LogoMark } from '@/components/Logo'
 import { Photo } from '@/components/Photo'
 import { SiteHeader } from '@/components/SiteHeader'
 import { getCategory } from '@/data/categories'
 import { getPlace } from '@/lib/places'
 import { getSession } from '@/lib/session'
+import { isAdmin } from '@/lib/admin'
 import { SubmitForm } from './SubmitForm'
 
 export const metadata: Metadata = {
@@ -17,6 +18,17 @@ export const metadata: Metadata = {
 
 type Props = { searchParams: Promise<Record<string, string | string[] | undefined>> }
 
+// Codes from /auth/line and its callback; the code in the URL tells the team which step failed.
+const loginErrors: Record<string, string> = {
+  line_cancel: 'ยกเลิกการเข้าสู่ระบบแล้ว กดปุ่มด้านล่างเพื่อลองอีกครั้ง',
+  line_state: 'เข้าสู่ระบบไม่สำเร็จ (หมดเวลาหรือเปิดคนละแท็บ) ลองอีกครั้ง',
+  line_denied: 'LINE ไม่อนุญาตการเข้าสู่ระบบ (รหัส line_denied) แจ้งทีมได้เลย',
+  line_token: 'เข้าสู่ระบบด้วย LINE ไม่สำเร็จ (รหัส line_token) ลองอีกครั้ง ถ้ายังไม่ได้แจ้งทีม',
+  line_config: 'ระบบเข้าสู่ระบบยังไม่พร้อม (รหัส line_config) แจ้งทีมได้เลย',
+  session_config: 'ระบบเข้าสู่ระบบยังไม่พร้อม (รหัส session_config) แจ้งทีมได้เลย',
+  server: 'ระบบขัดข้องระหว่างเข้าสู่ระบบ (รหัส server) ลองอีกครั้ง ถ้ายังไม่ได้แจ้งทีม',
+}
+
 function one(v: string | string[] | undefined) {
   return Array.isArray(v) ? v[0] : v
 }
@@ -26,7 +38,7 @@ export default async function SubmitPage({ searchParams }: Props) {
   const session = await getSession()
   const sent = one(sp.sent)
   const kind = one(sp.type) === 'report' ? 'report' : 'new'
-  const place = getPlace(one(sp.place) ?? '')
+  const place = await getPlace(one(sp.place) ?? '')
   const category = getCategory(one(sp.category) ?? '')?.slug
   const back = place ? `/place/${place.slug}` : '/'
 
@@ -38,9 +50,14 @@ export default async function SubmitPage({ searchParams }: Props) {
       <>
         <SiteHeader back={back} />
         <main className="auth">
-          <div className="auth__art">
-            <LogoMark size={112} />
-          </div>
+          <Image
+            className="auth__logo"
+            src="/logo-full.jpg"
+            width={200}
+            height={200}
+            alt="SawasdeeDog"
+            priority
+          />
           <div className="auth__text">
             <h1>ช่วยเราคัดที่ดี ๆ ให้คนเลี้ยงหมา</h1>
             <p>เข้าสู่ระบบด้วย LINE ก่อนเสนอสถานที่หรือแจ้งข้อมูลผิด ทีมจะตรวจทุกรายการก่อนขึ้นเว็บ</p>
@@ -62,7 +79,7 @@ export default async function SubmitPage({ searchParams }: Props) {
           <div className="auth__actions">
             {sp.error && (
               <p className="auth__error" role="alert">
-                เข้าสู่ระบบด้วย LINE ไม่สำเร็จ ลองอีกครั้ง
+                {loginErrors[one(sp.error) ?? ''] ?? loginErrors.line_token}
               </p>
             )}
             {/* Route handler redirect, so a plain <a> rather than <Link>. */}
@@ -141,6 +158,11 @@ export default async function SubmitPage({ searchParams }: Props) {
           <Link href="/criteria" className="criteria-link desktop-only">
             อ่านเกณฑ์การคัดเลือก
           </Link>
+          {isAdmin(session) && (
+            <Link href="/admin" className="criteria-link">
+              ไปหลังบ้าน (ตรวจข้อมูลที่ส่งมา)
+            </Link>
+          )}
         </div>
         <SubmitForm
           initialKind={kind}
