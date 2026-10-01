@@ -56,7 +56,11 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             <Link href="/admin/places">รายการบนเว็บ</Link>
             <Link href="/admin/places/new">+ เพิ่มรายการ</Link>
           </nav>
-          <span className="admin-header__who">{session.name}</span>
+          <span className="admin-header__who">
+            {session.name}
+            {/* Shown so admins can copy their own ID into ADMIN_LINE_USER_IDS. */}
+            <code title="LINE user ID ของคุณ">{session.sub}</code>
+          </span>
         </div>
       </header>
       {!isSupabaseConfigured() && (
