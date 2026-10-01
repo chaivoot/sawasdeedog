@@ -29,6 +29,7 @@ export default async function EditPlace({ params }: Props) {
           name: place.name,
           slug: place.slug,
           category: place.category,
+          extraCategories: place.extraCategories ?? [],
           type: place.type,
           trainerStyle: place.trainerStyle,
           province: place.province,

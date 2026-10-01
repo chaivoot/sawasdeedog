@@ -86,7 +86,12 @@ export function SubmitForm({ initialKind, initialCategory, reportPlace }: Props)
               aria-invalid={!!errors.name}
             />
           </Field>
-          <Field id="category" label="หมวด" error={errors.category}>
+          <Field
+            id="category"
+            label="หมวด"
+            hint="มีหลายบริการ? เลือกหมวดหลัก แล้วบอกบริการอื่นในโน้ตถึงทีม"
+            error={errors.category}
+          >
             <select
               id="category"
               name="category"

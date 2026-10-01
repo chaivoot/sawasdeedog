@@ -13,7 +13,7 @@ import { getCategory, trainerStyles } from '@/data/categories'
 import { findArea } from '@/data/areas'
 import { getBreed } from '@/data/breeds'
 import { dogFriendly, farmRule, hasDogFriendlyRule } from '@/data/criteria'
-import type { Contacts, Place } from '@/data/places'
+import { placeCategories, type Contacts, type Place } from '@/data/places'
 import { JsonLd } from '@/components/JsonLd'
 import { MIN_RATINGS_TO_SHOW } from '@/lib/limits'
 import { getPlace } from '@/lib/places'
@@ -160,16 +160,17 @@ function contactLinks(c: Contacts): ContactLink[] {
 }
 
 function criteriaFor(place: Place): string[] {
-  const category = getCategory(place.category)
+  const slugs = placeCategories(place)
+  const filters = slugs.flatMap((s) => getCategory(s)?.filters ?? [])
   const items: string[] = []
-  if (hasDogFriendlyRule(place.category)) items.push(dogFriendly.criterion)
+  if (slugs.some(hasDogFriendlyRule)) items.push(dogFriendly.criterion)
   if (place.category === 'farm') items.push(farmRule.criterion)
   if (place.trainerStyle) {
     const style = trainerStyles.find((s) => s.slug === place.trainerStyle)
     if (style) items.push(`แนวการฝึก ${style.label}`)
   }
   for (const a of place.attributes) {
-    const label = category?.filters.find((f) => f.slug === a)?.label
+    const label = filters.find((f) => f.slug === a)?.label
     if (label) items.push(label)
   }
   return items
@@ -182,6 +183,7 @@ export default async function PlacePage({ params }: Props) {
   const category = getCategory(place.category)
   const area = findArea(place.province, place.district)
   const typeLabel = category?.types?.find((t) => t.slug === place.type)?.label
+  const extraNames = (place.extraCategories ?? []).map((s) => getCategory(s)?.name).filter(Boolean)
   const breedNames = (place.breeds ?? []).map((b) => getBreed(b)?.name).filter(Boolean)
   const criteria = criteriaFor(place)
   const contacts = contactLinks(place.contacts)
@@ -219,6 +221,7 @@ export default async function PlacePage({ params }: Props) {
               <span className="place__eyebrow">
                 {category?.name}
                 {typeLabel && ` · ${typeLabel}`}
+                {extraNames.map((n) => ` · ${n}`)}
               </span>
               <h1>{place.name}</h1>
               {area && (

@@ -13,8 +13,11 @@ export type Place = {
   id?: string
   slug: string
   name: string
+  /** Main category: breadcrumb, structured data and the place's own page. */
   category: string
-  /** One of the category's `types` slugs. */
+  /** Other categories the place also passes the criteria for (never farm). */
+  extraCategories?: string[]
+  /** One of the main category's `types` slugs. */
   type?: string
   /** Trainers only. */
   trainerStyle?: TrainerStyle
@@ -23,7 +26,7 @@ export type Place = {
   /** ISO date of the team's last check. */
   checkedAt: string
   description?: string
-  /** Filter slugs from the category this place meets. */
+  /** Filter slugs, from any of the place's categories, that this place meets. */
   attributes: string[]
   hours?: string
   price?: string
@@ -36,6 +39,11 @@ export type Place = {
   published?: boolean
   /** User star ratings; absent when nobody has rated yet. */
   rating?: { count: number; avg: number }
+}
+
+/** Main category first, then the extras. */
+export function placeCategories(p: Pick<Place, 'category' | 'extraCategories'>): string[] {
+  return [p.category, ...(p.extraCategories ?? [])]
 }
 
 // Sample data mirroring the mockups. Used only when Supabase is not configured
@@ -148,6 +156,7 @@ export const samplePlaces: Place[] = [
     slug: 'sample-vet-a',
     name: 'โรงพยาบาลสัตว์ตัวอย่าง A',
     category: 'vet',
+    extraCategories: ['grooming'],
     type: 'hospital',
     province: 'bangkok',
     district: 'lat-krabang',

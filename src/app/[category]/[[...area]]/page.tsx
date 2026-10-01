@@ -214,7 +214,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
             <div className="listing-list">
               {!isTrainer && places.length > 0 && <span className="result-count mobile-only">{count}</span>}
               {places.map((p) => (
-                <ListingCard key={p.slug} place={p} />
+                <ListingCard key={p.slug} place={p} listing={category.slug} />
               ))}
               {places.length === 0 &&
                 (filtered ? (

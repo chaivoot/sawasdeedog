@@ -31,7 +31,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Category pages, and area pages only where there is something to show.
   for (const c of areaCategories) {
-    const inCat = entries.filter((e) => e.category === c.slug)
+    const inCat = entries.filter((e) => e.categories.includes(c.slug))
     urls.push({
       url: absoluteUrl(`/${c.slug}`),
       lastModified: latest(inCat),
