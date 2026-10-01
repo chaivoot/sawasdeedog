@@ -11,9 +11,23 @@ export function lineConfig() {
   return channelId && channelSecret ? { channelId, channelSecret } : undefined
 }
 
+/**
+ * Canonical origin from SITE_URL, tolerant of a missing scheme or a trailing
+ * path ("sawasdeedog.com/" -> "https://sawasdeedog.com"). Undefined if unset.
+ */
+export function siteOrigin(): string | undefined {
+  const raw = process.env.SITE_URL?.trim()
+  if (!raw) return undefined
+  try {
+    return new URL(/^https?:\/\//.test(raw) ? raw : `https://${raw}`).origin
+  } catch {
+    return undefined
+  }
+}
+
+/** The redirect_uri sent to LINE; must match a Callback URL in the channel exactly. */
 export function callbackUrl(requestUrl: string) {
-  const base = process.env.SITE_URL ?? new URL(requestUrl).origin
-  return new URL('/auth/line/callback', base).toString()
+  return new URL('/auth/line/callback', siteOrigin() ?? new URL(requestUrl).origin).toString()
 }
 
 type IdToken = { sub: string; name?: string; picture?: string; nonce?: string }
@@ -34,7 +48,7 @@ export async function exchangeCode(code: string, redirectUri: string, nonce: str
       client_secret: config.channelSecret,
     }),
   })
-  if (!tokenRes.ok) throw new Error(`LINE token exchange failed: ${tokenRes.status}`)
+  if (!tokenRes.ok) throw new Error(`token exchange ${tokenRes.status} ${await tokenRes.text()}`)
   const { id_token } = (await tokenRes.json()) as { id_token?: string }
   if (!id_token) throw new Error('LINE did not return an id_token (is the openid scope enabled?)')
 
@@ -43,6 +57,6 @@ export async function exchangeCode(code: string, redirectUri: string, nonce: str
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({ id_token, client_id: config.channelId, nonce }),
   })
-  if (!verifyRes.ok) throw new Error(`LINE id_token verification failed: ${verifyRes.status}`)
+  if (!verifyRes.ok) throw new Error(`id_token verify ${verifyRes.status} ${await verifyRes.text()}`)
   return (await verifyRes.json()) as IdToken
 }

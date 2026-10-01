@@ -18,6 +18,16 @@ export const metadata: Metadata = {
 
 type Props = { searchParams: Promise<Record<string, string | string[] | undefined>> }
 
+// Codes from /auth/line and its callback; the code in the URL tells the team which step failed.
+const loginErrors: Record<string, string> = {
+  line_cancel: 'ยกเลิกการเข้าสู่ระบบแล้ว กดปุ่มด้านล่างเพื่อลองอีกครั้ง',
+  line_state: 'เข้าสู่ระบบไม่สำเร็จ (หมดเวลาหรือเปิดคนละแท็บ) ลองอีกครั้ง',
+  line_denied: 'LINE ไม่อนุญาตการเข้าสู่ระบบ (รหัส line_denied) แจ้งทีมได้เลย',
+  line_token: 'เข้าสู่ระบบด้วย LINE ไม่สำเร็จ (รหัส line_token) ลองอีกครั้ง ถ้ายังไม่ได้แจ้งทีม',
+  line_config: 'ระบบเข้าสู่ระบบยังไม่พร้อม (รหัส line_config) แจ้งทีมได้เลย',
+  session_config: 'ระบบเข้าสู่ระบบยังไม่พร้อม (รหัส session_config) แจ้งทีมได้เลย',
+}
+
 function one(v: string | string[] | undefined) {
   return Array.isArray(v) ? v[0] : v
 }
@@ -63,7 +73,7 @@ export default async function SubmitPage({ searchParams }: Props) {
           <div className="auth__actions">
             {sp.error && (
               <p className="auth__error" role="alert">
-                เข้าสู่ระบบด้วย LINE ไม่สำเร็จ ลองอีกครั้ง
+                {loginErrors[one(sp.error) ?? ''] ?? loginErrors.line_token}
               </p>
             )}
             {/* Route handler redirect, so a plain <a> rather than <Link>. */}
