@@ -37,7 +37,6 @@ export const categories: Category[] = [
       { slug: 'restaurant', label: 'ร้านอาหาร' },
     ],
     filters: [
-      { slug: 'large-dog', label: 'รับหมาใหญ่' },
       { slug: 'dog-menu', label: 'มีเมนูหมา' },
       { slug: 'parking', label: 'มีที่จอดรถ' },
     ],
@@ -87,7 +86,7 @@ export const categories: Category[] = [
       { slug: 'shop', label: 'หน้าร้าน' },
       { slug: 'mobile', label: 'ถึงบ้าน' },
     ],
-    filters: [{ slug: 'large-dog', label: 'รับหมาใหญ่' }],
+    filters: [],
   },
   {
     slug: 'stay',
@@ -98,7 +97,7 @@ export const categories: Category[] = [
       { slug: 'hotel', label: 'โรงแรม' },
       { slug: 'resort', label: 'รีสอร์ท' },
     ],
-    filters: [{ slug: 'large-dog', label: 'รับหมาใหญ่' }],
+    filters: [],
   },
   {
     slug: 'boarding',
@@ -109,7 +108,7 @@ export const categories: Category[] = [
       { slug: 'daycare', label: 'รายวัน' },
       { slug: 'overnight', label: 'ค้างคืน' },
     ],
-    filters: [{ slug: 'large-dog', label: 'รับหมาใหญ่' }],
+    filters: [],
   },
   {
     slug: 'sitter',
