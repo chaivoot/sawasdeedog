@@ -2554,6 +2554,12 @@ p {
   font-size: 14px;
   color: var(--color-muted);
 }
+.admin-header__who code {
+  display: block;
+  font-size: 12px;
+  user-select: all;
+  word-break: break-all;
+}
 .admin-warning {
   margin: 0;
   padding: 10px var(--gutter);
