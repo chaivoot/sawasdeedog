@@ -5,12 +5,25 @@ import { safeNext, sessionCookie, verify } from '@/lib/session'
 const OAUTH_COOKIE = 'sd_oauth'
 
 export async function GET(request: NextRequest) {
+  try {
+    return await finish(request)
+  } catch (err) {
+    console.error('[line-login] unexpected error in callback', err)
+    return NextResponse.redirect(new URL('/submit?error=server', request.url))
+  }
+}
+
+async function finish(request: NextRequest) {
   const params = request.nextUrl.searchParams
   const fail = (code: string, detail: string) => {
     console.error(`[line-login] ${code}: ${detail}`)
     const res = NextResponse.redirect(new URL(`/submit?error=${code}`, request.url))
     res.cookies.delete(OAUTH_COOKIE)
     return res
+  }
+
+  if (process.env.NODE_ENV === 'production' && !process.env.SESSION_SECRET) {
+    return fail('session_config', 'SESSION_SECRET not set')
   }
 
   // User pressed cancel on LINE, or LINE rejected the request.

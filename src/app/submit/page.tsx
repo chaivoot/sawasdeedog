@@ -26,6 +26,7 @@ const loginErrors: Record<string, string> = {
   line_token: 'เข้าสู่ระบบด้วย LINE ไม่สำเร็จ (รหัส line_token) ลองอีกครั้ง ถ้ายังไม่ได้แจ้งทีม',
   line_config: 'ระบบเข้าสู่ระบบยังไม่พร้อม (รหัส line_config) แจ้งทีมได้เลย',
   session_config: 'ระบบเข้าสู่ระบบยังไม่พร้อม (รหัส session_config) แจ้งทีมได้เลย',
+  server: 'ระบบขัดข้องระหว่างเข้าสู่ระบบ (รหัส server) ลองอีกครั้ง ถ้ายังไม่ได้แจ้งทีม',
 }
 
 function one(v: string | string[] | undefined) {

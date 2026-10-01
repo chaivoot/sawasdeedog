@@ -10,6 +10,15 @@ function fail(request: NextRequest, code: string) {
 }
 
 export function GET(request: NextRequest) {
+  try {
+    return start(request)
+  } catch (err) {
+    console.error('[line-login] unexpected error in /auth/line', err)
+    return fail(request, 'server')
+  }
+}
+
+function start(request: NextRequest) {
   const next = safeNext(request.nextUrl.searchParams.get('next'))
   const config = lineConfig()
 
