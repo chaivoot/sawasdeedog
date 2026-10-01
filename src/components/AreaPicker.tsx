@@ -2,7 +2,7 @@
 
 import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { AREA_COOKIE, findArea, provinces } from '@/data/areas'
+import { AREA_COOKIE, findArea, popularProvinces, provinces } from '@/data/areas'
 import { Icon } from './Icon'
 
 type Props = {
@@ -27,6 +27,14 @@ export function AreaPicker({ province, district, category }: Props) {
   const q = query.trim()
   const districts = selectedProvince.districts.filter((d) => !q || d.name.includes(q))
   const selected = findArea(provinceSlug, districtSlug || undefined)
+  // Popular provinces as chips, plus the chosen one if it came from the dropdown.
+  const chipProvinces = pickable.filter((p) => popularProvinces.includes(p.slug) || p.slug === provinceSlug)
+
+  function pickProvince(slug: string) {
+    setProvinceSlug(slug)
+    setDistrictSlug('')
+    setQuery('')
+  }
 
   function open() {
     setProvinceSlug(current?.province.slug ?? pickable[0].slug)
@@ -96,7 +104,7 @@ export function AreaPicker({ province, district, category }: Props) {
             1. จังหวัด
           </span>
           <div className="chip-wrap" role="group" aria-labelledby="area-province-label">
-            {pickable.map((p) => {
+            {chipProvinces.map((p) => {
               const active = p.slug === provinceSlug
               return (
                 <button
@@ -104,11 +112,7 @@ export function AreaPicker({ province, district, category }: Props) {
                   type="button"
                   className="chip"
                   aria-pressed={active}
-                  onClick={() => {
-                    setProvinceSlug(p.slug)
-                    setDistrictSlug('')
-                    setQuery('')
-                  }}
+                  onClick={() => pickProvince(p.slug)}
                 >
                   {active && <Icon name="check" size={18} strokeWidth={2.4} />}
                   {p.name}
@@ -116,6 +120,22 @@ export function AreaPicker({ province, district, category }: Props) {
               )
             })}
           </div>
+          <label className="sr-only" htmlFor="area-province-select">
+            เลือกจังหวัดอื่น
+          </label>
+          <select
+            id="area-province-select"
+            className="select select--compact"
+            value={popularProvinces.includes(provinceSlug) ? '' : provinceSlug}
+            onChange={(e) => e.target.value && pickProvince(e.target.value)}
+          >
+            <option value="">จังหวัดอื่น ({pickable.length} จังหวัด)</option>
+            {pickable.map((p) => (
+              <option key={p.slug} value={p.slug}>
+                {p.name}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="sheet__section sheet__section--grow">

@@ -412,6 +412,14 @@ p {
 .sheet::backdrop {
   background: var(--scrim);
 }
+.sheet > *,
+.sheet__section > * {
+  flex-shrink: 0;
+}
+.sheet__section--grow,
+.sheet__list {
+  flex-shrink: 1;
+}
 .sheet__handle {
   width: 40px;
   height: 5px;
@@ -2272,6 +2280,10 @@ a.guarantee:hover {
 }
 .select:invalid {
   color: var(--color-muted);
+}
+.select--compact {
+  height: 44px;
+  font-size: 15px;
 }
 .textarea {
   width: 100%;
