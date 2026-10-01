@@ -4,6 +4,7 @@
 
 - ไฟล์งานออกแบบอยู่ใน [`design/`](design/DESIGN-HANDOFF.md) (tokens, ไอคอน, ม็อกอัปทุกหน้า)
 - ตัวเว็บใช้ Next.js 16 (App Router) + TypeScript และ CSS ล้วน (`src/app/globals.css`)
+- โทนสีเปลี่ยนตามโลโก้แล้ว (น้ำเงินเข้ม / ฟ้า / เหลือง) ค่าสีอยู่ที่ `:root` ใน `src/app/globals.css` ส่วน `design/tokens.*` เป็นของชุดเดิมจากนักออกแบบ
 
 ## เริ่มใช้งาน
 
@@ -34,7 +35,7 @@ npm run dev        # http://localhost:3000
 
 ## สถานะ / สิ่งที่ยังรอ
 
-- **โลโก้: กำลังออกแบบ** ตอนนี้ใช้แนว A เป็นตัวชั่วคราว พอได้โลโก้จริงให้วางทับ `public/logo.svg` และ `src/app/icon.svg` (favicon) ทั้งเว็บจะเปลี่ยนตาม
+- **โลโก้**: ใช้โลโก้ SawasDeeDog.com (ต้นฉบับอยู่ที่ `design/logo/sawasdeedog-logo.webp`) ตัดเป็นวงกลมไว้ใช้ที่ header และ favicon (`public/logo.png`, `src/app/icon.png`, `src/app/apple-icon.png`) ถ้ามีไฟล์โลโก้ที่พื้นใส (PNG/SVG) ให้ใช้แทนจะคมกว่า
 - ข้อมูลทั้งหมดใน `src/data/` เป็น**ตัวอย่าง** (ชื่อร้าน ย่าน สายพันธุ์)
 - ประเภท/ตัวกรองของหมวดอื่นนอกจากคาเฟ่และครูฝึก ร่างไว้จากคำอธิบายบนหน้าแรก ต้องเทียบกับ build-spec
 - เกณฑ์รับฟาร์มยังไม่สรุป (build-spec 4.2)

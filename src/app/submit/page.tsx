@@ -39,7 +39,7 @@ export default async function SubmitPage({ searchParams }: Props) {
         <SiteHeader back={back} />
         <main className="auth">
           <div className="auth__art">
-            <LogoMark size={72} />
+            <LogoMark size={112} />
           </div>
           <div className="auth__text">
             <h1>ช่วยเราคัดที่ดี ๆ ให้คนเลี้ยงหมา</h1>

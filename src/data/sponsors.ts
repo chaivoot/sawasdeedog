@@ -10,7 +10,7 @@ export type Sponsor = {
 }
 
 // Sponsored featured tiles. A sponsor always gets the "สปอนเซอร์" label
-// (marigold background, dark text). See /criteria for the sponsor policy.
+// (yellow background, dark text). See /criteria for the sponsor policy.
 // Example:
 // { category: 'grooming', name: '[ชื่อผู้สนับสนุน]', from: '2026-10-01', to: '2026-10-31' }
 export const sponsors: Sponsor[] = []

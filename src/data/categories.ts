@@ -14,7 +14,7 @@ export type Category = {
   listTitle?: string
   /** Short noun for empty states, e.g. "ยังไม่มีคาเฟ่ในย่าน…". Defaults to `name`. */
   shortName?: string
-  /** Rule every listing in this category meets; shown as a marigold banner. */
+  /** Rule every listing in this category meets; shown as a yellow banner. */
   guarantee?: string
   /** Shorter form for the desktop subtitle. */
   guaranteeShort?: string

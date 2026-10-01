@@ -18,14 +18,14 @@ const plexThaiLooped = IBM_Plex_Sans_Thai_Looped({
 
 export const metadata: Metadata = {
   title: {
-    default: 'sawasdee dog | หาที่ที่ต้อนรับหมาของคุณ',
-    template: '%s | sawasdee dog',
+    default: 'SawasDeeDog | หาที่ที่ต้อนรับหมาของคุณ',
+    template: '%s | SawasDeeDog',
   },
   description: 'ทีมครูฝึกสาย R+ เก็บและคัดเองทุกรายการ คัดมาแล้ว ไม่ใช่มีครบ',
 }
 
 export const viewport: Viewport = {
-  themeColor: '#F3F4EF',
+  themeColor: '#F2F6FB',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
