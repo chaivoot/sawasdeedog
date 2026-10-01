@@ -1,6 +1,6 @@
 # SawasdeeDog
 
-เว็บรวมสถานที่ที่ต้อนรับหมา ทีมครูฝึกสาย R+ เก็บและคัดเองทุกรายการ
+เว็บรวม Pet Friendly ที่จริงใจ ทีม SawasdeeDog เก็บและคัดเองทุกรายการ
 
 - ไฟล์งานออกแบบอยู่ใน [`design/`](design/DESIGN-HANDOFF.md) (tokens, ไอคอน, ม็อกอัปทุกหน้า)
 - ตัวเว็บใช้ Next.js 16 (App Router) + TypeScript และ CSS ล้วน (`src/app/globals.css`)
