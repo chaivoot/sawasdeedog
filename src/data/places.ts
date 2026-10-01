@@ -34,6 +34,8 @@ export type Place = {
   breeds?: string[]
   /** Hidden from the site when false (admin only). */
   published?: boolean
+  /** User star ratings; absent when nobody has rated yet. */
+  rating?: { count: number; avg: number }
 }
 
 // Sample data mirroring the mockups. Used only when Supabase is not configured

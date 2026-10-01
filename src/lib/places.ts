@@ -4,6 +4,7 @@ import { breeds, type Breed } from '@/data/breeds'
 import { samplePlaces, type Place } from '@/data/places'
 import { sponsors, type Sponsor } from '@/data/sponsors'
 import type { Area } from '@/data/areas'
+import { ratingStats } from './ratings'
 import { db, isSupabaseConfigured } from './supabase'
 
 // All reads of listings go through here. With Supabase configured they come
@@ -63,6 +64,13 @@ export function rowToPlace(r: PlaceRow): Place {
   }
 }
 
+/** Attaches rating stats to places that came from the database. */
+async function withRatings(places: Place[]): Promise<Place[]> {
+  const ids = places.map((p) => p.id).filter((id): id is string => Boolean(id))
+  const stats = await ratingStats(ids)
+  return places.map((p) => (p.id && stats.has(p.id) ? { ...p, rating: stats.get(p.id) } : p))
+}
+
 const byChecked = (a: Place, b: Place) => b.checkedAt.localeCompare(a.checkedAt)
 
 export type PlaceQuery = {
@@ -92,7 +100,7 @@ export async function listPlaces(q: PlaceQuery): Promise<Place[]> {
   if (q.filters?.length) query = query.contains('attributes', q.filters)
   const { data, error } = await query.order('checked_at', { ascending: false })
   if (error) throw error
-  return (data as PlaceRow[]).map(rowToPlace)
+  return withRatings((data as PlaceRow[]).map(rowToPlace))
 }
 
 /** Published place by slug (public pages). */
@@ -105,7 +113,9 @@ export async function getPlace(slug: string): Promise<Place | undefined> {
     .eq('published', true)
     .maybeSingle()
   if (error) throw error
-  return data ? rowToPlace(data as PlaceRow) : undefined
+  if (!data) return undefined
+  const [place] = await withRatings([rowToPlace(data as PlaceRow)])
+  return place
 }
 
 export type BreedWithCount = Breed & { farmCount: number }
@@ -126,7 +136,7 @@ export async function breedsWithFarms(): Promise<BreedWithCount[]> {
 }
 
 export async function farmsForBreed(breed: string): Promise<Place[]> {
-  return (await farms()).filter((f) => f.breeds?.includes(breed)).sort(byChecked)
+  return withRatings((await farms()).filter((f) => f.breeds?.includes(breed)).sort(byChecked))
 }
 
 export function activeSponsor(today: string): Sponsor | undefined {
