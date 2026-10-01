@@ -76,11 +76,12 @@ export const categories: Category[] = [
   {
     slug: 'rehab',
     icon: 'rehab',
-    name: 'กายภาพ & ฟื้นฟู',
+    name: 'ฟิตเนส & กายภาพ',
     schemaType: 'LocalBusiness',
-    listTitle: 'กายภาพบำบัด & ฟื้นฟูหมา',
-    description: 'กายภาพบำบัด ธาราบำบัด ฝังเข็ม',
+    listTitle: 'ฟิตเนสหมา & กายภาพบำบัด',
+    description: 'ฟิตเนสหมา กายภาพบำบัด ธาราบำบัด ฝังเข็ม',
     filters: [
+      { slug: 'fitness', label: 'ฟิตเนส' },
       { slug: 'physio', label: 'กายภาพบำบัด' },
       { slug: 'hydro', label: 'ธาราบำบัด' },
       { slug: 'acupuncture', label: 'ฝังเข็ม' },
@@ -204,3 +205,7 @@ export function getCategory(slug: string): Category | undefined {
 
 /** Categories browsed by area (everything except farm). */
 export const areaCategories = categories.filter((c) => c.slug !== 'farm')
+
+/** Categories the home page's daily "วันนี้ชวนไป" tile rotates through. */
+const NOT_FEATURED = ['farm', 'sitter', 'boarding', 'transport', 'rehab']
+export const featuredCategories = categories.filter((c) => !NOT_FEATURED.includes(c.slug))
