@@ -12,7 +12,9 @@ import { listingHref, type ListingParams } from '@/lib/listing'
 import { SiteHeader } from '@/components/SiteHeader'
 import { getCategory, trainerStyles, type Category, type TrainerStyle } from '@/data/categories'
 import { areaName, areaPath, findArea, type Area } from '@/data/areas'
-import { listPlaces } from '@/lib/places'
+import { JsonLd } from '@/components/JsonLd'
+import { areaCounts, listPlaces } from '@/lib/places'
+import { DEFAULT_OG_IMAGE, absoluteUrl } from '@/lib/site'
 
 type Props = {
   params: Promise<{ category: string; area?: string[] }>
@@ -51,13 +53,45 @@ function title(category: Category, area?: Area) {
   return area ? `${base} ${areaName(area)}` : base
 }
 
+/** Page title for search results, e.g. "คาเฟ่หมาเข้าได้ ลาดกระบัง กรุงเทพฯ". */
+function seoTitle(category: Category, area?: Area) {
+  const base = category.listTitle ?? category.name
+  if (!area) return base
+  return area.district
+    ? `${base} ${area.district.name} ${area.province.name}`
+    : `${base} ${area.province.name}`
+}
+
+function seoDescription(category: Category, area: Area | undefined, count: number) {
+  const where = area
+    ? area.district
+      ? `${area.district.name} ${area.province.name}`
+      : area.province.name
+    : ''
+  const lead =
+    count > 0
+      ? `รวม ${count} ${category.name}${where ? `ใน${where}` : ''}`
+      : `${category.name}${where ? `ใน${where}` : ''}`
+  const rule = hasDogFriendlyRule(category.slug) ? dogFriendly.banner : category.description
+  return `${lead} ที่ทีม SawasdeeDog คัดแล้ว · ${rule}`
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { category: slug, area: segments } = await params
   const r = resolve(slug, segments)
   if (!r) return {}
+  const places = await listPlaces({ category: r.category.slug, area: r.area })
+  const path = `/${r.category.slug}${areaPath(r.area)}`
+  const title = seoTitle(r.category, r.area)
+  const description = seoDescription(r.category, r.area, places.length)
   return {
-    title: title(r.category, r.area),
-    description: hasDogFriendlyRule(r.category.slug) ? dogFriendly.banner : r.category.description,
+    title,
+    description,
+    // Filtered views (?type=, ?f=) all point at the unfiltered page.
+    alternates: { canonical: path },
+    // Empty area pages are thin content; keep them out of the index until they have places.
+    robots: r.area && places.length === 0 ? { index: false, follow: true } : undefined,
+    openGraph: { title, description, url: path, images: [DEFAULT_OG_IMAGE] },
   }
 }
 
@@ -88,12 +122,40 @@ export default async function CategoryPage({ params, searchParams }: Props) {
     if (area.district) crumbs.push({ label: area.district.name })
   }
 
+  const nearby = await areaLinks(category, area)
+
   const count = `พบ ${places.length} ที่ ที่ผ่านเกณฑ์`
   const filtered = lp.filters.length > 0 || !!lp.type
   const noun = category.shortName ?? category.name
 
+  const breadcrumbLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { name: 'หน้าแรก', path: '/' },
+      { name: category.name, path: `/${category.slug}` },
+      ...(area ? [{ name: area.province.name, path: `/${category.slug}/${area.province.slug}` }] : []),
+      ...(area?.district ? [{ name: area.district.name, path: basePath }] : []),
+    ].map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.name, item: absoluteUrl(c.path) })),
+  }
+  const listLd = places.length
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'ItemList',
+        name: seoTitle(category, area),
+        itemListElement: places.map((p, i) => ({
+          '@type': 'ListItem',
+          position: i + 1,
+          name: p.name,
+          url: absoluteUrl(`/place/${p.slug}`),
+        })),
+      }
+    : undefined
+
   return (
     <>
+      <JsonLd data={breadcrumbLd} />
+      {listLd && <JsonLd data={listLd} />}
       <SiteHeader back="/" />
       <main className="page">
         <Breadcrumb items={crumbs} />
@@ -182,7 +244,51 @@ export default async function CategoryPage({ params, searchParams }: Props) {
             </div>
           </div>
         </div>
+
+        {nearby.links.length > 0 && (
+          <nav className="area-links" aria-labelledby="area-links-title">
+            <h2 id="area-links-title">{nearby.title}</h2>
+            <ul>
+              {nearby.links.map((l) => (
+                <li key={l.href}>
+                  <Link href={l.href}>
+                    {l.label} <span className="muted">({l.count})</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )}
       </main>
     </>
   )
+}
+
+type AreaLink = { href: string; label: string; count: number }
+
+/**
+ * Crawlable links to sub-areas that actually have places: provinces on the
+ * category root, districts on a province page, sibling districts on a district page.
+ */
+async function areaLinks(category: Category, area?: Area): Promise<{ title: string; links: AreaLink[] }> {
+  const counts = await areaCounts(category.slug)
+  const noun = category.shortName ?? category.name
+  const links: AreaLink[] = []
+  if (!area) {
+    for (const c of counts) {
+      const a = !c.district && findArea(c.province)
+      if (a) links.push({ href: `/${category.slug}${areaPath(a)}`, label: a.province.name, count: c.count })
+    }
+    return { title: `${noun}ตามจังหวัด`, links: links.sort((x, y) => y.count - x.count) }
+  }
+  for (const c of counts) {
+    if (c.province !== area.province.slug || !c.district || c.district === area.district?.slug) continue
+    const a = findArea(c.province, c.district)
+    if (a?.district)
+      links.push({ href: `/${category.slug}${areaPath(a)}`, label: a.district.name, count: c.count })
+  }
+  return {
+    title: `${noun}ในเขต/อำเภอ${area.district ? 'อื่น' : ''}ของ${area.province.name}`,
+    links: links.sort((x, y) => y.count - x.count),
+  }
 }

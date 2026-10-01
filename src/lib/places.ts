@@ -1,4 +1,5 @@
 import 'server-only'
+import { cache } from 'react'
 import { categories, type TrainerStyle } from '@/data/categories'
 import { breeds, type Breed } from '@/data/breeds'
 import { samplePlaces, type Place } from '@/data/places'
@@ -81,7 +82,7 @@ export type PlaceQuery = {
   filters?: string[]
 }
 
-export async function listPlaces(q: PlaceQuery): Promise<Place[]> {
+async function listPlacesUncached(q: PlaceQuery): Promise<Place[]> {
   if (!isSupabaseConfigured()) {
     return samplePlaces
       .filter((p) => p.category === q.category)
@@ -103,8 +104,13 @@ export async function listPlaces(q: PlaceQuery): Promise<Place[]> {
   return withRatings((data as PlaceRow[]).map(rowToPlace))
 }
 
-/** Published place by slug (public pages). */
-export async function getPlace(slug: string): Promise<Place | undefined> {
+/** Cached per request so generateMetadata and the page share one query. */
+export const listPlaces = cache(listPlacesUncached)
+
+/** Published place by slug (public pages). Cached per request. */
+export const getPlace = cache(getPlaceUncached)
+
+async function getPlaceUncached(slug: string): Promise<Place | undefined> {
   if (!isSupabaseConfigured()) return samplePlaces.find((p) => p.slug === slug)
   const { data, error } = await db()
     .from('places')
@@ -143,4 +149,64 @@ export function activeSponsor(today: string): Sponsor | undefined {
   return sponsors.find(
     (s) => s.from <= today && today <= s.to && categories.some((c) => c.slug === s.category),
   )
+}
+
+export type IndexEntry = {
+  slug: string
+  category: string
+  province: string
+  district?: string
+  updatedAt: string
+}
+
+/** Every published place, lightly, for the sitemap and area links. */
+export const listIndexEntries = cache(async (): Promise<IndexEntry[]> => {
+  if (!isSupabaseConfigured()) {
+    return samplePlaces.map((p) => ({
+      slug: p.slug,
+      category: p.category,
+      province: p.province,
+      district: p.district,
+      updatedAt: p.checkedAt,
+    }))
+  }
+  const { data, error } = await db()
+    .from('places')
+    .select('slug, category, province, district, updated_at')
+    .eq('published', true)
+  if (error) throw error
+  return (
+    data as {
+      slug: string
+      category: string
+      province: string
+      district: string | null
+      updated_at: string
+    }[]
+  ).map((r) => ({
+    slug: r.slug,
+    category: r.category,
+    province: r.province,
+    district: r.district ?? undefined,
+    updatedAt: r.updated_at,
+  }))
+})
+
+export type AreaCount = { province: string; district?: string; count: number }
+
+/** How many places a category has per district (and per province, district undefined). */
+export async function areaCounts(category: string): Promise<AreaCount[]> {
+  const entries = (await listIndexEntries()).filter((e) => e.category === category)
+  const map = new Map<string, AreaCount>()
+  for (const e of entries) {
+    const keys: [string, string | undefined][] = [[e.province, undefined]]
+    if (e.district) keys.push([e.province, e.district])
+    for (const [province, district] of keys) {
+      const k = `${province}/${district ?? ''}`
+      const c = map.get(k) ?? { province, district, count: 0 }
+      c.count++
+      map.set(k, c)
+    }
+  }
+  return [...map.values()]
 }

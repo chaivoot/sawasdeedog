@@ -6,6 +6,7 @@ import { dogFriendly, forceFreeDefinition } from '@/data/criteria'
 
 export const metadata: Metadata = {
   title: 'เกณฑ์การคัดเลือก',
+  alternates: { canonical: '/criteria' },
   description: `คัดมาแล้ว ไม่ใช่มีครบ เราลิสต์เฉพาะที่ที่เป็น ${dogFriendly.name} ไม่มีเงื่อนไขแอบแฝง`,
 }
 

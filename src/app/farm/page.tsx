@@ -8,7 +8,8 @@ import { SiteHeader } from '@/components/SiteHeader'
 import { breedsWithFarms } from '@/lib/places'
 
 export const metadata: Metadata = {
-  title: 'ฟาร์ม',
+  title: 'ฟาร์มสุนัขที่ออกใบเพ็ดดีกรีได้',
+  alternates: { canonical: '/farm' },
   description: `เลือกสายพันธุ์ แล้วดูฟาร์มที่ผ่านเกณฑ์จากทุกจังหวัด ${farmRule.banner}`,
 }
 

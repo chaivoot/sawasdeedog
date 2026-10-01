@@ -1201,6 +1201,27 @@ a.guarantee:hover {
   }
 }
 
+.area-links {
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-line);
+}
+.area-links h2 {
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+.area-links ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  font-size: 14.5px;
+}
+.area-links a:hover {
+  color: var(--color-primary);
+}
+
 .trainer-tabs {
   display: flex;
   flex-direction: column;
