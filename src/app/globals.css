@@ -2043,6 +2043,13 @@ p {
   max-width: 480px;
   margin: 0 auto;
 }
+.auth__logo {
+  align-self: center;
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+}
 .auth__art {
   align-self: center;
   width: 120px;

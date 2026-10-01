@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 
-// Round mark cut from the SawasdeeDog logo (design/logo/sawasdeedog-logo.webp).
+// Round mark cut from the SawasdeeDog logo (design/logo/sawasdeedog-logo-final.png).
 // Favicons: src/app/icon.png and src/app/apple-icon.png.
 export function LogoMark({ size }: { size: number }) {
   return <Image src="/logo.png" width={size} height={size} alt="" unoptimized priority />

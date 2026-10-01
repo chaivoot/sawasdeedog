@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import Link from 'next/link'
 import { Icon } from '@/components/Icon'
-import { LogoMark } from '@/components/Logo'
 import { Photo } from '@/components/Photo'
 import { SiteHeader } from '@/components/SiteHeader'
 import { getCategory } from '@/data/categories'
@@ -50,9 +50,14 @@ export default async function SubmitPage({ searchParams }: Props) {
       <>
         <SiteHeader back={back} />
         <main className="auth">
-          <div className="auth__art">
-            <LogoMark size={112} />
-          </div>
+          <Image
+            className="auth__logo"
+            src="/logo-full.jpg"
+            width={200}
+            height={200}
+            alt="SawasdeeDog"
+            priority
+          />
           <div className="auth__text">
             <h1>ช่วยเราคัดที่ดี ๆ ให้คนเลี้ยงหมา</h1>
             <p>เข้าสู่ระบบด้วย LINE ก่อนเสนอสถานที่หรือแจ้งข้อมูลผิด ทีมจะตรวจทุกรายการก่อนขึ้นเว็บ</p>

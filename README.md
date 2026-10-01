@@ -74,7 +74,7 @@ npm run dev        # http://localhost:3000
 
 ## สถานะ / สิ่งที่ยังรอ
 
-- **โลโก้**: ใช้โลโก้ SawasdeeDog (ต้นฉบับอยู่ที่ `design/logo/sawasdeedog-logo.webp`) ตัดเป็นวงกลมไว้ใช้ที่ header และ favicon (`public/logo.png`, `src/app/icon.png`, `src/app/apple-icon.png`) ถ้ามีไฟล์โลโก้ที่พื้นใส (PNG/SVG) ให้ใช้แทนจะคมกว่า
+- **โลโก้**: โลโก้ final อยู่ที่ `design/logo/sawasdeedog-logo-final.png` รูปน้องหมาในวงกลมตัดมาใช้ที่ header และ favicon (`public/logo.png`, `src/app/icon.png`, `src/app/apple-icon.png`) ส่วนโลโก้เต็ม (`public/logo-full.jpg`) ใช้ที่หน้าเข้าสู่ระบบ
 - ถ้ายังไม่ได้ตั้งค่า Supabase เว็บจะแสดงร้านตัวอย่างจาก `src/data/places.ts` ส่วนรายชื่อย่านและสายพันธุ์ใน `src/data/` ก็ยังเป็นตัวอย่าง ต้องเติมให้ครบ
 - ประเภท/ตัวกรองของหมวดอื่นนอกจากคาเฟ่และครูฝึก ร่างไว้จากคำอธิบายบนหน้าแรก ต้องเทียบกับ build-spec
 - เกณฑ์รับฟาร์มยังไม่สรุป (build-spec 4.2)
