@@ -7,6 +7,7 @@ import { Icon } from '@/components/Icon'
 import { ListingCard } from '@/components/ListingCard'
 import { SiteHeader } from '@/components/SiteHeader'
 import { breeds, getBreed } from '@/data/breeds'
+import { farmRule } from '@/data/criteria'
 import { farmsForBreed } from '@/lib/places'
 
 type Props = { params: Promise<{ breed: string }> }
@@ -20,9 +21,12 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const breed = getBreed((await params).breed)
   if (!breed) return {}
+  const farms = await farmsForBreed(breed.slug)
   return {
-    title: `ฟาร์ม${breed.name} (${breed.nameEn})`,
-    description: `ฟาร์ม${breed.name}ที่ผ่านเกณฑ์จากทุกจังหวัด`,
+    title: `ฟาร์ม${breed.name} (${breed.nameEn}) ออกใบเพ็ดดีกรีได้`,
+    description: `รวม ${farms.length} ฟาร์ม${breed.name} (${breed.nameEn}) ที่ผ่านเกณฑ์จากทุกจังหวัด ${farmRule.banner}`,
+    alternates: { canonical: `/farm/${breed.slug}` },
+    robots: farms.length === 0 ? { index: false, follow: true } : undefined,
   }
 }
 

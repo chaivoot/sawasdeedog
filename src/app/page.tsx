@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { cookies } from 'next/headers'
 import { AreaPicker } from '@/components/AreaPicker'
@@ -8,6 +9,27 @@ import { AREA_COOKIE, areaPath, parseAreaCookie, type Area } from '@/data/areas'
 import { activeSponsor } from '@/lib/places'
 import { todayInBangkok } from '@/lib/format'
 import type { Sponsor } from '@/data/sponsors'
+import { JsonLd } from '@/components/JsonLd'
+import { SITE_NAME, absoluteUrl, siteUrl } from '@/lib/site'
+
+export const metadata: Metadata = { alternates: { canonical: '/' } }
+
+const siteLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: SITE_NAME,
+    url: siteUrl(),
+    inLanguage: 'th-TH',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: SITE_NAME,
+    url: siteUrl(),
+    logo: absoluteUrl('/logo-full.jpg'),
+  },
+]
 
 function categoryHref(c: Category, area?: Area) {
   return c.slug === 'farm' ? '/farm' : `/${c.slug}${areaPath(area)}`
@@ -31,6 +53,7 @@ export default async function HomePage() {
 
   return (
     <>
+      <JsonLd data={siteLd} />
       <SiteHeader />
       <main className="page page--home">
         <div className="home-intro">

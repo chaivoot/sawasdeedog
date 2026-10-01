@@ -10,8 +10,10 @@ export type Category = {
   description: string
   /** Longer line used when this category is the featured home tile. */
   tagline?: string
-  /** Desktop H1 prefix on listing pages, e.g. "คาเฟ่หมาเข้าได้ ลาดกระบัง". Defaults to `name`. */
+  /** Search-friendly heading for listing pages and page titles, e.g. "คาเฟ่หมาเข้าได้ ลาดกระบัง". Defaults to `name`. */
   listTitle?: string
+  /** schema.org type for places in this category (structured data). */
+  schemaType: string
   /** Short noun for empty states, e.g. "ยังไม่มีคาเฟ่ในย่าน…". Defaults to `name`. */
   shortName?: string
   /** Segmented control (single choice). */
@@ -28,6 +30,7 @@ export const categories: Category[] = [
     slug: 'cafe',
     icon: 'cafe',
     name: 'คาเฟ่ & ร้านอาหาร',
+    schemaType: 'CafeOrCoffeeShop',
     description: 'คาเฟ่และร้านอาหารที่พาน้องหมาเข้าได้จริง',
     tagline: 'คาเฟ่และร้านอาหารที่พาน้องหมาเข้าได้จริง',
     listTitle: 'คาเฟ่หมาเข้าได้',
@@ -45,6 +48,8 @@ export const categories: Category[] = [
     slug: 'vet',
     icon: 'vet',
     name: 'โรงพยาบาลสัตว์ & คลินิก',
+    schemaType: 'VeterinaryCare',
+    listTitle: 'โรงพยาบาลสัตว์ & คลินิกรักษาหมา',
     description: 'โรงพยาบาล คลินิก และเฉพาะทาง',
     types: [
       { slug: 'hospital', label: 'โรงพยาบาล' },
@@ -57,6 +62,8 @@ export const categories: Category[] = [
     slug: 'trainer',
     icon: 'trainer',
     name: 'ครูฝึก',
+    schemaType: 'ProfessionalService',
+    listTitle: 'ครูฝึกหมา',
     description: 'แยกแนว Force-Free และ Balance ให้ชัด',
     filters: [
       { slug: 'home-visit', label: 'สอนถึงบ้าน' },
@@ -70,6 +77,8 @@ export const categories: Category[] = [
     slug: 'rehab',
     icon: 'rehab',
     name: 'กายภาพ & ฟื้นฟู',
+    schemaType: 'LocalBusiness',
+    listTitle: 'กายภาพบำบัด & ฟื้นฟูหมา',
     description: 'กายภาพบำบัด ธาราบำบัด ฝังเข็ม',
     filters: [
       { slug: 'physio', label: 'กายภาพบำบัด' },
@@ -81,6 +90,8 @@ export const categories: Category[] = [
     slug: 'grooming',
     icon: 'grooming',
     name: 'อาบน้ำ & ตัดขน',
+    schemaType: 'LocalBusiness',
+    listTitle: 'อาบน้ำตัดขนหมา',
     description: 'หน้าร้าน และบริการถึงบ้าน',
     types: [
       { slug: 'shop', label: 'หน้าร้าน' },
@@ -92,6 +103,8 @@ export const categories: Category[] = [
     slug: 'stay',
     icon: 'stay',
     name: 'ที่พักพร้อมหมา',
+    schemaType: 'LodgingBusiness',
+    listTitle: 'ที่พักพาหมาไปได้',
     description: 'โรงแรม รีสอร์ท ที่เจ้าของพักด้วยได้',
     types: [
       { slug: 'hotel', label: 'โรงแรม' },
@@ -103,6 +116,8 @@ export const categories: Category[] = [
     slug: 'boarding',
     icon: 'boarding',
     name: 'ฝากเลี้ยง',
+    schemaType: 'LocalBusiness',
+    listTitle: 'ฝากเลี้ยงหมา',
     description: 'รายวัน (daycare) และค้างคืน',
     types: [
       { slug: 'daycare', label: 'รายวัน' },
@@ -114,6 +129,8 @@ export const categories: Category[] = [
     slug: 'sitter',
     icon: 'sitter',
     name: 'Pet sitter & พาเดิน',
+    schemaType: 'LocalBusiness',
+    listTitle: 'รับเลี้ยงหมา & พาหมาเดิน',
     description: 'เลี้ยงที่บ้านเจ้าของ และพาเดิน',
     types: [
       { slug: 'sitting', label: 'เลี้ยงที่บ้าน' },
@@ -125,6 +142,8 @@ export const categories: Category[] = [
     slug: 'park',
     icon: 'park',
     name: 'ลานวิ่ง & สระว่ายน้ำหมา',
+    schemaType: 'LocalBusiness',
+    listTitle: 'ลานวิ่งหมา & สระว่ายน้ำหมา',
     description: 'ลานวิ่งฟรี เสียค่าเข้า และสระว่ายน้ำ',
     types: [
       { slug: 'run', label: 'ลานวิ่ง' },
@@ -139,6 +158,8 @@ export const categories: Category[] = [
     slug: 'transport',
     icon: 'transport',
     name: 'ขนส่ง',
+    schemaType: 'LocalBusiness',
+    listTitle: 'ขนส่งสัตว์เลี้ยง & แท็กซี่หมา',
     description: 'ในเมือง ต่างจังหวัด ไปสนามบิน',
     filters: [
       { slug: 'in-city', label: 'ในเมือง' },
@@ -150,6 +171,8 @@ export const categories: Category[] = [
     slug: 'farm',
     icon: 'farm',
     name: 'ฟาร์ม',
+    schemaType: 'LocalBusiness',
+    listTitle: 'ฟาร์มสุนัข',
     description: 'เลือกตามสายพันธุ์ ไม่ต้องเลือกย่าน',
     filters: [],
   },

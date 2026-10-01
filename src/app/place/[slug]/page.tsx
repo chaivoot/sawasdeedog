@@ -13,7 +13,10 @@ import { findArea } from '@/data/areas'
 import { getBreed } from '@/data/breeds'
 import { dogFriendly, farmRule, hasDogFriendlyRule } from '@/data/criteria'
 import type { Contacts, Place } from '@/data/places'
+import { JsonLd } from '@/components/JsonLd'
+import { MIN_RATINGS_TO_SHOW } from '@/lib/limits'
 import { getPlace } from '@/lib/places'
+import { DEFAULT_OG_IMAGE, absoluteUrl } from '@/lib/site'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -28,10 +31,80 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!place) return {}
   const category = getCategory(place.category)
   const area = findArea(place.province, place.district)
+  const where = area
+    ? area.district
+      ? `${area.district.name} ${area.province.name}`
+      : area.province.name
+    : ''
+  const title = `${place.name} · ${category?.name ?? ''}${where ? ` ${where}` : ''}`
+  const description =
+    place.description ??
+    `${place.name} ${category?.name ?? ''}${where ? `ใน${where}` : ''} ที่ทีม SawasdeeDog คัดแล้ว`
+  const path = `/place/${place.slug}`
   return {
-    title: `${place.name} · ${category?.name ?? ''}${area ? ` ${area.district?.name ?? area.province.name}` : ''}`,
-    description: place.description,
+    title,
+    description,
+    alternates: { canonical: path },
+    openGraph: {
+      title,
+      description,
+      url: path,
+      images: [place.photos[0] ? { url: place.photos[0], alt: place.name } : DEFAULT_OG_IMAGE],
+    },
   }
+}
+
+/** schema.org LocalBusiness (or a subtype) so search engines can show address, rating and contacts. */
+function placeLd(place: Place, crumbs: Crumb[]) {
+  const category = getCategory(place.category)
+  const area = findArea(place.province, place.district)
+  const url = absoluteUrl(`/place/${place.slug}`)
+  const c = place.contacts
+  const sameAs = [
+    c.facebook,
+    c.website,
+    c.instagram && `https://instagram.com/${c.instagram.replace(/^@/, '')}`,
+  ].filter(Boolean)
+  const business = {
+    '@context': 'https://schema.org',
+    '@type': category?.schemaType ?? 'LocalBusiness',
+    '@id': url,
+    name: place.name,
+    url,
+    description: place.description,
+    image: place.photos.length ? place.photos.map(absoluteUrl) : undefined,
+    telephone: c.phone,
+    hasMap: place.mapsUrl,
+    priceRange: place.price,
+    address: area && {
+      '@type': 'PostalAddress',
+      addressLocality: area.district?.name,
+      addressRegion: area.province.name,
+      addressCountry: 'TH',
+    },
+    sameAs: sameAs.length ? sameAs : undefined,
+    aggregateRating:
+      place.rating && place.rating.count >= MIN_RATINGS_TO_SHOW
+        ? {
+            '@type': 'AggregateRating',
+            ratingValue: Number(place.rating.avg.toFixed(1)),
+            ratingCount: place.rating.count,
+            bestRating: 5,
+            worstRating: 1,
+          }
+        : undefined,
+  }
+  const breadcrumb = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: crumbs.map((cr, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: cr.label,
+      item: absoluteUrl(cr.href ?? `/place/${place.slug}`),
+    })),
+  }
+  return [business, breadcrumb]
 }
 
 type ContactLink = { key: keyof Contacts; icon: IconName; label: string; value: string; href: string }
@@ -134,6 +207,7 @@ export default async function PlacePage({ params }: Props) {
 
   return (
     <>
+      <JsonLd data={placeLd(place, crumbs)} />
       <SiteHeader desktopOnly />
       <main className="page page--place">
         <Breadcrumb items={crumbs} />

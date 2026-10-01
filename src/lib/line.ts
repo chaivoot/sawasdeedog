@@ -1,4 +1,5 @@
 import 'server-only'
+import { siteUrl } from './site'
 
 // LINE Login v2.1 (https://developers.line.biz/en/docs/line-login/integrate-line-login/)
 export const LINE_AUTHORIZE_URL = 'https://access.line.me/oauth2/v2.1/authorize'
@@ -11,18 +12,9 @@ export function lineConfig() {
   return channelId && channelSecret ? { channelId, channelSecret } : undefined
 }
 
-/**
- * Canonical origin from SITE_URL, tolerant of a missing scheme or a trailing
- * path ("sawasdeedog.com/" -> "https://sawasdeedog.com"). Undefined if unset.
- */
+/** Canonical origin from SITE_URL, or undefined when it isn't set. */
 export function siteOrigin(): string | undefined {
-  const raw = process.env.SITE_URL?.trim()
-  if (!raw) return undefined
-  try {
-    return new URL(/^https?:\/\//.test(raw) ? raw : `https://${raw}`).origin
-  } catch {
-    return undefined
-  }
+  return process.env.SITE_URL?.trim() ? siteUrl() : undefined
 }
 
 /** The redirect_uri sent to LINE; must match a Callback URL in the channel exactly. */
