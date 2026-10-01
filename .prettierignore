@@ -1,0 +1,5 @@
+design/
+.next/
+node_modules/
+src/components/icon-paths.ts
+package-lock.json
