@@ -68,6 +68,7 @@ npm run dev        # http://localhost:3000
 ### 3. Vercel
 
 1. Import repo นี้ที่ https://vercel.com/new (ตรวจเจอ Next.js เองอัตโนมัติ)
+   - `vercel.json` ตั้งให้ฝั่งเซิร์ฟเวอร์รันที่สิงคโปร์ (`sin1`) ให้อยู่ใกล้ Supabase ถ้าย้าย region ของ Supabase ต้องแก้ค่านี้ตาม
 2. **Settings → Environment Variables** ใส่ทุกตัวตาม `.env.example`
    - `SESSION_SECRET` สร้างด้วยคำสั่ง `openssl rand -base64 32`
    - `SITE_URL` คือโดเมนจริง
