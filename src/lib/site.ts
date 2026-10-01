@@ -13,6 +13,9 @@ export function siteUrl(): string {
 
 export const SITE_NAME = 'SawasdeeDog'
 
+/** Official SawasdeeDog profiles, linked from the Organization structured data. */
+export const SOCIAL_PROFILES = ['https://www.facebook.com/sawasdeedog']
+
 export function absoluteUrl(path: string) {
   return new URL(path, siteUrl()).toString()
 }

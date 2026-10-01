@@ -10,7 +10,7 @@ import { activeSponsor } from '@/lib/places'
 import { todayInBangkok } from '@/lib/format'
 import type { Sponsor } from '@/data/sponsors'
 import { JsonLd } from '@/components/JsonLd'
-import { SITE_NAME, absoluteUrl, siteUrl } from '@/lib/site'
+import { SITE_NAME, SOCIAL_PROFILES, absoluteUrl, siteUrl } from '@/lib/site'
 
 export const metadata: Metadata = { alternates: { canonical: '/' } }
 
@@ -28,6 +28,7 @@ const siteLd = [
     name: SITE_NAME,
     url: siteUrl(),
     logo: absoluteUrl('/logo-full.jpg'),
+    sameAs: SOCIAL_PROFILES,
   },
 ]
 
