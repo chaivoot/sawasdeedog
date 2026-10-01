@@ -168,9 +168,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
             <div className="page-title__text page-title__text--count">
               <h1>
                 <span className="page-title__mobile-title">{category.name}</span>
-                <span className="page-title__desktop-title">
-                  {isTrainer ? category.name : title(category, area)}
-                </span>
+                <span className="page-title__desktop-title">{title(category, area)}</span>
               </h1>
               {!isTrainer && (
                 <span className="page-title__sub desktop-only">

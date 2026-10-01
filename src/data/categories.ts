@@ -61,10 +61,9 @@ export const categories: Category[] = [
   {
     slug: 'trainer',
     icon: 'trainer',
-    name: 'ครูฝึก',
+    name: 'ครูฝึกหมา',
     schemaType: 'ProfessionalService',
-    listTitle: 'ครูฝึกหมา',
-    description: 'แยกแนว Force-Free และ Balance ให้ชัด',
+    description: 'ครูฝึกสุนัข แยกแนว Force-Free และ Balance ให้ชัด',
     filters: [
       { slug: 'home-visit', label: 'สอนถึงบ้าน' },
       { slug: 'day-school', label: 'โรงเรียนไปกลับ' },
