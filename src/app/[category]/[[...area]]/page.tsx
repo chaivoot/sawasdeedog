@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { dogFriendly, hasDogFriendlyRule } from '@/data/criteria'
 import { AreaPicker } from '@/components/AreaPicker'
 import { Breadcrumb, type Crumb } from '@/components/Breadcrumb'
 import { EmptyState } from '@/components/EmptyState'
@@ -55,7 +57,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!r) return {}
   return {
     title: title(r.category, r.area),
-    description: r.category.guarantee ?? r.category.description,
+    description: hasDogFriendlyRule(r.category.slug) ? dogFriendly.banner : r.category.description,
   }
 }
 
@@ -111,7 +113,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
               {!isTrainer && (
                 <span className="page-title__sub desktop-only">
                   {count}
-                  {category.guaranteeShort && ` · ${category.guaranteeShort}`}
+                  {hasDogFriendlyRule(category.slug) && ` · ${dogFriendly.short}`}
                 </span>
               )}
             </div>
@@ -125,11 +127,11 @@ export default async function CategoryPage({ params, searchParams }: Props) {
           </div>
         </div>
 
-        {category.guarantee && (
-          <div className="guarantee mobile-only">
+        {hasDogFriendlyRule(category.slug) && (
+          <Link href="/criteria#dog-friendly" className="guarantee mobile-only">
             <Icon name="checkc" size={18} strokeWidth={2} />
-            {category.guarantee}
-          </div>
+            {dogFriendly.banner}
+          </Link>
         )}
 
         {isTrainer && <TrainerTabs basePath={basePath} params={lp} />}

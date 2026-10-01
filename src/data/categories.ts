@@ -14,12 +14,6 @@ export type Category = {
   listTitle?: string
   /** Short noun for empty states, e.g. "ยังไม่มีคาเฟ่ในย่าน…". Defaults to `name`. */
   shortName?: string
-  /** Rule every listing in this category meets; shown as a yellow banner. */
-  guarantee?: string
-  /** Shorter form for the desktop subtitle. */
-  guaranteeShort?: string
-  /** The same rule as a checklist item on place pages. */
-  guaranteeCriterion?: string
   /** Segmented control (single choice). */
   types?: Option[]
   /** Toggle chips on mobile / checkboxes on desktop (multi choice). */
@@ -34,13 +28,10 @@ export const categories: Category[] = [
     slug: 'cafe',
     icon: 'cafe',
     name: 'คาเฟ่ & ร้านอาหาร',
-    description: 'คาเฟ่และร้านอาหารที่หมาเข้าห้องแอร์ได้',
-    tagline: 'คาเฟ่และร้านอาหารที่หมาเข้าห้องแอร์ได้',
+    description: 'คาเฟ่และร้านอาหารที่พาน้องหมาเข้าได้จริง',
+    tagline: 'คาเฟ่และร้านอาหารที่พาน้องหมาเข้าได้จริง',
     listTitle: 'คาเฟ่หมาเข้าได้',
     shortName: 'คาเฟ่',
-    guarantee: 'ทุกร้านในหมวดนี้ หมาเข้าห้องแอร์ได้',
-    guaranteeShort: 'ทุกร้านหมาเข้าห้องแอร์ได้',
-    guaranteeCriterion: 'หมาเข้าห้องแอร์ได้',
     types: [
       { slug: 'cafe', label: 'คาเฟ่' },
       { slug: 'restaurant', label: 'ร้านอาหาร' },
@@ -67,7 +58,7 @@ export const categories: Category[] = [
     slug: 'trainer',
     icon: 'trainer',
     name: 'ครูฝึก',
-    description: 'แยกแนว R+ และ Balance ให้ชัด',
+    description: 'แยกแนว Force-Free และ Balance ให้ชัด',
     filters: [
       { slug: 'home-visit', label: 'สอนถึงบ้าน' },
       { slug: 'day-school', label: 'โรงเรียนไปกลับ' },
@@ -165,17 +156,21 @@ export const categories: Category[] = [
   },
 ]
 
-/** Trainer tabs. Both tabs must look identical; neither is styled as "better". */
+/**
+ * Trainer tabs. Both tabs must look identical; neither is styled as "better".
+ * The stored value for Force-Free stays `rplus` (database + URL) so existing
+ * listings and links keep working; only the labels changed.
+ */
 export const trainerStyles = [
   {
     slug: 'rplus',
-    label: 'R+ (force-free)',
-    blurb: 'ครูที่สอนด้วยการเสริมแรงทางบวก ไม่ใช้ความเจ็บ ความอึดอัด หรือความกลัว',
+    label: 'Force-Free',
+    blurb: 'ครูที่ไม่ใช้ความเจ็บ ความอึดอัด หรือความกลัวในการฝึก',
   },
   {
     slug: 'balance',
-    label: 'Balance',
-    blurb: 'ครูที่ใช้ทั้งการให้รางวัลและการแก้พฤติกรรม (correction) ร่วมกัน',
+    label: 'Balance (มีการบังคับ)',
+    blurb: 'ครูที่ใช้ทั้งการให้รางวัลและการบังคับหรือแก้พฤติกรรม (correction) ร่วมกัน',
   },
 ] as const
 

@@ -194,7 +194,7 @@ export function SubmitForm({ initialKind, initialCategory, reportPlace }: Props)
               id="details"
               name="details"
               className="textarea"
-              placeholder="เช่น ย้ายร้านแล้ว เวลาเปิดเปลี่ยน หรือไม่ให้หมาเข้าห้องแอร์แล้ว"
+              placeholder="เช่น ย้ายร้านแล้ว เวลาเปิดเปลี่ยน หรือเริ่มมีเงื่อนไขกับน้องหมาแล้ว"
               required
               aria-invalid={!!errors.details}
             />

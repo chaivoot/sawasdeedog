@@ -107,7 +107,7 @@ export function ListingFilters({ basePath, params, types, filters, filterLabel =
   )
 }
 
-/** R+ / Balance tabs. Both tabs share one style on purpose. */
+/** Force-Free / Balance tabs. Both tabs share one style on purpose. */
 export function TrainerTabs({ basePath, params }: { basePath: string; params: ListingParams }) {
   const navigate = useNavigate(basePath)
   const current = trainerStyles.find((s) => s.slug === params.style) ?? trainerStyles[0]

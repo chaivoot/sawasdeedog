@@ -36,7 +36,7 @@ export default async function HomePage() {
         <div className="home-intro">
           <div className="home-intro__text">
             <h1>หาที่ที่ต้อนรับหมาของคุณ</h1>
-            <p>ทีมครูฝึกสาย R+ เก็บและคัดเองทุกรายการ คัดมาแล้ว ไม่ใช่มีครบ</p>
+            <p>ทีมครูฝึกสาย Force-Free เก็บและคัดเองทุกรายการ คัดมาแล้ว ไม่ใช่มีครบ</p>
           </div>
           <div className="home-intro__area">
             <AreaPicker province={area?.province.slug} district={area?.district?.slug} />
@@ -57,7 +57,7 @@ export default async function HomePage() {
             <b className="desktop-only">เราคัดยังไง</b>
             <br />
             <span className="mobile-only">อ่านเกณฑ์การคัดเลือกของเรา</span>
-            <span className="desktop-only">อ่านเกณฑ์การคัดเลือก และนิยาม force-free ของเรา</span>
+            <span className="desktop-only">อ่านเกณฑ์การคัดเลือก และนิยาม Dog Friendly ของเรา</span>
           </span>
           <Icon name="right" size={20} strokeWidth={2} />
         </Link>
