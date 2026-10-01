@@ -21,6 +21,7 @@
   --color-checkbox: #8797ab;
   --color-photo-icon: #7d93ab;
   --color-error: #b3261e;
+  --star-stroke: #8a6a00;
   --photo-placeholder: repeating-linear-gradient(135deg, #dce7f2 0 10px, #d2e0ee 10px 20px);
   --shadow-segment: 0 1px 3px rgba(16, 35, 61, 0.14);
   --shadow-nav: 0 6px 16px rgba(10, 76, 147, 0.28);
@@ -1816,6 +1817,9 @@ p {
   .place__contacts {
     order: 6;
   }
+  .place__rating {
+    order: 4;
+  }
   .place__report {
     order: 7;
   }
@@ -2811,4 +2815,90 @@ p {
   .admin-form .btn {
     align-self: flex-start;
   }
+}
+
+/* ---------- Ratings ---------- */
+
+.rating-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13.5px;
+  color: var(--color-ink-2);
+}
+.rating-badge b {
+  font-weight: 600;
+  color: var(--color-ink);
+}
+.star {
+  display: block;
+  flex-shrink: 0;
+}
+.rating {
+  padding: 16px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
+  scroll-margin-top: 16px;
+}
+.rating__summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.rating__avg {
+  font-family: var(--font-heading);
+  font-weight: 500;
+  font-size: 30px;
+  line-height: 1;
+}
+.rating__stars {
+  display: flex;
+  gap: 2px;
+}
+.rating__count {
+  font-size: 14px;
+  color: var(--color-muted);
+}
+.rating__mine {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 14px;
+  border-top: 1px solid var(--color-line);
+}
+.rating__label {
+  font-size: 15px;
+  font-weight: 600;
+}
+.rating__input {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: -6px;
+}
+.rating__input button {
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.rating__input button:hover {
+  background: var(--color-accent-50);
+}
+.rating__input button:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+.rating__word {
+  margin-left: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-ink-2);
 }

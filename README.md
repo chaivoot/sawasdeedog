@@ -41,6 +41,7 @@ npm run dev        # http://localhost:3000
   - แจ้งข้อมูลผิด: แก้ที่รายการนั้นแล้วกด "แก้ข้อมูลแล้ว"
   - รายการบนเว็บ: เพิ่ม แก้ ซ่อน หรือลบ พร้อมอัปโหลดรูป (รูปแรกเป็นรูปปก)
 - บันทึกแล้วหน้าเว็บอัปเดตทันที
+- **ให้คะแนน**: คนที่ login ด้วย LINE แล้ว ให้ดาว 1–5 ได้ที่หน้ารายละเอียดของแต่ละที่ 1 บัญชีให้ได้ 1 คะแนนต่อ 1 ที่ (กดใหม่ = เปลี่ยนคะแนนเดิม ไม่นับเพิ่ม) คะแนนเฉลี่ยขึ้นเมื่อมีคนให้ครบ 3 คน (`MIN_RATINGS_TO_SHOW` ใน `src/lib/limits.ts`)
 - รูปจะถูกย่อในเบราว์เซอร์ (ด้านยาวไม่เกิน 1600px) แล้วอัปโหลดตรงไป Supabase Storage ไม่ผ่านเซิร์ฟเวอร์ เพราะ Vercel รับ request ได้ไม่เกิน 4.5MB
 
 ## ตั้งค่าครั้งแรก
@@ -48,7 +49,7 @@ npm run dev        # http://localhost:3000
 ### 1. Supabase
 
 1. สร้างโปรเจกต์ที่ https://supabase.com (เลือก region Singapore)
-2. เปิด **SQL Editor** แล้วรันไฟล์ `supabase/migrations/0001_init.sql` ทั้งไฟล์ ไฟล์นี้สร้างตาราง places, submissions และที่เก็บรูป 2 bucket
+2. เปิด **SQL Editor** แล้วรันไฟล์ใน `supabase/migrations/` ตามลำดับเลข (`0001_init.sql` แล้วตามด้วย `0002_ratings.sql`) ไฟล์นี้สร้างตาราง places, submissions และที่เก็บรูป 2 bucket
 3. ไปที่ **Project Settings → API** แล้วคัดลอกค่ามาใส่ env:
    - Project URL → `SUPABASE_URL`
    - `service_role` key → `SUPABASE_SERVICE_ROLE_KEY` (เป็นความลับ ห้ามเปิดเผย)

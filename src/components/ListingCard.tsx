@@ -6,6 +6,7 @@ import type { Place } from '@/data/places'
 import { Checked } from './Checked'
 import { Icon } from './Icon'
 import { Photo } from './Photo'
+import { RatingBadge } from './Stars'
 
 /** Row card on mobile, photo-top card on desktop (M-Category / D-Category). */
 export function ListingCard({ place }: { place: Place }) {
@@ -22,6 +23,7 @@ export function ListingCard({ place }: { place: Place }) {
       <Photo src={place.photos[0]} alt={place.name} />
       <div className="listing-card__body">
         <span className="listing-card__name">{place.name}</span>
+        <RatingBadge rating={place.rating} />
         {place.category === 'farm' ? (
           <>
             <span className="listing-card__province mobile-only">

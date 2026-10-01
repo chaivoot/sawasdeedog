@@ -5,6 +5,8 @@ import { Breadcrumb, type Crumb } from '@/components/Breadcrumb'
 import { Checked } from '@/components/Checked'
 import { Icon, type IconName } from '@/components/Icon'
 import { PlaceGallery } from '@/components/PlaceGallery'
+import { RatingWidget } from '@/components/RatingWidget'
+import { RatingBadge } from '@/components/Stars'
 import { SiteHeader } from '@/components/SiteHeader'
 import { getCategory, trainerStyles } from '@/data/categories'
 import { findArea } from '@/data/areas'
@@ -149,6 +151,7 @@ export default async function PlacePage({ params }: Props) {
                   {area.district && ` › ${area.district.name}`}
                 </span>
               )}
+              <RatingBadge rating={place.rating} />
               <Checked date={place.checkedAt} long className="place__checked mobile-only" />
             </div>
 
@@ -167,6 +170,8 @@ export default async function PlacePage({ params }: Props) {
                 </ul>
               </section>
             )}
+
+            <RatingWidget slug={place.slug} initial={place.rating} />
 
             <Link href={`/submit?type=report&place=${place.slug}`} className="report-link place__report">
               <Icon name="flag" size={18} strokeWidth={2} />
