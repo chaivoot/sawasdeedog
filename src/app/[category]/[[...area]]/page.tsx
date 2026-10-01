@@ -68,7 +68,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   const lp = parseParams(category, await searchParams)
   const basePath = `/${category.slug}${areaPath(area)}`
 
-  const places = listPlaces({
+  const places = await listPlaces({
     category: category.slug,
     area,
     type: lp.type,

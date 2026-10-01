@@ -7,6 +7,7 @@ import { SiteHeader } from '@/components/SiteHeader'
 import { getCategory } from '@/data/categories'
 import { getPlace } from '@/lib/places'
 import { getSession } from '@/lib/session'
+import { isAdmin } from '@/lib/admin'
 import { SubmitForm } from './SubmitForm'
 
 export const metadata: Metadata = {
@@ -26,7 +27,7 @@ export default async function SubmitPage({ searchParams }: Props) {
   const session = await getSession()
   const sent = one(sp.sent)
   const kind = one(sp.type) === 'report' ? 'report' : 'new'
-  const place = getPlace(one(sp.place) ?? '')
+  const place = await getPlace(one(sp.place) ?? '')
   const category = getCategory(one(sp.category) ?? '')?.slug
   const back = place ? `/place/${place.slug}` : '/'
 
@@ -141,6 +142,11 @@ export default async function SubmitPage({ searchParams }: Props) {
           <Link href="/criteria" className="criteria-link desktop-only">
             อ่านเกณฑ์การคัดเลือก
           </Link>
+          {isAdmin(session) && (
+            <Link href="/admin" className="criteria-link">
+              ไปหลังบ้าน (ตรวจข้อมูลที่ส่งมา)
+            </Link>
+          )}
         </div>
         <SubmitForm
           initialKind={kind}

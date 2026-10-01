@@ -11,6 +11,8 @@ import { farmsForBreed } from '@/lib/places'
 
 type Props = { params: Promise<{ breed: string }> }
 
+export const revalidate = 3600
+
 export function generateStaticParams() {
   return breeds.map((b) => ({ breed: b.slug }))
 }
@@ -27,7 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function FarmBreedPage({ params }: Props) {
   const breed = getBreed((await params).breed)
   if (!breed) notFound()
-  const farms = farmsForBreed(breed.slug)
+  const farms = await farmsForBreed(breed.slug)
 
   return (
     <>

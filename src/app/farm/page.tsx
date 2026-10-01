@@ -10,14 +10,16 @@ export const metadata: Metadata = {
   description: 'เลือกสายพันธุ์ แล้วดูฟาร์มที่ผ่านเกณฑ์จากทุกจังหวัด',
 }
 
-export default function FarmPage() {
+export const revalidate = 3600
+
+export default async function FarmPage() {
   return (
     <>
       <SiteHeader back="/" />
       <main className="page farm-page">
         <Breadcrumb items={[{ label: 'หน้าแรก', href: '/' }, { label: 'ฟาร์ม' }]} />
         <BreedSearch
-          breeds={breedsWithFarms()}
+          breeds={await breedsWithFarms()}
           intro={
             <div className="farm-intro">
               <div className="page-title">

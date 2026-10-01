@@ -5,7 +5,7 @@ export function Checked({ date, long, className }: { date: string; long?: boolea
   return (
     <span className={`checked${className ? ` ${className}` : ''}`}>
       <Icon name="checkc" size={15} strokeWidth={2} />
-      {long ? `เช็คล่าสุด ${formatDay(date)} โดยทีม SawasDeeDog` : `เช็คล่าสุด ${formatMonth(date)}`}
+      {long ? `เช็คล่าสุด ${formatDay(date)} โดยทีม SawasdeeDog` : `เช็คล่าสุด ${formatMonth(date)}`}
     </span>
   )
 }

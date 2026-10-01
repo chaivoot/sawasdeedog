@@ -4,9 +4,9 @@ import { redirect } from 'next/navigation'
 import { categories } from '@/data/categories'
 import { findArea } from '@/data/areas'
 import { getPlace } from '@/lib/places'
-import { MAX_PHOTOS, MAX_PHOTO_MB } from '@/lib/limits'
+import { MAX_PHOTOS } from '@/lib/limits'
 import { getSession } from '@/lib/session'
-import { saveSubmission, type Submission } from '@/lib/submissions'
+import { saveSubmission, submissionFolder, type Submission } from '@/lib/submissions'
 
 export type FormState = {
   errors?: Record<string, string>
@@ -62,46 +62,46 @@ export async function submitAction(_prev: FormState, form: FormData): Promise<Fo
     else if (district && !findArea(province, district)) errors.district = 'เลือกเขตใหม่'
     submission = {
       kind,
-      name,
-      category,
-      mapsUrl,
-      province,
-      district: district || undefined,
-      note: text(form, 'note') || undefined,
+      payload: {
+        name,
+        category,
+        mapsUrl,
+        province,
+        district: district || undefined,
+        note: text(form, 'note') || undefined,
+      },
     }
   } else {
     const placeSlug = text(form, 'place')
-    const place = placeSlug ? getPlace(placeSlug) : undefined
+    const place = placeSlug ? await getPlace(placeSlug) : undefined
     const placeName = place?.name ?? text(form, 'placeName')
     const details = text(form, 'details')
     if (!placeName) errors.placeName = 'กรอกชื่อสถานที่'
     if (!details) errors.details = 'บอกทีมว่าข้อมูลไหนไม่ตรง'
-    submission = { kind, place: place?.slug, placeName, details }
+    submission = { kind, placeSlug: place?.slug, payload: { placeName, details } }
   }
 
-  const photos = form.getAll('photos').filter((f): f is File => f instanceof File && f.size > 0)
-  if (photos.length > MAX_PHOTOS) errors.photos = `แนบได้สูงสุด ${MAX_PHOTOS} รูป`
-  else if (photos.some((p) => !p.type.startsWith('image/'))) errors.photos = 'แนบได้เฉพาะไฟล์รูป'
-  else if (photos.some((p) => p.size > MAX_PHOTO_MB * 1024 * 1024))
-    errors.photos = `รูปต้องไม่เกิน ${MAX_PHOTO_MB}MB ต่อรูป`
+  // Photos were uploaded straight to storage; only their paths come through here.
+  let photos: string[] = []
+  try {
+    photos = JSON.parse(text(form, 'photoPaths') || '[]')
+  } catch {
+    photos = []
+  }
+  const folder = `${submissionFolder(session.sub)}/`
+  if (!Array.isArray(photos) || photos.length > MAX_PHOTOS) errors.photos = `แนบได้สูงสุด ${MAX_PHOTOS} รูป`
+  else if (photos.some((p) => typeof p !== 'string' || !p.startsWith(folder) || p.includes('..')))
+    errors.photos = 'รูปที่แนบไม่ถูกต้อง ลองแนบใหม่'
 
   if (Object.keys(errors).length) return { errors }
 
   try {
-    await saveSubmission(
-      {
-        ...submission,
-        submittedBy: session,
-        submittedAt: new Date().toISOString(),
-        photos: photos.map((p) => ({ name: p.name, type: p.type, size: p.size })),
-      },
-      photos,
-    )
+    await saveSubmission(submission, photos, session)
   } catch (err) {
     console.error(err)
     return { message: 'ส่งไม่สำเร็จ ลองใหม่อีกครั้ง หรือติดต่อทีมทาง LINE' }
   }
 
-  const sentName = submission.kind === 'new' ? submission.name : submission.placeName
+  const sentName = submission.kind === 'new' ? submission.payload.name : submission.payload.placeName
   redirect(`/submit?sent=${encodeURIComponent(sentName)}&kind=${kind}`)
 }
