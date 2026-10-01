@@ -4,6 +4,7 @@ import { BreedSearch } from '@/components/BreedSearch'
 import Link from 'next/link'
 import { Icon } from '@/components/Icon'
 import { farmRule } from '@/data/criteria'
+import { FarmBuyerNote } from '@/components/FarmBuyerNote'
 import { SiteHeader } from '@/components/SiteHeader'
 import { breedsWithFarms } from '@/lib/places'
 
@@ -36,6 +37,7 @@ export default async function FarmPage() {
                 <Icon name="checkc" size={18} strokeWidth={2} />
                 {farmRule.banner}
               </Link>
+              <FarmBuyerNote />
             </div>
           }
         />
