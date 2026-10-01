@@ -18,10 +18,10 @@ const plexThaiLooped = IBM_Plex_Sans_Thai_Looped({
 
 export const metadata: Metadata = {
   title: {
-    default: 'SawasdeeDog | หาที่ที่ต้อนรับหมาของคุณ',
+    default: 'SawasdeeDog | หา Pet Friendly ที่จริงใจ ให้หมาคุณ',
     template: '%s | SawasdeeDog',
   },
-  description: 'ทีมครูฝึกสาย Force-Free เก็บและคัดเองทุกรายการ คัดมาแล้ว ไม่ใช่มีครบ',
+  description: 'ค้นหาบริการต่างๆ ที่เราคัดมาแล้ว ให้กับน้องหมาของคุณเลย',
 }
 
 export const viewport: Viewport = {

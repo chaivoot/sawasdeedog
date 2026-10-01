@@ -35,8 +35,8 @@ export default async function HomePage() {
       <main className="page page--home">
         <div className="home-intro">
           <div className="home-intro__text">
-            <h1>หาที่ที่ต้อนรับหมาของคุณ</h1>
-            <p>ทีมครูฝึกสาย Force-Free เก็บและคัดเองทุกรายการ คัดมาแล้ว ไม่ใช่มีครบ</p>
+            <h1>หา Pet Friendly ที่จริงใจ ให้หมาคุณ</h1>
+            <p>ค้นหาบริการต่างๆ ที่เราคัดมาแล้ว ให้กับน้องหมาของคุณเลย</p>
           </div>
           <div className="home-intro__area">
             <AreaPicker province={area?.province.slug} district={area?.district?.slug} />
