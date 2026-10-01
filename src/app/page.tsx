@@ -4,7 +4,7 @@ import { cookies } from 'next/headers'
 import { AreaPicker } from '@/components/AreaPicker'
 import { Icon } from '@/components/Icon'
 import { SiteHeader } from '@/components/SiteHeader'
-import { areaCategories, categories, type Category } from '@/data/categories'
+import { categories, featuredCategories, type Category } from '@/data/categories'
 import { AREA_COOKIE, areaPath, parseAreaCookie, type Area } from '@/data/areas'
 import { activeSponsor } from '@/lib/places'
 import { todayInBangkok } from '@/lib/format'
@@ -36,10 +36,10 @@ function categoryHref(c: Category, area?: Area) {
   return c.slug === 'farm' ? '/farm' : `/${c.slug}${areaPath(area)}`
 }
 
-/** "วันนี้ชวนไป" rotates daily through the area categories. */
+/** "วันนี้ชวนไป" rotates daily through the featured categories. */
 function dailyPick(today: string): Category {
   const day = Math.floor(Date.parse(`${today}T00:00:00Z`) / 86_400_000)
-  return areaCategories[day % areaCategories.length]
+  return featuredCategories[day % featuredCategories.length]
 }
 
 export default async function HomePage() {
