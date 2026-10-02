@@ -41,6 +41,8 @@ export function PlaceEditor({ draft, fromSubmission }: { draft: PlaceDraft; from
   const [uploading, setUploading] = useState(false)
   const [uploadError, setUploadError] = useState('')
   const [extras, setExtras] = useState(draft.extraCategories)
+  const [farmBreeds, setFarmBreeds] = useState(draft.breeds)
+  const [breedQuery, setBreedQuery] = useState('')
   const category = getCategory(categorySlug)
   const extraOptions = extraCategoryOptions(categorySlug)
   // Drop extras that stop being valid when the main category changes.
@@ -297,19 +299,43 @@ export function PlaceEditor({ draft, fromSubmission }: { draft: PlaceDraft; from
         <fieldset className="admin-fieldset">
           <legend>สายพันธุ์</legend>
           {e.breeds && <span className="field__error">{e.breeds}</span>}
+          <label className="search-field admin-breed-search">
+            <Icon name="search" size={20} strokeWidth={2} />
+            <span className="sr-only">ค้นหาสายพันธุ์</span>
+            <input
+              type="search"
+              placeholder="ค้นหาสายพันธุ์ ไทยหรืออังกฤษ"
+              value={breedQuery}
+              onChange={(ev) => setBreedQuery(ev.target.value)}
+            />
+          </label>
           <div className="admin-checks">
-            {breeds.map((b) => (
-              <label key={b.slug} className="checkbox">
-                <input
-                  type="checkbox"
-                  name="breeds"
-                  value={b.slug}
-                  defaultChecked={draft.breeds.includes(b.slug)}
-                />
-                {b.name}
-              </label>
-            ))}
+            {breeds.map((b) => {
+              const checked = farmBreeds.includes(b.slug)
+              const q = breedQuery.trim().toLowerCase()
+              // Hidden, not removed: ticked breeds must stay in the form while filtering.
+              const match = checked || !q || b.name.includes(q) || b.nameEn.toLowerCase().includes(q)
+              return (
+                <label key={b.slug} className="checkbox" hidden={!match}>
+                  <input
+                    type="checkbox"
+                    name="breeds"
+                    value={b.slug}
+                    checked={checked}
+                    onChange={(ev) =>
+                      setFarmBreeds((prev) =>
+                        ev.target.checked ? [...prev, b.slug] : prev.filter((s) => s !== b.slug),
+                      )
+                    }
+                  />
+                  {b.name}
+                </label>
+              )
+            })}
           </div>
+          <span className="field__hint">
+            ไม่มีสายพันธุ์ที่ต้องการ? แจ้งทีมพัฒนาให้เพิ่มในรายการ ({breeds.length} สายพันธุ์ตอนนี้)
+          </span>
         </fieldset>
       )}
 
