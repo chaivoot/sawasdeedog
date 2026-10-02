@@ -1,3 +1,5 @@
+import type { Option } from './categories'
+
 // The site-wide selection rule, worded so it isn't tied to any one category.
 // Shown on /criteria, listing pages, place pages and the admin editor.
 export const dogFriendly = {
@@ -22,15 +24,30 @@ export function hasDogFriendlyRule(categorySlug: string) {
   return categorySlug !== 'trainer' && categorySlug !== 'farm' && categorySlug !== 'stay'
 }
 
+/** Stays must take dogs at least this heavy. */
+export const STAY_MIN_DOG_KG = 15
+
 /**
  * Stays almost always keep dogs out of somewhere (restaurant, pool), so the bar
- * is size: big dogs must be welcome. Other limits are shown as filters instead.
+ * is size: dogs of 15 kg or more must be welcome. Other limits are shown as warnings.
  */
 export const stayRule = {
-  banner: 'ทุกที่พักในนี้รับน้องหมาตัวใหญ่ หนักเกิน 20 กก. ได้',
-  short: 'รับน้องหมาตัวใหญ่เกิน 20 กก.',
-  criterion: 'รับน้องหมาหนักเกิน 20 กก.',
-  body: 'ที่พักส่วนใหญ่มีบางโซนที่น้องหมาเข้าไม่ได้ เราจึงใช้เกณฑ์แยก คือต้องรับน้องหมาที่หนักเกิน 20 กิโลกรัมได้ ที่พักที่รับเฉพาะน้องตัวเล็กเราไม่ลิสต์ ส่วนเงื่อนไขอื่น เช่น เข้าร้านอาหารหรือลงสระไม่ได้ หรือไม่รับบางสายพันธุ์ เราบอกไว้ในหน้าที่พักแต่ละที่ และเลือกกรองได้',
+  banner: `ทุกที่พักในนี้รับน้องหมาหนัก ${STAY_MIN_DOG_KG} กก. ขึ้นไปได้`,
+  short: `รับน้องหมา ${STAY_MIN_DOG_KG} กก. ขึ้นไป`,
+  criterion: `รับน้องหมาหนัก ${STAY_MIN_DOG_KG} กก. ขึ้นไป`,
+  body: `ที่พักส่วนใหญ่มีบางโซนที่น้องหมาเข้าไม่ได้ เราจึงใช้เกณฑ์แยก คือต้องรับน้องหมาที่หนัก ${STAY_MIN_DOG_KG} กิโลกรัมขึ้นไปได้ ที่พักที่รับเฉพาะน้องตัวเล็กกว่านั้นเราไม่ลิสต์ ส่วนข้อจำกัดอื่น เช่น จำกัดน้ำหนักที่กี่กิโล ห้ามเข้าร้านอาหาร ห้ามลงสระ หรือห้ามบางสายพันธุ์ เราขึ้นเตือนไว้ในหน้าที่พักแต่ละที่`,
+}
+
+/** Warnings for a place: its weight limit and the restrictions ticked for its categories. */
+export function placeWarnings(
+  p: { maxDogKg?: number; maxDogs?: number; attributes: string[] },
+  warnings: Option[],
+): string[] {
+  const out: string[] = []
+  if (p.maxDogKg) out.push(`จำกัดน้ำหนักน้องหมาไม่เกิน ${p.maxDogKg} กก.`)
+  if (p.maxDogs) out.push(`รับน้องหมาได้ไม่เกิน ${p.maxDogs} ตัวต่อห้อง`)
+  for (const w of warnings) if (p.attributes.includes(w.slug)) out.push(w.label)
+  return out
 }
 
 /** The listing rule for a category, if it has one; `anchor` is its section on /criteria. */

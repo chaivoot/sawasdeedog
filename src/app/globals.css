@@ -1867,6 +1867,9 @@ a.guarantee:hover {
 .criteria-list svg {
   color: var(--color-primary);
 }
+.criteria-list--warn svg {
+  color: #b4501d;
+}
 .info-box {
   display: flex;
   flex-direction: column;

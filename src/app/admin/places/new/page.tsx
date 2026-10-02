@@ -24,6 +24,8 @@ export default async function NewPlace({ searchParams }: Props) {
     coords: '',
     attributes: [],
     breeds: [],
+    maxDogKg: '',
+    maxDogs: '',
     photos: [],
     contacts: {},
     published: true,

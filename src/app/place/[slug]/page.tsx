@@ -13,7 +13,7 @@ import { SiteHeader } from '@/components/SiteHeader'
 import { getCategory, trainerStyles } from '@/data/categories'
 import { findArea } from '@/data/areas'
 import { getBreed } from '@/data/breeds'
-import { categoryRule, farmRule } from '@/data/criteria'
+import { categoryRule, farmRule, placeWarnings } from '@/data/criteria'
 import { placeCategories, type Contacts, type Place } from '@/data/places'
 import { JsonLd } from '@/components/JsonLd'
 import { MIN_RATINGS_TO_SHOW } from '@/lib/limits'
@@ -141,6 +141,8 @@ function criteriaFor(place: Place): string[] {
     const style = trainerStyles.find((s) => s.slug === place.trainerStyle)
     if (style) items.push(`แนวการฝึก ${style.label}`)
   }
+  // A stay with no weight limit says so; one with a limit gets a warning instead.
+  if (slugs.includes('stay') && !place.maxDogKg) items.push('ไม่จำกัดน้ำหนักน้องหมา')
   for (const a of place.attributes) {
     const label = filters.find((f) => f.slug === a)?.label
     if (label) items.push(label)
@@ -158,6 +160,10 @@ export default async function PlacePage({ params }: Props) {
   const extraNames = (place.extraCategories ?? []).map((s) => getCategory(s)?.name).filter(Boolean)
   const breedNames = (place.breeds ?? []).map((b) => getBreed(b)?.name).filter(Boolean)
   const criteria = criteriaFor(place)
+  const warnings = placeWarnings(
+    place,
+    placeCategories(place).flatMap((s) => getCategory(s)?.warnings ?? []),
+  )
   const contacts = contactLinks(place.contacts)
   const serviceAreas = serviceAreaLabels(place.serviceAreas ?? [])
 
@@ -219,6 +225,20 @@ export default async function PlacePage({ params }: Props) {
                     <li key={c}>
                       <Icon name="check" size={20} strokeWidth={2.4} />
                       {c}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
+
+            {warnings.length > 0 && (
+              <section className="place__section place__criteria place__warnings">
+                <h2>ข้อจำกัดที่ควรรู้</h2>
+                <ul className="criteria-list criteria-list--warn">
+                  {warnings.map((w) => (
+                    <li key={w}>
+                      <Icon name="flag" size={20} strokeWidth={2.2} />
+                      {w}
                     </li>
                   ))}
                 </ul>

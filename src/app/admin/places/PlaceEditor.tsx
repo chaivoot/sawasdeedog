@@ -4,7 +4,7 @@ import { startTransition, useActionState, useState } from 'react'
 import { categories, extraCategoryOptions, getCategory, trainerStyles } from '@/data/categories'
 import { provinces } from '@/data/areas'
 import { breeds } from '@/data/breeds'
-import { categoryRule } from '@/data/criteria'
+import { categoryRule, STAY_MIN_DOG_KG } from '@/data/criteria'
 import type { Contacts } from '@/data/places'
 import { Icon } from '@/components/Icon'
 import { cleanServiceAreas, serviceAreaLabels } from '@/lib/geo'
@@ -34,6 +34,10 @@ export type PlaceDraft = {
   coords: string
   photos: string[]
   breeds: string[]
+  /** Stays: heaviest dog taken, kg; empty = no limit. */
+  maxDogKg: string
+  /** Stays: most dogs per room; empty = no limit. */
+  maxDogs: string
   published: boolean
 }
 
@@ -303,7 +307,7 @@ export function PlaceEditor({ draft, fromSubmission }: { draft: PlaceDraft; from
         </div>
       </fieldset>
 
-      {allCategories.some((c) => c.filters.length > 0) && (
+      {allCategories.some((c) => c.filters.length > 0 || c.warnings?.length) && (
         <fieldset className="admin-fieldset">
           <legend>ผ่านเกณฑ์อะไรบ้าง</legend>
           {[...new Set(allCategories.map((c) => categoryRule(c.slug)?.criterion).filter(Boolean))].map(
@@ -313,6 +317,60 @@ export function PlaceEditor({ draft, fromSubmission }: { draft: PlaceDraft; from
               </p>
             ),
           )}
+          {allCategories.some((c) => c.slug === 'stay') && (
+            <div className="admin-check-group">
+              <Field
+                id="maxDogKg"
+                label="จำกัดน้ำหนักน้องหมา (กก.)"
+                hint={`เว้นว่าง = ไม่จำกัด · ต่ำกว่า ${STAY_MIN_DOG_KG} กก. ไม่ผ่านเกณฑ์`}
+                error={e.maxDogKg}
+              >
+                <input
+                  id="maxDogKg"
+                  name="maxDogKg"
+                  className="input"
+                  inputMode="numeric"
+                  defaultValue={draft.maxDogKg}
+                  placeholder="ไม่จำกัด"
+                />
+              </Field>
+              <Field
+                id="maxDogs"
+                label="จำนวนน้องหมาต่อห้อง (ตัว)"
+                hint="เว้นว่าง = ไม่จำกัด"
+                error={e.maxDogs}
+              >
+                <input
+                  id="maxDogs"
+                  name="maxDogs"
+                  className="input"
+                  inputMode="numeric"
+                  defaultValue={draft.maxDogs}
+                  placeholder="ไม่จำกัด"
+                />
+              </Field>
+            </div>
+          )}
+          {allCategories
+            .filter((c) => c.warnings?.length)
+            .map((c) => (
+              <div key={`${c.slug}-warnings`} className="admin-check-group">
+                <span className="field__label">ข้อห้าม (ขึ้นเป็นคำเตือนในหน้าที่พัก)</span>
+                <div className="admin-checks">
+                  {c.warnings!.map((w) => (
+                    <label key={w.slug} className="checkbox">
+                      <input
+                        type="checkbox"
+                        name="attributes"
+                        value={w.slug}
+                        defaultChecked={draft.attributes.includes(w.slug)}
+                      />
+                      {w.label}
+                    </label>
+                  ))}
+                </div>
+              </div>
+            ))}
           {allCategories
             .filter((c) => c.filters.length > 0)
             .map((c) => (

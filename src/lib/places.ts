@@ -36,6 +36,8 @@ export type PlaceRow = {
   service_areas: string[]
   lat: number | null
   lng: number | null
+  max_dog_kg: number | null
+  max_dogs: number | null
   photos: string[]
   breeds: string[]
   published: boolean
@@ -68,6 +70,8 @@ export function rowToPlace(r: PlaceRow): Place {
     serviceAreas: r.service_areas ?? [],
     lat: r.lat ?? undefined,
     lng: r.lng ?? undefined,
+    maxDogKg: r.max_dog_kg ?? undefined,
+    maxDogs: r.max_dogs ?? undefined,
     photos: r.photos ?? [],
     breeds: r.breeds ?? [],
     published: r.published,

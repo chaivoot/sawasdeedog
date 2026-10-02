@@ -22,6 +22,8 @@ export type Category = {
   types?: Option[]
   /** Toggle chips on mobile / checkboxes on desktop (multi choice). */
   filters: Option[]
+  /** Restrictions a place may have; stored with the attributes, shown as warnings, never filtered on. */
+  warnings?: Option[]
 }
 
 // Order is the order of the home grid. Farm is browsed by breed, not area.
@@ -118,13 +120,20 @@ export const categories: Category[] = [
       { slug: 'hotel', label: 'โรงแรม' },
       { slug: 'resort', label: 'รีสอร์ท' },
     ],
-    // Every stay takes dogs over 20 kg (stayRule); these say how much further it goes.
-    filters: [
-      { slug: 'no-weight-limit', label: 'ไม่จำกัดน้ำหนัก' },
-      { slug: 'big-dogs', label: 'รับน้องหมา 35 กก. ขึ้นไป' },
-      { slug: 'all-breeds', label: 'ไม่จำกัดสายพันธุ์' },
-      { slug: 'restaurant-ok', label: 'น้องเข้าร้านอาหารได้' },
-      { slug: 'pool-ok', label: 'น้องลงสระได้' },
+    filters: [],
+    // Every stay takes dogs of 15 kg or more (stayRule); its weight limit and these are shown as warnings.
+    warnings: [
+      { slug: 'no-restaurant', label: 'ห้ามน้องหมาเข้าร้านอาหาร' },
+      { slug: 'no-pool', label: 'ห้ามน้องหมาลงสระว่ายน้ำของคน' },
+      { slug: 'no-common-areas', label: 'ห้ามน้องหมาเข้าล็อบบี้/พื้นที่ส่วนกลาง' },
+      { slug: 'no-bed', label: 'ห้ามน้องหมาขึ้นเตียง/โซฟา' },
+      { slug: 'breed-ban', label: 'ห้ามสายพันธุ์หมาดุบางสายพันธุ์' },
+      { slug: 'designated-rooms', label: 'พักได้เฉพาะห้องที่กำหนด' },
+      { slug: 'not-left-alone', label: 'ห้ามทิ้งน้องหมาไว้ในห้องลำพัง' },
+      { slug: 'leash-required', label: 'ต้องใส่สายจูงนอกห้องพัก' },
+      { slug: 'diaper-required', label: 'ต้องใส่ผ้าอ้อมให้น้อง' },
+      { slug: 'vaccine-record', label: 'ต้องแสดงสมุดวัคซีน' },
+      { slug: 'direct-booking-only', label: 'ต้องจองตรงกับที่พัก (จองผ่านแอปไม่ได้)' },
     ],
   },
   {

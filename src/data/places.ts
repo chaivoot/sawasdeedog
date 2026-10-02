@@ -36,6 +36,10 @@ export type Place = {
   /** Storefront coordinates, read from the Google Maps link. */
   lat?: number
   lng?: number
+  /** Stays: heaviest dog taken, in kg; unset means no limit. */
+  maxDogKg?: number
+  /** Stays: most dogs per room; unset means not limited (or not known). */
+  maxDogs?: number
   /** Where the place goes to customers: "bangkok" (whole province) or "bangkok/lat-krabang". */
   serviceAreas?: string[]
   photos: string[]
@@ -64,6 +68,20 @@ const sampleContacts: Contacts = {
 const maps = 'https://maps.google.com/'
 
 export const samplePlaces: Place[] = [
+  {
+    slug: 'sample-stay-a',
+    name: 'ที่พักตัวอย่าง A',
+    category: 'stay',
+    type: 'resort',
+    province: 'chonburi',
+    checkedAt: '2026-09-15',
+    attributes: ['no-restaurant', 'no-pool'],
+    maxDogKg: 25,
+    maxDogs: 2,
+    contacts: sampleContacts,
+    mapsUrl: maps,
+    photos: [],
+  },
   {
     slug: 'sample-cafe-a',
     name: 'คาเฟ่ตัวอย่าง A',

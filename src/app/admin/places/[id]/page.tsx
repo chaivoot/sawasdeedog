@@ -45,6 +45,8 @@ export default async function EditPlace({ params }: Props) {
           coords: place.lat != null && place.lng != null ? `${place.lat}, ${place.lng}` : '',
           photos: place.photos,
           breeds: place.breeds ?? [],
+          maxDogKg: place.maxDogKg ? String(place.maxDogKg) : '',
+          maxDogs: place.maxDogs ? String(place.maxDogs) : '',
           published: place.published !== false,
         }}
       />
