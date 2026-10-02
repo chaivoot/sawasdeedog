@@ -34,6 +34,8 @@ const siteLd = [
 
 function categoryHref(c: Category, area?: Area, near?: boolean) {
   if (c.slug === 'farm') return '/farm'
+  // Stays are picked by trip destination, not where you are: open on every province.
+  if (c.slug === 'stay') return '/stay'
   return near ? `/${c.slug}?near=1` : `/${c.slug}${areaPath(area)}`
 }
 
