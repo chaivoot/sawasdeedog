@@ -5,7 +5,7 @@ import { AreaPicker } from '@/components/AreaPicker'
 import { Icon } from '@/components/Icon'
 import { SiteHeader } from '@/components/SiteHeader'
 import { categories, featuredCategories, type Category } from '@/data/categories'
-import { AREA_COOKIE, areaPath, parseAreaCookie, type Area } from '@/data/areas'
+import { AREA_COOKIE, NEAR_ME, areaPath, parseAreaCookie, type Area } from '@/data/areas'
 import { activeSponsor } from '@/lib/places'
 import { todayInBangkok } from '@/lib/format'
 import type { Sponsor } from '@/data/sponsors'
@@ -32,8 +32,9 @@ const siteLd = [
   },
 ]
 
-function categoryHref(c: Category, area?: Area) {
-  return c.slug === 'farm' ? '/farm' : `/${c.slug}${areaPath(area)}`
+function categoryHref(c: Category, area?: Area, near?: boolean) {
+  if (c.slug === 'farm') return '/farm'
+  return near ? `/${c.slug}?near=1` : `/${c.slug}${areaPath(area)}`
 }
 
 /** "วันนี้ชวนไป" rotates daily through the featured categories. */
@@ -43,7 +44,9 @@ function dailyPick(today: string): Category {
 }
 
 export default async function HomePage() {
-  const area = parseAreaCookie((await cookies()).get(AREA_COOKIE)?.value)
+  const areaCookie = (await cookies()).get(AREA_COOKIE)?.value
+  const near = areaCookie === NEAR_ME
+  const area = parseAreaCookie(areaCookie)
   const today = todayInBangkok()
   const sponsor = activeSponsor(today)
   const featured = sponsor
@@ -63,14 +66,14 @@ export default async function HomePage() {
             <p>ค้นหาบริการต่างๆ ที่เราคัดมาแล้ว ให้กับน้องหมาของคุณเลย</p>
           </div>
           <div className="home-intro__area">
-            <AreaPicker province={area?.province.slug} district={area?.district?.slug} />
+            <AreaPicker province={area?.province.slug} district={area?.district?.slug} near={near} />
           </div>
         </div>
 
         <div className="home-grid">
-          <FeaturedTile category={featured} href={categoryHref(featured, area)} sponsor={sponsor} />
+          <FeaturedTile category={featured} href={categoryHref(featured, area, near)} sponsor={sponsor} />
           {rest.map((c, i) => (
-            <CategoryTile key={c.slug} category={c} href={categoryHref(c, area)} tall={i === 0} />
+            <CategoryTile key={c.slug} category={c} href={categoryHref(c, area, near)} tall={i === 0} />
           ))}
         </div>
 

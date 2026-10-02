@@ -39,6 +39,8 @@ export function areaName(area: Area): string {
 }
 
 export const AREA_COOKIE = 'area'
+/** Cookie value meaning "use my location" instead of a fixed area. */
+export const NEAR_ME = 'near'
 
 /** Cookie value is "province/district" or "province". */
 export function parseAreaCookie(value?: string): Area | undefined {

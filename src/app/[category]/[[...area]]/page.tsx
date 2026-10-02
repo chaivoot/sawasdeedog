@@ -7,10 +7,11 @@ import { Breadcrumb, type Crumb } from '@/components/Breadcrumb'
 import { EmptyState } from '@/components/EmptyState'
 import { Icon } from '@/components/Icon'
 import { ListingCard } from '@/components/ListingCard'
+import { NearbyResults } from '@/components/NearbyResults'
 import { ListingFilters, TrainerTabs } from '@/components/ListingControls'
-import { listingHref, type ListingParams } from '@/lib/listing'
+import { listingHref, parseListingParams } from '@/lib/listing'
 import { SiteHeader } from '@/components/SiteHeader'
-import { getCategory, trainerStyles, type Category, type TrainerStyle } from '@/data/categories'
+import { getCategory, type Category, type TrainerStyle } from '@/data/categories'
 import { areaName, areaPath, findArea, type Area } from '@/data/areas'
 import { JsonLd } from '@/components/JsonLd'
 import { areaCounts, listPlaces } from '@/lib/places'
@@ -28,24 +29,6 @@ function resolve(categorySlug: string, segments: string[] = []) {
   const area = segments.length ? findArea(segments[0], segments[1]) : undefined
   if (segments.length && !area) return undefined
   return { category, area }
-}
-
-function one(v: string | string[] | undefined) {
-  return Array.isArray(v) ? v[0] : v
-}
-
-function parseParams(category: Category, sp: Record<string, string | string[] | undefined>): ListingParams {
-  const type = one(sp.type)
-  const style = one(sp.style)
-  const f = one(sp.f)?.split(',') ?? []
-  return {
-    type: category.types?.some((t) => t.slug === type) ? type : undefined,
-    style:
-      category.slug === 'trainer'
-        ? (trainerStyles.find((s) => s.slug === style)?.slug ?? trainerStyles[0].slug)
-        : undefined,
-    filters: category.filters.map((x) => x.slug).filter((s) => f.includes(s)),
-  }
 }
 
 function title(category: Category, area?: Area) {
@@ -101,7 +84,10 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   if (!r) notFound()
   const { category, area } = r
   const isTrainer = category.slug === 'trainer'
-  const lp = parseParams(category, await searchParams)
+  const lp = parseListingParams(category, await searchParams)
+  // "ใกล้ฉัน" only applies to the all-areas page; the list is filled in the browser.
+  const near = lp.near && !area
+  if (!near) lp.near = false
   const basePath = `/${category.slug}${areaPath(area)}`
 
   const places = await listPlaces({
@@ -170,7 +156,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
                 <span className="page-title__mobile-title">{category.name}</span>
                 <span className="page-title__desktop-title">{title(category, area)}</span>
               </h1>
-              {!isTrainer && (
+              {!isTrainer && !near && (
                 <span className="page-title__sub desktop-only">
                   {count}
                   {hasDogFriendlyRule(category.slug) && ` · ${dogFriendly.short}`}
@@ -183,6 +169,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
               province={area?.province.slug}
               district={area?.district?.slug}
               category={category.slug}
+              near={near}
             />
           </div>
         </div>
@@ -210,35 +197,45 @@ export default async function CategoryPage({ params, searchParams }: Props) {
           )}
           <div className="listing-layout__main">
             <div className="listing-list">
-              {!isTrainer && places.length > 0 && <span className="result-count mobile-only">{count}</span>}
-              {places.map((p) => (
-                <ListingCard key={p.slug} place={p} listing={category.slug} />
-              ))}
-              {places.length === 0 &&
-                (filtered ? (
-                  <EmptyState
-                    title="ยังไม่มีที่ที่ตรงกับตัวกรองนี้"
-                    body="ลองเอาตัวกรองบางข้อออก หรือถ้ารู้จักที่ดี ๆ เสนอให้ทีมช่วยเช็คได้เลย"
-                    primary={{ href: '/submit', label: 'เสนอสถานที่' }}
-                    secondary={{
-                      href: listingHref(basePath, { style: lp.style, filters: [] }),
-                      label: 'ล้างตัวกรอง',
-                    }}
-                  />
-                ) : (
-                  <EmptyState
-                    title={area ? `ยังไม่มี${noun}ในย่าน${areaName(area)}` : `ยังไม่มี${noun}ที่ผ่านเกณฑ์`}
-                    body="เรายังคัดไม่ครบทุกย่าน ถ้ารู้จักที่ดี ๆ แถวนี้ เสนอให้ทีมช่วยเช็คได้เลย"
-                    primary={{ href: '/submit', label: 'เสนอสถานที่' }}
-                    secondary={
-                      area?.district
-                        ? { href: `/${category.slug}/${area.province.slug}`, label: 'ดูทั้งจังหวัด' }
-                        : area
-                          ? { href: `/${category.slug}`, label: 'ดูทุกย่าน' }
-                          : undefined
-                    }
-                  />
-                ))}
+              {near ? (
+                <NearbyResults category={category.slug} noun={noun} params={lp} />
+              ) : (
+                <>
+                  {!isTrainer && places.length > 0 && (
+                    <span className="result-count mobile-only">{count}</span>
+                  )}
+                  {places.map((p) => (
+                    <ListingCard key={p.slug} place={p} listing={category.slug} />
+                  ))}
+                  {places.length === 0 &&
+                    (filtered ? (
+                      <EmptyState
+                        title="ยังไม่มีที่ที่ตรงกับตัวกรองนี้"
+                        body="ลองเอาตัวกรองบางข้อออก หรือถ้ารู้จักที่ดี ๆ เสนอให้ทีมช่วยเช็คได้เลย"
+                        primary={{ href: '/submit', label: 'เสนอสถานที่' }}
+                        secondary={{
+                          href: listingHref(basePath, { style: lp.style, filters: [] }),
+                          label: 'ล้างตัวกรอง',
+                        }}
+                      />
+                    ) : (
+                      <EmptyState
+                        title={
+                          area ? `ยังไม่มี${noun}ในย่าน${areaName(area)}` : `ยังไม่มี${noun}ที่ผ่านเกณฑ์`
+                        }
+                        body="เรายังคัดไม่ครบทุกย่าน ถ้ารู้จักที่ดี ๆ แถวนี้ เสนอให้ทีมช่วยเช็คได้เลย"
+                        primary={{ href: '/submit', label: 'เสนอสถานที่' }}
+                        secondary={
+                          area?.district
+                            ? { href: `/${category.slug}/${area.province.slug}`, label: 'ดูทั้งจังหวัด' }
+                            : area
+                              ? { href: `/${category.slug}`, label: 'ดูทุกย่าน' }
+                              : undefined
+                        }
+                      />
+                    ))}
+                </>
+              )}
             </div>
           </div>
         </div>

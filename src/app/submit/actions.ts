@@ -56,8 +56,7 @@ export async function submitAction(_prev: FormState, form: FormData): Promise<Fo
     const district = text(form, 'district')
     if (!name) errors.name = 'กรอกชื่อสถานที่'
     if (!categories.some((c) => c.slug === category)) errors.category = 'เลือกหมวด'
-    if (!mapsUrl) errors.mapsUrl = 'วางลิงก์ Google Maps'
-    else if (!isGoogleMapsUrl(mapsUrl)) errors.mapsUrl = 'ลิงก์นี้ไม่ใช่ลิงก์ Google Maps'
+    if (mapsUrl && !isGoogleMapsUrl(mapsUrl)) errors.mapsUrl = 'ลิงก์นี้ไม่ใช่ลิงก์ Google Maps'
     if (!findArea(province)) errors.province = 'เลือกจังหวัด'
     else if (district && !findArea(province, district)) errors.district = 'เลือกเขตใหม่'
     submission = {
@@ -65,7 +64,7 @@ export async function submitAction(_prev: FormState, form: FormData): Promise<Fo
       payload: {
         name,
         category,
-        mapsUrl,
+        mapsUrl: mapsUrl || undefined,
         province,
         district: district || undefined,
         note: text(form, 'note') || undefined,

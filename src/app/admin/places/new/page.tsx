@@ -20,6 +20,8 @@ export default async function NewPlace({ searchParams }: Props) {
     district: fromNew?.payload.district ?? '',
     checkedAt: todayInBangkok(),
     mapsUrl: fromNew?.payload.mapsUrl ?? '',
+    serviceAreas: [],
+    coords: '',
     attributes: [],
     breeds: [],
     photos: [],

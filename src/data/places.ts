@@ -31,7 +31,13 @@ export type Place = {
   hours?: string
   price?: string
   contacts: Contacts
-  mapsUrl: string
+  /** Storefront on Google Maps; absent for services without one (visiting trainers, sitters). */
+  mapsUrl?: string
+  /** Storefront coordinates, read from the Google Maps link. */
+  lat?: number
+  lng?: number
+  /** Where the place goes to customers: "bangkok" (whole province) or "bangkok/lat-krabang". */
+  serviceAreas?: string[]
   photos: string[]
   /** Farms only: breed slugs. */
   breeds?: string[]
@@ -72,6 +78,8 @@ export const samplePlaces: Place[] = [
     price: '[ข้อความอิสระจากทีม]',
     contacts: sampleContacts,
     mapsUrl: maps,
+    lat: 13.7279,
+    lng: 100.7782,
     photos: [],
   },
   {
@@ -85,6 +93,8 @@ export const samplePlaces: Place[] = [
     attributes: ['parking'],
     contacts: { phone: '[เบอร์โทร]' },
     mapsUrl: maps,
+    lat: 13.7225,
+    lng: 100.7598,
     photos: [],
   },
   {
@@ -98,6 +108,8 @@ export const samplePlaces: Place[] = [
     attributes: [],
     contacts: {},
     mapsUrl: maps,
+    lat: 13.7302,
+    lng: 100.7451,
     photos: [],
   },
   {
@@ -111,6 +123,8 @@ export const samplePlaces: Place[] = [
     attributes: ['parking'],
     contacts: {},
     mapsUrl: maps,
+    lat: 13.6676,
+    lng: 100.6045,
     photos: [],
   },
   {
@@ -123,7 +137,7 @@ export const samplePlaces: Place[] = [
     checkedAt: '2026-09-10',
     attributes: ['home-visit', 'online'],
     contacts: sampleContacts,
-    mapsUrl: maps,
+    serviceAreas: ['bangkok/lat-krabang', 'bangkok/bang-na', 'samut-prakan'],
     photos: [],
   },
   {
@@ -164,6 +178,8 @@ export const samplePlaces: Place[] = [
     attributes: ['open-24h'],
     contacts: { phone: '[เบอร์โทร]' },
     mapsUrl: maps,
+    lat: 13.7243,
+    lng: 100.7716,
     photos: [],
   },
   {

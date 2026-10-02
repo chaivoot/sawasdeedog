@@ -3,6 +3,7 @@ import { getCategory } from '@/data/categories'
 import { findArea } from '@/data/areas'
 import { getBreed } from '@/data/breeds'
 import type { Place } from '@/data/places'
+import { formatKm } from '@/lib/geo'
 import { Checked } from './Checked'
 import { Icon } from './Icon'
 import { Photo } from './Photo'
@@ -12,7 +13,16 @@ import { RatingBadge } from './Stars'
  * Row card on mobile, photo-top card on desktop (M-Category / D-Category).
  * `listing` is the category page showing the card; its filters decide the tags.
  */
-export function ListingCard({ place, listing }: { place: Place; listing?: string }) {
+export function ListingCard({
+  place,
+  listing,
+  distanceKm,
+}: {
+  place: Place
+  listing?: string
+  /** Shown on "ใกล้ฉัน" results. */
+  distanceKm?: number
+}) {
   const category = getCategory(place.category)
   const tagCategory = getCategory(listing ?? place.category)
   const area = findArea(place.province, place.district)
@@ -39,6 +49,7 @@ export function ListingCard({ place, listing }: { place: Place; listing?: string
         ) : (
           <span className="listing-card__meta">
             {typeLabel} · {area ? (area.district?.name ?? area.province.name) : ''}
+            {!place.mapsUrl && place.serviceAreas?.length ? ' · บริการถึงที่' : ''}
           </span>
         )}
         {tags.length > 0 && (
@@ -49,6 +60,12 @@ export function ListingCard({ place, listing }: { place: Place; listing?: string
               </span>
             ))}
           </div>
+        )}
+        {distanceKm != null && (
+          <span className="listing-card__distance">
+            <Icon name="nav" size={14} strokeWidth={2} />
+            {formatKm(distanceKm)}
+          </span>
         )}
         <div className="listing-card__checked">
           <Checked date={place.checkedAt} />

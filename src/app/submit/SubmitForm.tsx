@@ -114,7 +114,7 @@ export function SubmitForm({ initialKind, initialCategory, reportPlace }: Props)
           <Field
             id="mapsUrl"
             label="ลิงก์ Google Maps"
-            hint="เปิด Google Maps กดแชร์ แล้วคัดลอกลิงก์มาวาง"
+            hint="ถ้ามีหน้าร้าน: เปิด Google Maps กดแชร์ แล้วคัดลอกลิงก์มาวาง (ไม่มีหน้าร้านเว้นว่างได้)"
             error={errors.mapsUrl}
             full
           >
@@ -125,7 +125,6 @@ export function SubmitForm({ initialKind, initialCategory, reportPlace }: Props)
               inputMode="url"
               className="input"
               placeholder="วางลิงก์จาก Google Maps"
-              required
               aria-invalid={!!errors.mapsUrl}
             />
           </Field>

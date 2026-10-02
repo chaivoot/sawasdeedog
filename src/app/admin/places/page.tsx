@@ -2,15 +2,18 @@ import Link from 'next/link'
 import { getCategory } from '@/data/categories'
 import { findArea } from '@/data/areas'
 import { listAllPlaces } from '@/lib/admin-places'
+import { backfillCoordsAction } from '../actions'
 import { requireAdminPage } from '@/lib/admin-page'
 import { formatDay } from '@/lib/format'
 
-type Props = { searchParams: Promise<{ q?: string; saved?: string }> }
+type Props = { searchParams: Promise<{ q?: string; saved?: string; coords?: string }> }
 
 export default async function AdminPlaces({ searchParams }: Props) {
   await requireAdminPage()
-  const { q, saved } = await searchParams
+  const { q, saved, coords } = await searchParams
   const places = await listAllPlaces(q)
+  const missingCoords = places.filter((p) => p.mapsUrl && p.lat == null).length
+  const [coordsFound, coordsTried] = (coords ?? '').split('-').map(Number)
 
   return (
     <>
@@ -24,6 +27,20 @@ export default async function AdminPlaces({ searchParams }: Props) {
         <p className="admin-notice" role="status">
           บันทึกแล้ว · <Link href={`/place/${saved}`}>ดูบนเว็บ</Link>
         </p>
+      )}
+      {coords && (
+        <p className="admin-notice" role="status">
+          ดึงพิกัดได้ {coordsFound} จาก {coordsTried} รายการ
+          {coordsFound < coordsTried && ' · ที่เหลือให้เปิดแก้ไขแล้ววางพิกัดเอง'}
+        </p>
+      )}
+      {missingCoords > 0 && (
+        <form action={backfillCoordsAction} className="admin-notice">
+          {missingCoords} รายการมีลิงก์ Google Maps แต่ยังไม่มีพิกัด (ใช้กับปุ่ม &quot;ใกล้ฉัน&quot;){' '}
+          <button type="submit" className="btn btn--secondary btn--sm">
+            ดึงพิกัดจากลิงก์
+          </button>
+        </form>
       )}
       <form className="admin-search" role="search">
         <input
