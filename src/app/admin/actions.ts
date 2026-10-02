@@ -115,6 +115,13 @@ export async function savePlaceAction(_prev: PlaceFormState, form: FormData): Pr
   const attributes = form
     .getAll('attributes')
     .filter((a): a is string => typeof a === 'string' && filterSlugs.has(a))
+  // No weight limit takes big dogs too, so it also shows under that filter.
+  if (
+    attributes.includes('no-weight-limit') &&
+    filterSlugs.has('big-dogs') &&
+    !attributes.includes('big-dogs')
+  )
+    attributes.push('big-dogs')
   const breedSlugs = new Set(breeds.map((b) => b.slug))
   const placeBreeds = isFarm
     ? form.getAll('breeds').filter((b): b is string => typeof b === 'string' && breedSlugs.has(b))

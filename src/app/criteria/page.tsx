@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Icon } from '@/components/Icon'
 import { SiteHeader } from '@/components/SiteHeader'
-import { dogFriendly, farmRule, forceFreeDefinition } from '@/data/criteria'
+import { dogFriendly, farmRule, forceFreeDefinition, stayRule } from '@/data/criteria'
 
 export const metadata: Metadata = {
   title: 'เกณฑ์การคัดเลือก',
@@ -19,7 +19,12 @@ const rules = [
   {
     id: 'no-conditions',
     title: 'ไม่มีเงื่อนไขแอบแฝง',
-    body: 'คำว่า "รับน้องหมา" ต้องหมายถึงรับจริง ถ้ารับแต่ให้อยู่ได้แค่โซนนอก เข้าห้องแอร์ไม่ได้ หรือรับเข้าห้องพักแต่จำกัดเฉพาะน้องที่หนักไม่เกิน 4 กิโลกรัม แบบนี้เราไม่ลิสต์ ใช้เกณฑ์เดียวกันทุกหมวด ทั้งคาเฟ่ ที่พัก ร้านอาบน้ำ ฝากเลี้ยง และอื่น ๆ',
+    body: 'คำว่า "รับน้องหมา" ต้องหมายถึงรับจริง ถ้ารับแต่ให้อยู่ได้แค่โซนนอก เข้าห้องแอร์ไม่ได้ หรือรับเฉพาะน้องตัวเล็ก แบบนี้เราไม่ลิสต์ ใช้เกณฑ์เดียวกันทุกหมวด ทั้งคาเฟ่ ร้านอาบน้ำ ฝากเลี้ยง และอื่น ๆ ยกเว้นที่พักซึ่งมีเกณฑ์ของตัวเอง',
+  },
+  {
+    id: 'stay',
+    title: 'ที่พัก: รับน้องหมาตัวใหญ่',
+    body: stayRule.body,
   },
   {
     id: 'trainer',

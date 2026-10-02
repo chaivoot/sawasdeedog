@@ -13,7 +13,7 @@ import { SiteHeader } from '@/components/SiteHeader'
 import { getCategory, trainerStyles } from '@/data/categories'
 import { findArea } from '@/data/areas'
 import { getBreed } from '@/data/breeds'
-import { dogFriendly, farmRule, hasDogFriendlyRule } from '@/data/criteria'
+import { categoryRule, farmRule } from '@/data/criteria'
 import { placeCategories, type Contacts, type Place } from '@/data/places'
 import { JsonLd } from '@/components/JsonLd'
 import { MIN_RATINGS_TO_SHOW } from '@/lib/limits'
@@ -132,7 +132,10 @@ function criteriaFor(place: Place): string[] {
   const slugs = placeCategories(place)
   const filters = slugs.flatMap((s) => getCategory(s)?.filters ?? [])
   const items: string[] = []
-  if (slugs.some(hasDogFriendlyRule)) items.push(dogFriendly.criterion)
+  for (const s of slugs) {
+    const c = categoryRule(s)?.criterion
+    if (c && !items.includes(c)) items.push(c)
+  }
   if (place.category === 'farm') items.push(farmRule.criterion)
   if (place.trainerStyle) {
     const style = trainerStyles.find((s) => s.slug === place.trainerStyle)

@@ -16,10 +16,29 @@ export const dogFriendly = {
 
 /**
  * The Dog Friendly rule is about where dogs are welcome, so it applies to every
- * category except trainers (judged on training method) and farms (own criteria).
+ * category except trainers (judged on training method), farms and stays (own criteria).
  */
 export function hasDogFriendlyRule(categorySlug: string) {
-  return categorySlug !== 'trainer' && categorySlug !== 'farm'
+  return categorySlug !== 'trainer' && categorySlug !== 'farm' && categorySlug !== 'stay'
+}
+
+/**
+ * Stays almost always keep dogs out of somewhere (restaurant, pool), so the bar
+ * is size: big dogs must be welcome. Other limits are shown as filters instead.
+ */
+export const stayRule = {
+  banner: 'ทุกที่พักในนี้รับน้องหมาตัวใหญ่ หนักเกิน 20 กก. ได้',
+  short: 'รับน้องหมาตัวใหญ่เกิน 20 กก.',
+  criterion: 'รับน้องหมาหนักเกิน 20 กก.',
+  body: 'ที่พักส่วนใหญ่มีบางโซนที่น้องหมาเข้าไม่ได้ เราจึงใช้เกณฑ์แยก คือต้องรับน้องหมาที่หนักเกิน 20 กิโลกรัมได้ ที่พักที่รับเฉพาะน้องตัวเล็กเราไม่ลิสต์ ส่วนเงื่อนไขอื่น เช่น เข้าร้านอาหารหรือลงสระไม่ได้ หรือไม่รับบางสายพันธุ์ เราบอกไว้ในหน้าที่พักแต่ละที่ และเลือกกรองได้',
+}
+
+/** The listing rule for a category, if it has one; `anchor` is its section on /criteria. */
+export function categoryRule(
+  categorySlug: string,
+): { anchor: string; banner: string; short: string; criterion: string } | undefined {
+  if (categorySlug === 'stay') return { anchor: 'stay', ...stayRule }
+  if (hasDogFriendlyRule(categorySlug)) return { anchor: 'dog-friendly', ...dogFriendly }
 }
 
 /** Farms are listed only if they can issue a pedigree certificate for the puppy. */
