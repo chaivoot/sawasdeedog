@@ -2864,6 +2864,12 @@ a.guarantee:hover {
   font-weight: 500;
   font-size: 17px;
 }
+.admin-breed-search {
+  margin-bottom: 12px;
+}
+.admin-checks [hidden] {
+  display: none;
+}
 .admin-check-group + .admin-check-group {
   margin-top: 12px;
 }
