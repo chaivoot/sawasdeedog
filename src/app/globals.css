@@ -1252,6 +1252,21 @@ a.guarantee:hover {
   color: var(--color-primary);
 }
 
+.area-clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px;
+  border: 0;
+  background: none;
+  color: var(--color-primary);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
 .near-me {
   justify-content: center;
   gap: 8px;
