@@ -1,6 +1,6 @@
--- Stays: the heaviest dog a place takes and how many dogs per room,
--- both shown as warnings. The heaviest dog, shown as a warning ("รับน้องหมาไม่เกิน 25 กก.").
--- Empty means no weight limit. Stays that take only dogs under 15 kg are not listed.
+-- Stays: the heaviest dog a place takes and how many dogs per room, both shown
+-- as warnings ("จำกัดน้ำหนักน้องหมาไม่เกิน 25 กก.", "ไม่เกิน 2 ตัวต่อห้อง").
+-- Empty means no limit. Stays that take only dogs under 15 kg are not listed.
 -- Run once in the Supabase SQL editor after 0004_locations.sql.
 
 alter table public.places
