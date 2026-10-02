@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { AdminEditButton } from '@/components/AdminEditButton'
 import { Breadcrumb, type Crumb } from '@/components/Breadcrumb'
 import { Checked } from '@/components/Checked'
 import { FarmBuyerNote } from '@/components/FarmBuyerNote'
@@ -212,6 +213,7 @@ export default async function PlacePage({ params }: Props) {
     <>
       <JsonLd data={placeLd(place, crumbs)} />
       <SiteHeader desktopOnly />
+      <AdminEditButton href={place.id ? `/admin/places/${place.id}` : '/admin/places'} />
       <main className="page page--place">
         <Breadcrumb items={crumbs} />
         <PlaceGallery photos={place.photos} name={place.name} back={listHref} />
