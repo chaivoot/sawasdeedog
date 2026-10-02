@@ -127,3 +127,24 @@ export function parseImport(text: string, today: string): { items: ImportItem[] 
     return { error: 'รูปแบบไม่ถูกต้อง ต้องเป็นข้อมูลร้าน 1 ร้าน หรือรายการของหลายร้าน' }
   return { items: list.map((x) => toItem(x as Record<string, unknown>, today)) }
 }
+
+export type ExistingPlace = { id?: string; slug: string; name: string }
+
+/** Comparable form of a name: "People & Tail" and "people and tail" match. */
+const nameKey = (s: string) =>
+  s
+    .toLowerCase()
+    .replace(/&/g, 'and')
+    .replace(/[^\p{L}\p{N}]+/gu, '')
+
+/** A listed place this draft probably duplicates, by slug or name. */
+export function findExisting(draft: PlaceDraft, existing: ExistingPlace[]): ExistingPlace | undefined {
+  const key = nameKey(draft.name)
+  return existing.find(
+    (e) =>
+      (draft.slug && e.slug === draft.slug) ||
+      (key.length >= 4 &&
+        (nameKey(e.name) === key ||
+          (key.length >= 6 && (nameKey(e.name).includes(key) || key.includes(nameKey(e.name)))))),
+  )
+}

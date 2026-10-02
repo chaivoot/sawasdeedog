@@ -3,12 +3,12 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { PlaceEditor } from '../PlaceEditor'
-import { parseImport, type ImportItem } from './parse'
+import { findExisting, parseImport, type ExistingPlace, type ImportItem } from './parse'
 
 // The pasted text survives the save redirect, so a list can be worked through one by one.
 const KEY = 'sd_import'
 
-export function ImportPlaces({ today }: { today: string }) {
+export function ImportPlaces({ today, existing }: { today: string; existing: ExistingPlace[] }) {
   const [text, setText] = useState('')
   const [items, setItems] = useState<ImportItem[]>([])
   const [error, setError] = useState('')
@@ -51,6 +51,7 @@ export function ImportPlaces({ today }: { today: string }) {
   }
 
   const item = open == null ? undefined : items[open]
+  const duplicate = item && findExisting(item.draft, existing)
 
   return (
     <>
@@ -100,6 +101,7 @@ export function ImportPlaces({ today }: { today: string }) {
                 onClick={() => setOpen(i)}
               >
                 {it.draft.name || `รายการที่ ${i + 1}`}
+                {findExisting(it.draft, existing) && <span className="admin-badge">มีในระบบแล้ว</span>}
                 {it.warnings.length > 0 && <span className="admin-badge">ต้องแก้ {it.warnings.length}</span>}
               </button>
             </li>
@@ -109,6 +111,16 @@ export function ImportPlaces({ today }: { today: string }) {
 
       {item && (
         <section className="admin-import__item" aria-label={item.draft.name}>
+          {duplicate && (
+            <p className="auth__error" role="alert">
+              ร้านนี้น่าจะมีในระบบแล้ว: <b>{duplicate.name}</b> (/{duplicate.slug}) · ข้ามได้เลย หรือ{' '}
+              {duplicate.id ? (
+                <Link href={`/admin/places/${duplicate.id}`}>เปิดรายการเดิมเพื่อแก้ไข</Link>
+              ) : (
+                'แก้รายการเดิมแทน'
+              )}
+            </p>
+          )}
           {(item.notes.length > 0 || item.warnings.length > 0 || item.sources.length > 0) && (
             <div className="admin-notice admin-import__checks">
               {item.warnings.length > 0 && (
