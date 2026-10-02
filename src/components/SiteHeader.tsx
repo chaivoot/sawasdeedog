@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { AddPlaceButton } from './AddPlaceButton'
 import { Brand } from './Logo'
 import { Icon } from './Icon'
 import { SiteNav } from './SiteNav'
@@ -30,20 +31,14 @@ export function SiteHeader({ back, desktopOnly }: Props) {
               <span className="site-header__spacer" />
             </>
           )}
-          <Link href="/submit" className="submit-pill">
-            <Icon name="plus" size={18} strokeWidth={2.2} />
-            เสนอสถานที่
-          </Link>
+          <AddPlaceButton variant="pill" />
         </header>
       )}
       <header className="site-header--desktop">
         <div className="site-header__inner">
           <Brand size="large" />
           <SiteNav />
-          <Link href="/submit" className="btn btn--primary btn--sm">
-            <Icon name="plus" size={20} strokeWidth={2.2} />
-            <span>เสนอสถานที่</span>
-          </Link>
+          <AddPlaceButton variant="button" />
         </div>
       </header>
     </>
