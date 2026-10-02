@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { dogFriendly, hasDogFriendlyRule } from '@/data/criteria'
+import { categoryRule } from '@/data/criteria'
 import { AreaPicker } from '@/components/AreaPicker'
 import { Breadcrumb, type Crumb } from '@/components/Breadcrumb'
 import { EmptyState } from '@/components/EmptyState'
@@ -55,7 +55,7 @@ function seoDescription(category: Category, area: Area | undefined, count: numbe
     count > 0
       ? `รวม ${count} ${category.name}${where ? `ใน${where}` : ''}`
       : `${category.name}${where ? `ใน${where}` : ''}`
-  const rule = hasDogFriendlyRule(category.slug) ? dogFriendly.banner : category.description
+  const rule = categoryRule(category.slug)?.banner ?? category.description
   return `${lead} ที่ทีม SawasdeeDog คัดแล้ว · ${rule}`
 }
 
@@ -84,6 +84,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   if (!r) notFound()
   const { category, area } = r
   const isTrainer = category.slug === 'trainer'
+  const rule = categoryRule(category.slug)
   const lp = parseListingParams(category, await searchParams)
   // "ใกล้ฉัน" only applies to the all-areas page; the list is filled in the browser.
   const near = lp.near && !area
@@ -159,7 +160,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
               {!isTrainer && !near && (
                 <span className="page-title__sub desktop-only">
                   {count}
-                  {hasDogFriendlyRule(category.slug) && ` · ${dogFriendly.short}`}
+                  {rule && ` · ${rule.short}`}
                 </span>
               )}
             </div>
@@ -174,10 +175,10 @@ export default async function CategoryPage({ params, searchParams }: Props) {
           </div>
         </div>
 
-        {hasDogFriendlyRule(category.slug) && (
-          <Link href="/criteria#dog-friendly" className="guarantee mobile-only">
+        {rule && (
+          <Link href={`/criteria#${rule.anchor}`} className="guarantee mobile-only">
             <Icon name="checkc" size={18} strokeWidth={2} />
-            {dogFriendly.banner}
+            {rule.banner}
           </Link>
         )}
 

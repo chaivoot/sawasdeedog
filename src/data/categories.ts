@@ -118,7 +118,14 @@ export const categories: Category[] = [
       { slug: 'hotel', label: 'โรงแรม' },
       { slug: 'resort', label: 'รีสอร์ท' },
     ],
-    filters: [],
+    // Every stay takes dogs over 20 kg (stayRule); these say how much further it goes.
+    filters: [
+      { slug: 'no-weight-limit', label: 'ไม่จำกัดน้ำหนัก' },
+      { slug: 'big-dogs', label: 'รับน้องหมา 35 กก. ขึ้นไป' },
+      { slug: 'all-breeds', label: 'ไม่จำกัดสายพันธุ์' },
+      { slug: 'restaurant-ok', label: 'น้องเข้าร้านอาหารได้' },
+      { slug: 'pool-ok', label: 'น้องลงสระได้' },
+    ],
   },
   {
     slug: 'boarding',
