@@ -14,6 +14,8 @@ export type Category = {
   listTitle?: string
   /** schema.org type for places in this category (structured data). */
   schemaType: string
+  /** Pastel icon tile [background, icon colour], so categories are told apart at a glance. */
+  tone: [string, string]
   /** Short noun for empty states, e.g. "ยังไม่มีคาเฟ่ในย่าน…". Defaults to `name`. */
   shortName?: string
   /** Segmented control (single choice). */
@@ -29,6 +31,7 @@ export const categories: Category[] = [
   {
     slug: 'cafe',
     icon: 'cafe',
+    tone: ['#dff3e8', '#1e7a4c'],
     name: 'คาเฟ่ & ร้านอาหาร',
     schemaType: 'CafeOrCoffeeShop',
     description: 'คาเฟ่และร้านอาหารที่พาน้องหมาเข้าได้จริง',
@@ -47,6 +50,7 @@ export const categories: Category[] = [
   {
     slug: 'vet',
     icon: 'vet',
+    tone: ['#ffe4e4', '#b03a3a'],
     name: 'โรงพยาบาลสัตว์ & คลินิก',
     schemaType: 'VeterinaryCare',
     listTitle: 'โรงพยาบาลสัตว์ & คลินิกรักษาหมา',
@@ -61,6 +65,7 @@ export const categories: Category[] = [
   {
     slug: 'trainer',
     icon: 'trainer',
+    tone: ['#e3ecff', '#2a4fb3'],
     name: 'ครูฝึกหมา',
     schemaType: 'ProfessionalService',
     description: 'ครูฝึกสุนัข แยกแนว Force-Free และ Balance ให้ชัด',
@@ -75,6 +80,7 @@ export const categories: Category[] = [
   {
     slug: 'rehab',
     icon: 'rehab',
+    tone: ['#ece6ff', '#5b3fb3'],
     name: 'ฟิตเนส & กายภาพ',
     schemaType: 'LocalBusiness',
     listTitle: 'ฟิตเนสหมา & กายภาพบำบัด',
@@ -89,6 +95,7 @@ export const categories: Category[] = [
   {
     slug: 'grooming',
     icon: 'grooming',
+    tone: ['#dff4f4', '#1c7373'],
     name: 'อาบน้ำ & ตัดขน',
     schemaType: 'LocalBusiness',
     listTitle: 'อาบน้ำตัดขนหมา',
@@ -102,6 +109,7 @@ export const categories: Category[] = [
   {
     slug: 'stay',
     icon: 'stay',
+    tone: ['#ffe8d6', '#b4501d'],
     name: 'ที่พักพร้อมหมา',
     schemaType: 'LodgingBusiness',
     listTitle: 'ที่พักพาหมาไปได้',
@@ -115,6 +123,7 @@ export const categories: Category[] = [
   {
     slug: 'boarding',
     icon: 'boarding',
+    tone: ['#f6e2f5', '#8a3584'],
     name: 'ฝากเลี้ยง',
     schemaType: 'LocalBusiness',
     listTitle: 'ฝากเลี้ยงหมา',
@@ -128,6 +137,7 @@ export const categories: Category[] = [
   {
     slug: 'sitter',
     icon: 'sitter',
+    tone: ['#e6f2d9', '#4c7a1e'],
     name: 'Pet sitter & พาเดิน',
     schemaType: 'LocalBusiness',
     listTitle: 'รับเลี้ยงหมา & พาหมาเดิน',
@@ -141,6 +151,7 @@ export const categories: Category[] = [
   {
     slug: 'park',
     icon: 'park',
+    tone: ['#fff1c2', '#7a5a00'],
     name: 'ลานวิ่ง & สระว่ายน้ำหมา',
     schemaType: 'LocalBusiness',
     listTitle: 'ลานวิ่งหมา & สระว่ายน้ำหมา',
@@ -157,6 +168,7 @@ export const categories: Category[] = [
   {
     slug: 'transport',
     icon: 'transport',
+    tone: ['#e0eef8', '#235f8f'],
     name: 'ขนส่ง',
     schemaType: 'LocalBusiness',
     listTitle: 'ขนส่งสัตว์เลี้ยง & แท็กซี่หมา',
@@ -170,6 +182,7 @@ export const categories: Category[] = [
   {
     slug: 'farm',
     icon: 'farm',
+    tone: ['#f3e7da', '#7a4e24'],
     name: 'ฟาร์ม',
     schemaType: 'LocalBusiness',
     listTitle: 'ฟาร์มสุนัข',

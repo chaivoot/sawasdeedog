@@ -14,10 +14,13 @@
   --color-ink: #10233d;
   --color-ink-2: #3d4f66;
   --color-muted: #56677d;
-  --color-line: #dce3ec;
-  --color-ground: #f2f6fb;
+  --color-line: #ece3d2;
+  /* Warm cream ground: the logo's yellow, toned down, so pages aren't all blue and white. */
+  --color-ground: #fbf6ec;
   --color-surface: #ffffff;
-  --color-track: #e3e9f1;
+  --color-track: #f1e9d8;
+  /* Soft yellow for small fills (icon tiles, tags, the header pill). */
+  --color-warm-50: #fff3cc;
   --color-checkbox: #8797ab;
   --color-photo-icon: #7d93ab;
   --color-error: #b3261e;
@@ -212,7 +215,7 @@ p {
   align-items: center;
   gap: 4px;
   border-radius: 12px;
-  background: var(--color-primary-50);
+  background: var(--color-warm-50);
   color: var(--color-primary-dark);
   text-decoration: none;
   font-size: 14px;
@@ -675,7 +678,7 @@ p {
   height: 24px;
   padding: 0 8px;
   border-radius: 8px;
-  background: var(--color-primary-50);
+  background: var(--color-warm-50);
   color: var(--color-primary-dark);
   font-size: 12.5px;
   font-weight: 600;
@@ -764,8 +767,8 @@ p {
   height: 44px;
   flex-shrink: 0;
   border-radius: 14px;
-  background: var(--color-primary-50);
-  color: var(--color-primary);
+  background: var(--tone-bg, var(--color-warm-50));
+  color: var(--tone-fg, var(--color-primary));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1022,17 +1025,18 @@ p {
   gap: 10px;
   padding: 12px 14px;
   border-radius: 16px;
-  background: var(--color-accent-50);
-  color: var(--color-ink);
+  background: var(--color-primary);
+  color: #fff;
   text-decoration: none;
   font-size: 14px;
   line-height: 1.45;
 }
 .callout:hover {
-  color: var(--color-ink);
+  color: #fff;
+  background: var(--color-primary-dark);
 }
 .callout > svg {
-  color: var(--color-accent-text);
+  color: var(--color-accent);
 }
 .callout__text {
   flex-grow: 1;
@@ -1041,7 +1045,7 @@ p {
   font-weight: 600;
 }
 .callout__text span {
-  color: var(--color-ink-2);
+  color: var(--color-primary-100);
 }
 @media (min-width: 900px) {
   .callout {
@@ -1516,7 +1520,7 @@ a.guarantee:hover {
   width: 72px;
   height: 72px;
   border-radius: 50%;
-  background: var(--color-primary-50);
+  background: var(--color-warm-50);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1828,7 +1832,7 @@ a.guarantee:hover {
   height: 36px;
   flex-shrink: 0;
   border-radius: 10px;
-  background: var(--color-primary-50);
+  background: var(--color-warm-50);
   color: var(--color-primary);
   display: flex;
   align-items: center;
