@@ -18,6 +18,7 @@ import { placeCategories, type Contacts, type Place } from '@/data/places'
 import { JsonLd } from '@/components/JsonLd'
 import { MIN_RATINGS_TO_SHOW } from '@/lib/limits'
 import { contactLinks } from '@/lib/contacts'
+import { serviceAreaLabels } from '@/lib/geo'
 import { getPlace } from '@/lib/places'
 import { DEFAULT_OG_IMAGE, absoluteUrl } from '@/lib/site'
 
@@ -76,6 +77,13 @@ function placeLd(place: Place, crumbs: Crumb[]) {
     image: place.photos.length ? place.photos.map(absoluteUrl) : undefined,
     telephone: c.phone,
     hasMap: place.mapsUrl,
+    geo:
+      place.lat != null && place.lng != null
+        ? { '@type': 'GeoCoordinates', latitude: place.lat, longitude: place.lng }
+        : undefined,
+    areaServed: place.serviceAreas?.length
+      ? serviceAreaLabels(place.serviceAreas).map((name) => ({ '@type': 'AdministrativeArea', name }))
+      : undefined,
     priceRange: place.price,
     address: area && {
       '@type': 'PostalAddress',
@@ -148,6 +156,7 @@ export default async function PlacePage({ params }: Props) {
   const breedNames = (place.breeds ?? []).map((b) => getBreed(b)?.name).filter(Boolean)
   const criteria = criteriaFor(place)
   const contacts = contactLinks(place.contacts)
+  const serviceAreas = serviceAreaLabels(place.serviceAreas ?? [])
 
   const isFarm = place.category === 'farm'
   const listHref = isFarm
@@ -237,15 +246,26 @@ export default async function PlacePage({ params }: Props) {
           </div>
 
           <aside className="place__aside">
-            <a
-              href={place.mapsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn--primary btn--navigate place__navigate"
-            >
-              <Icon name="nav" size={24} strokeWidth={2} />
-              <span>นำทางด้วย Google Maps</span>
-            </a>
+            {place.mapsUrl && (
+              <a
+                href={place.mapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn--primary btn--navigate place__navigate"
+              >
+                <Icon name="nav" size={24} strokeWidth={2} />
+                <span>นำทางด้วย Google Maps</span>
+              </a>
+            )}
+            {serviceAreas.length > 0 && (
+              <div className="service-areas place__navigate">
+                <span className="service-areas__label">
+                  <Icon name="pin" size={18} strokeWidth={2} />
+                  ให้บริการถึงที่
+                </span>
+                <span className="service-areas__list">{serviceAreas.join(' · ')}</span>
+              </div>
+            )}
             <Checked date={place.checkedAt} long className="place__checked desktop-only" />
 
             {(place.hours || place.price) && (

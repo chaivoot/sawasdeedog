@@ -6,7 +6,7 @@ import { SUBMISSION_PHOTOS_BUCKET, db, isSupabaseConfigured } from './supabase'
 export type NewPlacePayload = {
   name: string
   category: string
-  mapsUrl: string
+  mapsUrl?: string
   province: string
   district?: string
   note?: string

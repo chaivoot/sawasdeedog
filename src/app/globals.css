@@ -1243,6 +1243,60 @@ a.guarantee:hover {
   color: #fff;
 }
 
+.listing-card__distance {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.near-me {
+  justify-content: center;
+  gap: 8px;
+}
+.near-me[aria-pressed='true'] {
+  border-color: var(--color-primary);
+}
+.nearby__status {
+  padding: 24px 4px;
+  color: var(--color-ink-2);
+}
+.nearby__status--error {
+  color: var(--color-error);
+}
+.nearby__group {
+  margin-top: 12px;
+  font-size: 15px;
+}
+.nearby__credit {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--color-muted);
+}
+
+.service-areas {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: var(--radius-button);
+  background: var(--color-warm-50);
+  font-size: 14.5px;
+  line-height: 1.5;
+}
+.service-areas__label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: var(--color-accent-text);
+}
+.service-areas__list {
+  color: var(--color-ink);
+}
+
 .buyer-note {
   padding: 14px 16px;
   border: 1px solid var(--color-line);
@@ -2892,6 +2946,25 @@ a.guarantee:hover {
   font-family: var(--font-heading);
   font-weight: 500;
   font-size: 17px;
+}
+.admin-areas {
+  margin-bottom: 12px;
+}
+.admin-areas .tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.admin-areas__remove {
+  display: inline-flex;
+  padding: 2px;
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+.admin-areas__picker {
+  margin-bottom: 10px;
 }
 .admin-breed-search {
   margin-bottom: 12px;

@@ -7,6 +7,7 @@ import { breeds } from '@/data/breeds'
 import { dogFriendly, hasDogFriendlyRule } from '@/data/criteria'
 import type { Contacts } from '@/data/places'
 import { Icon } from '@/components/Icon'
+import { cleanServiceAreas, serviceAreaLabels } from '@/lib/geo'
 import { MAX_PLACE_PHOTOS } from '@/lib/limits'
 import { uploadPhotos } from '@/lib/upload-client'
 import { savePlaceAction, type PlaceFormState } from '../actions'
@@ -28,6 +29,9 @@ export type PlaceDraft = {
   price?: string
   contacts: Contacts
   mapsUrl: string
+  serviceAreas: string[]
+  /** "lat, lng" or empty. */
+  coords: string
   photos: string[]
   breeds: string[]
   published: boolean
@@ -237,14 +241,37 @@ export function PlaceEditor({ draft, fromSubmission }: { draft: PlaceDraft; from
               </select>
             </Field>
           </div>
-          <Field id="mapsUrl" label="ลิงก์ Google Maps" error={e.mapsUrl} full>
+          <Field
+            id="mapsUrl"
+            label="ลิงก์ Google Maps (หน้าร้าน)"
+            hint="เว้นว่างได้ถ้าไม่มีหน้าร้าน เช่น ครูฝึกที่สอนถึงบ้าน"
+            error={e.mapsUrl}
+            full
+          >
             <input
               id="mapsUrl"
               name="mapsUrl"
-              type="url"
+              inputMode="url"
               className="input"
               defaultValue={draft.mapsUrl}
-              required
+            />
+          </Field>
+          <input type="hidden" name="coordsFrom" value={draft.mapsUrl} />
+          <input type="hidden" name="coordsWere" value={draft.coords} />
+          <Field
+            id="coords"
+            label="พิกัดหน้าร้าน"
+            hint="ระบบดึงจากลิงก์ Google Maps ให้ตอนบันทึก ถ้าดึงไม่ได้ ให้คลิกขวาที่หมุดใน Google Maps แล้วคัดลอกตัวเลขมาวาง"
+            error={e.coords}
+            full
+          >
+            <input
+              id="coords"
+              name="coords"
+              className="input"
+              defaultValue={draft.coords}
+              placeholder="เช่น 13.7279, 100.7782"
+              inputMode="decimal"
             />
           </Field>
           <Field id="checkedAt" label="วันที่ทีมเช็คล่าสุด" error={e.checkedAt}>
@@ -338,6 +365,8 @@ export function PlaceEditor({ draft, fromSubmission }: { draft: PlaceDraft; from
           </span>
         </fieldset>
       )}
+
+      <ServiceAreasField initial={draft.serviceAreas} />
 
       <fieldset className="admin-fieldset">
         <legend>รายละเอียด</legend>
@@ -491,5 +520,80 @@ function Field({
         hint && <span className="field__hint">{hint}</span>
       )}
     </div>
+  )
+}
+
+/** Districts or whole provinces a visiting service covers. */
+function ServiceAreasField({ initial }: { initial: string[] }) {
+  const [areas, setAreas] = useState(initial)
+  const [province, setProvince] = useState('bangkok')
+  const [district, setDistrict] = useState('')
+  const districts = provinces.find((p) => p.slug === province)?.districts ?? []
+  const token = district ? `${province}/${district}` : province
+
+  return (
+    <fieldset className="admin-fieldset">
+      <legend>พื้นที่ให้บริการถึงที่ (ถ้ามี)</legend>
+      <p className="field__hint">
+        สำหรับบริการที่ไปหาลูกค้า เช่น ครูฝึกสอนถึงบ้าน Pet sitter ขนส่ง รายการจะขึ้นในหน้าของย่านเหล่านี้ด้วย
+      </p>
+      {areas.length > 0 && (
+        <div className="tag-list admin-areas">
+          {areas.map((t) => (
+            <span key={t} className="tag">
+              <input type="hidden" name="serviceAreas" value={t} />
+              {serviceAreaLabels([t])[0]}
+              <button
+                type="button"
+                className="admin-areas__remove"
+                aria-label={`เอา ${serviceAreaLabels([t])[0]} ออก`}
+                onClick={() => setAreas((prev) => prev.filter((x) => x !== t))}
+              >
+                <Icon name="x" size={14} strokeWidth={2.4} />
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
+      <div className="form__grid admin-areas__picker">
+        <label className="field">
+          <span className="field__label">จังหวัด</span>
+          <select
+            className="select"
+            value={province}
+            onChange={(ev) => {
+              setProvince(ev.target.value)
+              setDistrict('')
+            }}
+          >
+            {provinces.map((p) => (
+              <option key={p.slug} value={p.slug}>
+                {p.name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="field">
+          <span className="field__label">เขต / อำเภอ</span>
+          <select className="select" value={district} onChange={(ev) => setDistrict(ev.target.value)}>
+            <option value="">ทั้งจังหวัด</option>
+            {districts.map((d) => (
+              <option key={d.slug} value={d.slug}>
+                {d.name}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+      <button
+        type="button"
+        className="btn btn--secondary btn--sm"
+        disabled={areas.includes(token)}
+        onClick={() => setAreas((prev) => cleanServiceAreas([...prev, token]))}
+      >
+        <Icon name="plus" size={18} strokeWidth={2.2} />
+        <span>เพิ่มพื้นที่</span>
+      </button>
+    </fieldset>
   )
 }

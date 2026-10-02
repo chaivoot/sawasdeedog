@@ -41,9 +41,13 @@ export default async function SubmissionPage({ params }: Props) {
             <dd>{area ? [area.province.name, area.district?.name].filter(Boolean).join(' › ') : '-'}</dd>
             <dt>Google Maps</dt>
             <dd>
-              <a href={s.payload.mapsUrl} target="_blank" rel="noopener noreferrer">
-                {s.payload.mapsUrl}
-              </a>
+              {s.payload.mapsUrl ? (
+                <a href={s.payload.mapsUrl} target="_blank" rel="noopener noreferrer">
+                  {s.payload.mapsUrl}
+                </a>
+              ) : (
+                'ไม่มี (บริการถึงที่ / ไม่มีหน้าร้าน)'
+              )}
             </dd>
             <dt>โน้ตถึงทีม</dt>
             <dd className="admin-pre">{s.payload.note || '-'}</dd>

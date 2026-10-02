@@ -8,6 +8,7 @@ import { findArea } from '@/data/areas'
 import { breeds } from '@/data/breeds'
 import { requireAdmin } from '@/lib/admin'
 import { deletePlace, slugTaken, upsertPlace, type PlaceInput } from '@/lib/admin-places'
+import { cleanServiceAreas, parseLatLng, resolveMapsLatLng } from '@/lib/geo'
 import { facebookUrl, instagramHandle, lineLink, websiteUrl } from '@/lib/contacts'
 import { MAX_PLACE_PHOTOS } from '@/lib/limits'
 import { db, isSupabaseConfigured } from '@/lib/supabase'
@@ -78,8 +79,24 @@ export async function savePlaceAction(_prev: PlaceFormState, form: FormData): Pr
   const checkedAt = text(form, 'checkedAt')
   if (!/^\d{4}-\d{2}-\d{2}$/.test(checkedAt)) errors.checkedAt = 'ใส่วันที่เช็ค'
 
+  // Google Maps only for places with a storefront; visiting services list service areas instead.
   const mapsUrl = text(form, 'mapsUrl')
-  if (!isHttpUrl(mapsUrl)) errors.mapsUrl = 'ใส่ลิงก์ Google Maps'
+  if (mapsUrl && !isHttpUrl(mapsUrl)) errors.mapsUrl = 'ลิงก์ Google Maps ไม่ถูกต้อง'
+  const serviceAreas = cleanServiceAreas(
+    form.getAll('serviceAreas').filter((v): v is string => typeof v === 'string'),
+  )
+
+  // Coordinates: typed by hand, or read from the Maps link. A prefilled value is
+  // re-read when the link changed, so an edited link never keeps old coordinates.
+  const coordsText = text(form, 'coords')
+  let coords = parseLatLng(coordsText)
+  if (coordsText && !coords) errors.coords = 'ใส่เป็น ละติจูด, ลองจิจูด เช่น 13.7279, 100.7782'
+  const linkChanged = mapsUrl !== text(form, 'coordsFrom')
+  const coordsUntouched = coordsText === text(form, 'coordsWere')
+  if (mapsUrl && !errors.mapsUrl && (!coords || (linkChanged && coordsUntouched))) {
+    coords = (await resolveMapsLatLng(mapsUrl)) ?? (linkChanged && coordsUntouched ? undefined : coords)
+  }
+  if (!mapsUrl && coordsUntouched && text(form, 'coordsFrom')) coords = undefined
 
   // Store contacts in one canonical form, whatever was pasted.
   const instagramRaw = text(form, 'instagram')
@@ -140,7 +157,10 @@ export async function savePlaceAction(_prev: PlaceFormState, form: FormData): Pr
     instagram: instagram ?? null,
     facebook: facebook ?? null,
     website: website ?? null,
-    maps_url: mapsUrl,
+    maps_url: mapsUrl || null,
+    service_areas: serviceAreas,
+    lat: coords?.lat ?? null,
+    lng: coords?.lng ?? null,
     photos,
     breeds: placeBreeds,
     published: form.get('published') === 'on',
@@ -195,4 +215,27 @@ export async function setSubmissionStatusAction(form: FormData) {
   await updateSubmission(id, status, admin.sub, undefined, text(form, 'note') || undefined)
   revalidatePath('/admin', 'layout')
   redirect('/admin')
+}
+
+/** Fills in storefront coordinates for places saved before they were read from the Maps link. */
+export async function backfillCoordsAction() {
+  await requireAdmin()
+  if (!isSupabaseConfigured()) redirect('/admin/places')
+  const { data, error } = await db()
+    .from('places')
+    .select('id, maps_url')
+    .is('lat', null)
+    .not('maps_url', 'is', null)
+    .limit(40)
+  if (error) throw error
+  let found = 0
+  const rows = (data ?? []) as { id: string; maps_url: string }[]
+  for (const r of rows) {
+    const c = await resolveMapsLatLng(r.maps_url)
+    if (!c) continue
+    const { error: e } = await db().from('places').update({ lat: c.lat, lng: c.lng }).eq('id', r.id)
+    if (!e) found++
+  }
+  revalidatePath('/', 'layout')
+  redirect(`/admin/places?coords=${found}-${rows.length}`)
 }

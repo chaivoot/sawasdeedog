@@ -2,7 +2,8 @@
 
 import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { AREA_COOKIE, findArea, popularProvinces, provinces } from '@/data/areas'
+import { AREA_COOKIE, NEAR_ME, findArea, popularProvinces, provinces } from '@/data/areas'
+import { positionErrorText, requestPosition, type PositionError } from '@/lib/near-me'
 import { Icon } from './Icon'
 
 type Props = {
@@ -10,11 +11,13 @@ type Props = {
   district?: string
   /** On a category page, confirming navigates to that category in the new area. */
   category?: string
+  /** "ใกล้ฉัน" is the current choice. */
+  near?: boolean
 }
 
 const pickable = provinces.filter((p) => p.districts.length > 0)
 
-export function AreaPicker({ province, district, category }: Props) {
+export function AreaPicker({ province, district, category, near }: Props) {
   const router = useRouter()
   const dialogRef = useRef<HTMLDialogElement>(null)
   const current = findArea(province, district)
@@ -22,6 +25,8 @@ export function AreaPicker({ province, district, category }: Props) {
   const [provinceSlug, setProvinceSlug] = useState(current?.province.slug ?? pickable[0].slug)
   const [districtSlug, setDistrictSlug] = useState(current?.district?.slug ?? '')
   const [query, setQuery] = useState('')
+  const [locating, setLocating] = useState(false)
+  const [nearError, setNearError] = useState('')
 
   const selectedProvince = pickable.find((p) => p.slug === provinceSlug) ?? pickable[0]
   const q = query.trim()
@@ -36,7 +41,28 @@ export function AreaPicker({ province, district, category }: Props) {
     setQuery('')
   }
 
+  function setCookie(value: string) {
+    document.cookie = `${AREA_COOKIE}=${value}; path=/; max-age=${60 * 60 * 24 * 365}; samesite=lax`
+  }
+
+  async function useMyLocation() {
+    setLocating(true)
+    setNearError('')
+    try {
+      await requestPosition()
+      setCookie(NEAR_ME)
+      close()
+      if (category) router.push(`/${category}?near=1`)
+      else router.refresh()
+    } catch (err) {
+      setNearError(positionErrorText[err as PositionError] ?? positionErrorText.unavailable)
+    } finally {
+      setLocating(false)
+    }
+  }
+
   function open() {
+    setNearError('')
     setProvinceSlug(current?.province.slug ?? pickable[0].slug)
     setDistrictSlug(current?.district?.slug ?? '')
     setQuery('')
@@ -50,7 +76,7 @@ export function AreaPicker({ province, district, category }: Props) {
   function confirm() {
     if (!selected) return
     const value = selected.province.slug + (selected.district ? `/${selected.district.slug}` : '')
-    document.cookie = `${AREA_COOKIE}=${value}; path=/; max-age=${60 * 60 * 24 * 365}; samesite=lax`
+    setCookie(value)
     close()
     if (category) router.push(`/${category}/${value}`)
     else router.refresh()
@@ -64,7 +90,9 @@ export function AreaPicker({ province, district, category }: Props) {
         <Icon name="pin" size={20} strokeWidth={2} />
         <span className="area-button__value">
           <span className="muted">ย่าน</span>
-          {current ? (
+          {near ? (
+            <b>ใกล้ฉัน</b>
+          ) : current ? (
             <>
               <b>{current.province.name}</b>
               {current.district && (
@@ -80,7 +108,7 @@ export function AreaPicker({ province, district, category }: Props) {
             <b>ทุกย่าน</b>
           )}
         </span>
-        <span className="area-button__action">{current ? 'เปลี่ยน' : 'เลือก'}</span>
+        <span className="area-button__action">{current || near ? 'เปลี่ยน' : 'เลือก'}</span>
       </button>
 
       <dialog
@@ -97,6 +125,24 @@ export function AreaPicker({ province, district, category }: Props) {
           <button type="button" className="icon-button sheet__close" aria-label="ปิด" onClick={close}>
             <Icon name="x" size={22} strokeWidth={2} />
           </button>
+        </div>
+
+        <div className="sheet__section">
+          <button
+            type="button"
+            className="btn btn--secondary btn--block near-me"
+            onClick={useMyLocation}
+            disabled={locating}
+            aria-pressed={near}
+          >
+            <Icon name="nav" size={20} strokeWidth={2} />
+            <span>{locating ? 'กำลังหาตำแหน่ง…' : 'ใกล้ฉัน (ใช้ตำแหน่งปัจจุบัน)'}</span>
+          </button>
+          {nearError && (
+            <p className="sheet__empty" role="alert">
+              {nearError}
+            </p>
+          )}
         </div>
 
         <div className="sheet__section">

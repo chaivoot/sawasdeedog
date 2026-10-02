@@ -5,6 +5,7 @@ import { breeds, type Breed } from '@/data/breeds'
 import { placeCategories, samplePlaces, type Place } from '@/data/places'
 import { sponsors, type Sponsor } from '@/data/sponsors'
 import type { Area } from '@/data/areas'
+import { coversArea, areaKeys } from './geo'
 import { ratingStats } from './ratings'
 import { db, isSupabaseConfigured } from './supabase'
 
@@ -31,7 +32,10 @@ export type PlaceRow = {
   instagram: string | null
   facebook: string | null
   website: string | null
-  maps_url: string
+  maps_url: string | null
+  service_areas: string[]
+  lat: number | null
+  lng: number | null
   photos: string[]
   breeds: string[]
   published: boolean
@@ -60,7 +64,10 @@ export function rowToPlace(r: PlaceRow): Place {
       facebook: r.facebook ?? undefined,
       website: r.website ?? undefined,
     },
-    mapsUrl: r.maps_url,
+    mapsUrl: r.maps_url ?? undefined,
+    serviceAreas: r.service_areas ?? [],
+    lat: r.lat ?? undefined,
+    lng: r.lng ?? undefined,
     photos: r.photos ?? [],
     breeds: r.breeds ?? [],
     published: r.published,
@@ -88,8 +95,7 @@ async function listPlacesUncached(q: PlaceQuery): Promise<Place[]> {
   if (!isSupabaseConfigured()) {
     return samplePlaces
       .filter((p) => placeCategories(p).includes(q.category))
-      .filter((p) => !q.area || p.province === q.area.province.slug)
-      .filter((p) => !q.area?.district || p.district === q.area.district.slug)
+      .filter((p) => !q.area || coversArea(p, q.area))
       .filter((p) => !q.type || (p.category === q.category && p.type === q.type))
       .filter((p) => !q.trainerStyle || p.trainerStyle === q.trainerStyle)
       .filter((p) => (q.filters ?? []).every((f) => p.attributes.includes(f)))
@@ -101,15 +107,15 @@ async function listPlacesUncached(q: PlaceQuery): Promise<Place[]> {
     .select('*')
     .eq('published', true)
     .or(`category.eq.${q.category},extra_categories.cs.{${q.category}}`)
-  if (q.area) query = query.eq('province', q.area.province.slug)
-  if (q.area?.district) query = query.eq('district', q.area.district.slug)
+  // Area is matched below: a place shows up by its address or by its service areas.
   // Types belong to the main category only.
   if (q.type) query = query.eq('category', q.category).eq('type', q.type)
   if (q.trainerStyle) query = query.eq('trainer_style', q.trainerStyle)
   if (q.filters?.length) query = query.contains('attributes', q.filters)
   const { data, error } = await query.order('checked_at', { ascending: false })
   if (error) throw error
-  return withRatings((data as PlaceRow[]).map(rowToPlace))
+  const places = (data as PlaceRow[]).map(rowToPlace).filter((p) => !q.area || coversArea(p, q.area))
+  return withRatings(places)
 }
 
 /** Cached per request so generateMetadata and the page share one query. */
@@ -165,6 +171,7 @@ export type IndexEntry = {
   categories: string[]
   province: string
   district?: string
+  serviceAreas: string[]
   updatedAt: string
 }
 
@@ -176,12 +183,13 @@ export const listIndexEntries = cache(async (): Promise<IndexEntry[]> => {
       categories: placeCategories(p),
       province: p.province,
       district: p.district,
+      serviceAreas: p.serviceAreas ?? [],
       updatedAt: p.checkedAt,
     }))
   }
   const { data, error } = await db()
     .from('places')
-    .select('slug, category, extra_categories, province, district, updated_at')
+    .select('slug, category, extra_categories, province, district, service_areas, updated_at')
     .eq('published', true)
   if (error) throw error
   return (
@@ -191,6 +199,7 @@ export const listIndexEntries = cache(async (): Promise<IndexEntry[]> => {
       extra_categories: string[] | null
       province: string
       district: string | null
+      service_areas: string[] | null
       updated_at: string
     }[]
   ).map((r) => ({
@@ -198,6 +207,7 @@ export const listIndexEntries = cache(async (): Promise<IndexEntry[]> => {
     categories: [r.category, ...(r.extra_categories ?? [])],
     province: r.province,
     district: r.district ?? undefined,
+    serviceAreas: r.service_areas ?? [],
     updatedAt: r.updated_at,
   }))
 })
@@ -209,10 +219,8 @@ export async function areaCounts(category: string): Promise<AreaCount[]> {
   const entries = (await listIndexEntries()).filter((e) => e.categories.includes(category))
   const map = new Map<string, AreaCount>()
   for (const e of entries) {
-    const keys: [string, string | undefined][] = [[e.province, undefined]]
-    if (e.district) keys.push([e.province, e.district])
-    for (const [province, district] of keys) {
-      const k = `${province}/${district ?? ''}`
+    for (const k of areaKeys(e)) {
+      const [province, district] = k.split('/')
       const c = map.get(k) ?? { province, district, count: 0 }
       c.count++
       map.set(k, c)

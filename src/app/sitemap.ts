@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next'
 import { areaCategories } from '@/data/categories'
 import { findArea } from '@/data/areas'
 import { breedsWithFarms, listIndexEntries, type IndexEntry } from '@/lib/places'
+import { areaKeys } from '@/lib/geo'
 import { absoluteUrl } from '@/lib/site'
 
 // Rebuilt hourly; admin saves also revalidate the whole site.
@@ -40,8 +41,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })
     const areas = new Map<string, typeof inCat>()
     for (const e of inCat) {
-      for (const path of [e.province, e.district && `${e.province}/${e.district}`]) {
-        if (!path || !findArea(...path.split('/'))) continue
+      for (const path of areaKeys(e)) {
+        if (!findArea(...path.split('/'))) continue
         areas.set(path, [...(areas.get(path) ?? []), e])
       }
     }
