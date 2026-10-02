@@ -36,6 +36,8 @@ export type PlaceDraft = {
   breeds: string[]
   /** Stays: heaviest dog taken, kg; empty = no limit. */
   maxDogKg: string
+  /** Stays: most dogs per room; empty = no limit. */
+  maxDogs: string
   published: boolean
 }
 
@@ -329,6 +331,21 @@ export function PlaceEditor({ draft, fromSubmission }: { draft: PlaceDraft; from
                   className="input"
                   inputMode="numeric"
                   defaultValue={draft.maxDogKg}
+                  placeholder="ไม่จำกัด"
+                />
+              </Field>
+              <Field
+                id="maxDogs"
+                label="จำนวนน้องหมาต่อห้อง (ตัว)"
+                hint="เว้นว่าง = ไม่จำกัด"
+                error={e.maxDogs}
+              >
+                <input
+                  id="maxDogs"
+                  name="maxDogs"
+                  className="input"
+                  inputMode="numeric"
+                  defaultValue={draft.maxDogs}
                   placeholder="ไม่จำกัด"
                 />
               </Field>

@@ -125,7 +125,15 @@ export const categories: Category[] = [
     warnings: [
       { slug: 'no-restaurant', label: 'ห้ามน้องหมาเข้าร้านอาหาร' },
       { slug: 'no-pool', label: 'ห้ามน้องหมาลงสระว่ายน้ำของคน' },
+      { slug: 'no-common-areas', label: 'ห้ามน้องหมาเข้าล็อบบี้/พื้นที่ส่วนกลาง' },
+      { slug: 'no-bed', label: 'ห้ามน้องหมาขึ้นเตียง/โซฟา' },
       { slug: 'breed-ban', label: 'ห้ามสายพันธุ์หมาดุบางสายพันธุ์' },
+      { slug: 'designated-rooms', label: 'พักได้เฉพาะห้องที่กำหนด' },
+      { slug: 'not-left-alone', label: 'ห้ามทิ้งน้องหมาไว้ในห้องลำพัง' },
+      { slug: 'leash-required', label: 'ต้องใส่สายจูงนอกห้องพัก' },
+      { slug: 'diaper-required', label: 'ต้องใส่ผ้าอ้อมให้น้อง' },
+      { slug: 'vaccine-record', label: 'ต้องแสดงสมุดวัคซีน' },
+      { slug: 'direct-booking-only', label: 'ต้องจองตรงกับที่พัก (จองผ่านแอปไม่ได้)' },
     ],
   },
   {

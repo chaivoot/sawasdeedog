@@ -38,6 +38,8 @@ export type Place = {
   lng?: number
   /** Stays: heaviest dog taken, in kg; unset means no limit. */
   maxDogKg?: number
+  /** Stays: most dogs per room; unset means not limited (or not known). */
+  maxDogs?: number
   /** Where the place goes to customers: "bangkok" (whole province) or "bangkok/lat-krabang". */
   serviceAreas?: string[]
   photos: string[]
@@ -75,6 +77,7 @@ export const samplePlaces: Place[] = [
     checkedAt: '2026-09-15',
     attributes: ['no-restaurant', 'no-pool'],
     maxDogKg: 25,
+    maxDogs: 2,
     contacts: sampleContacts,
     mapsUrl: maps,
     photos: [],

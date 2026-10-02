@@ -127,6 +127,10 @@ export async function savePlaceAction(_prev: PlaceFormState, form: FormData): Pr
     errors.maxDogKg = 'ใส่เป็นตัวเลขกิโลกรัม เช่น 25'
   else if (maxDogKg !== null && maxDogKg < STAY_MIN_DOG_KG)
     errors.maxDogKg = `รับน้องหมาไม่ถึง ${STAY_MIN_DOG_KG} กก. ไม่ผ่านเกณฑ์ที่พัก`
+  const maxDogsText = isStay ? text(form, 'maxDogs') : ''
+  const maxDogs = maxDogsText ? Number(maxDogsText) : null
+  if (maxDogs !== null && (!Number.isInteger(maxDogs) || maxDogs <= 0))
+    errors.maxDogs = 'ใส่เป็นจำนวนตัว เช่น 2'
   const breedSlugs = new Set(breeds.map((b) => b.slug))
   const placeBreeds = isFarm
     ? form.getAll('breeds').filter((b): b is string => typeof b === 'string' && breedSlugs.has(b))
@@ -174,6 +178,7 @@ export async function savePlaceAction(_prev: PlaceFormState, form: FormData): Pr
     lat: coords?.lat ?? null,
     lng: coords?.lng ?? null,
     max_dog_kg: maxDogKg,
+    max_dogs: maxDogs,
     photos,
     breeds: placeBreeds,
     published: form.get('published') === 'on',

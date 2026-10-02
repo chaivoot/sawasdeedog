@@ -106,6 +106,7 @@ function toItem(raw: Record<string, unknown>, today: string): ImportItem {
       photos: [],
       breeds: placeBreeds.filter((b) => breedSlugs.has(b)),
       maxDogKg: Number.isInteger(maxDogKg) && maxDogKg > 0 ? String(maxDogKg) : '',
+      maxDogs: Number.isInteger(Number(raw.maxDogs)) && Number(raw.maxDogs) > 0 ? String(raw.maxDogs) : '',
       // Shown by default; research can say "published": false to keep one hidden.
       published: raw.published !== false,
     },

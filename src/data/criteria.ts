@@ -39,9 +39,13 @@ export const stayRule = {
 }
 
 /** Warnings for a place: its weight limit and the restrictions ticked for its categories. */
-export function placeWarnings(p: { maxDogKg?: number; attributes: string[] }, warnings: Option[]): string[] {
+export function placeWarnings(
+  p: { maxDogKg?: number; maxDogs?: number; attributes: string[] },
+  warnings: Option[],
+): string[] {
   const out: string[] = []
   if (p.maxDogKg) out.push(`จำกัดน้ำหนักน้องหมาไม่เกิน ${p.maxDogKg} กก.`)
+  if (p.maxDogs) out.push(`รับน้องหมาได้ไม่เกิน ${p.maxDogs} ตัวต่อห้อง`)
   for (const w of warnings) if (p.attributes.includes(w.slug)) out.push(w.label)
   return out
 }
