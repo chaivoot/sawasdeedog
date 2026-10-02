@@ -15,24 +15,22 @@ export function SiteHeader({ back, desktopOnly }: Props) {
   return (
     <>
       {!desktopOnly && (
-        <header className="site-header">
-          {back ? (
-            <>
-              <Link href={back} className="icon-button" aria-label="ย้อนกลับ">
-                <Icon name="back" strokeWidth={2} />
+        <>
+          {/* Same header on every page so the logo never moves; back sits on its own row below. */}
+          <header className="site-header">
+            <Brand />
+            <span className="site-header__spacer" />
+            <AddPlaceButton variant="pill" />
+          </header>
+          {back && (
+            <div className="back-bar">
+              <Link href={back} className="back-bar__link">
+                <Icon name="back" size={20} strokeWidth={2} />
+                ย้อนกลับ
               </Link>
-              <span className="site-header__center">
-                <Brand size="small" />
-              </span>
-            </>
-          ) : (
-            <>
-              <Brand />
-              <span className="site-header__spacer" />
-            </>
+            </div>
           )}
-          <AddPlaceButton variant="pill" />
-        </header>
+        </>
       )}
       <header className="site-header--desktop">
         <div className="site-header__inner">
