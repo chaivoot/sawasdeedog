@@ -1,6 +1,7 @@
 import { getCategory, trainerStyles } from '@/data/categories'
 import { provinces } from '@/data/areas'
 import { breeds } from '@/data/breeds'
+import { STAY_MIN_DOG_KG } from '@/data/criteria'
 import { cleanServiceAreas, parseLatLng } from '@/lib/geo'
 import type { PlaceDraft } from '../PlaceEditor'
 
@@ -59,10 +60,14 @@ function toItem(raw: Record<string, unknown>, today: string): ImportItem {
   if (str(raw.coords) && !coords) warnings.push('พิกัดไม่ถูกต้อง')
 
   const filterSlugs = new Set(
-    [category, ...extraCategories.map((c) => getCategory(c))].flatMap(
-      (c) => c?.filters.map((f) => f.slug) ?? [],
+    [category, ...extraCategories.map((c) => getCategory(c))].flatMap((c) =>
+      [...(c?.filters ?? []), ...(c?.warnings ?? [])].map((f) => f.slug),
     ),
   )
+  const maxDogKg = Number(raw.maxDogKg)
+  if (raw.maxDogKg != null && !(Number.isInteger(maxDogKg) && maxDogKg > 0))
+    warnings.push(`น้ำหนักสูงสุด "${str(raw.maxDogKg)}" ไม่ใช่ตัวเลข`)
+  else if (maxDogKg < STAY_MIN_DOG_KG) warnings.push(`รับน้องหมาแค่ ${maxDogKg} กก. ไม่ผ่านเกณฑ์ที่พัก`)
   const attributes = strs(raw.attributes)
   for (const a of attributes) if (!filterSlugs.has(a)) warnings.push(`ไม่รู้จักเกณฑ์ "${a}"`)
 
@@ -100,6 +105,7 @@ function toItem(raw: Record<string, unknown>, today: string): ImportItem {
       // Photos are uploaded in the editor: hotlinked images break, and may not be ours to use.
       photos: [],
       breeds: placeBreeds.filter((b) => breedSlugs.has(b)),
+      maxDogKg: Number.isInteger(maxDogKg) && maxDogKg > 0 ? String(maxDogKg) : '',
       // Shown by default; research can say "published": false to keep one hidden.
       published: raw.published !== false,
     },

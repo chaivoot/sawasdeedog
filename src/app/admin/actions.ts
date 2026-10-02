@@ -6,6 +6,7 @@ import { redirect } from 'next/navigation'
 import { extraCategoryOptions, getCategory, trainerStyles, type TrainerStyle } from '@/data/categories'
 import { findArea } from '@/data/areas'
 import { breeds } from '@/data/breeds'
+import { STAY_MIN_DOG_KG } from '@/data/criteria'
 import { requireAdmin } from '@/lib/admin'
 import { deletePlace, slugTaken, upsertPlace, type PlaceInput } from '@/lib/admin-places'
 import { cleanServiceAreas, parseLatLng, resolveMapsLatLng } from '@/lib/geo'
@@ -111,17 +112,21 @@ export async function savePlaceAction(_prev: PlaceFormState, form: FormData): Pr
   const website = websiteUrl(websiteRaw)
   if (websiteRaw && !website) errors.website = 'ลิงก์เว็บไซต์ไม่ถูกต้อง'
 
-  const filterSlugs = new Set(allCategories.flatMap((c) => c.filters.map((f) => f.slug)))
+  const filterSlugs = new Set(
+    allCategories.flatMap((c) => [...c.filters, ...(c.warnings ?? [])].map((f) => f.slug)),
+  )
   const attributes = form
     .getAll('attributes')
     .filter((a): a is string => typeof a === 'string' && filterSlugs.has(a))
-  // No weight limit takes big dogs too, so it also shows under that filter.
-  if (
-    attributes.includes('no-weight-limit') &&
-    filterSlugs.has('big-dogs') &&
-    !attributes.includes('big-dogs')
-  )
-    attributes.push('big-dogs')
+
+  // Stays: the heaviest dog taken (empty = no limit); below the listing minimum is an error.
+  const isStay = allCategories.some((c) => c.slug === 'stay')
+  const maxDogKgText = isStay ? text(form, 'maxDogKg') : ''
+  const maxDogKg = maxDogKgText ? Number(maxDogKgText) : null
+  if (maxDogKg !== null && (!Number.isInteger(maxDogKg) || maxDogKg <= 0))
+    errors.maxDogKg = 'ใส่เป็นตัวเลขกิโลกรัม เช่น 25'
+  else if (maxDogKg !== null && maxDogKg < STAY_MIN_DOG_KG)
+    errors.maxDogKg = `รับน้องหมาไม่ถึง ${STAY_MIN_DOG_KG} กก. ไม่ผ่านเกณฑ์ที่พัก`
   const breedSlugs = new Set(breeds.map((b) => b.slug))
   const placeBreeds = isFarm
     ? form.getAll('breeds').filter((b): b is string => typeof b === 'string' && breedSlugs.has(b))
@@ -168,6 +173,7 @@ export async function savePlaceAction(_prev: PlaceFormState, form: FormData): Pr
     service_areas: serviceAreas,
     lat: coords?.lat ?? null,
     lng: coords?.lng ?? null,
+    max_dog_kg: maxDogKg,
     photos,
     breeds: placeBreeds,
     published: form.get('published') === 'on',

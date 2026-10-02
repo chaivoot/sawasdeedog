@@ -53,6 +53,7 @@ export function ListingCard({
           <span className="listing-card__meta">
             {typeLabel} · {area ? (area.district?.name ?? area.province.name) : ''}
             {!place.mapsUrl && place.serviceAreas?.length ? ' · บริการถึงที่' : ''}
+            {place.maxDogKg ? ` · น้องไม่เกิน ${place.maxDogKg} กก.` : ''}
           </span>
         )}
         {tags.length > 0 && (
