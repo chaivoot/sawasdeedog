@@ -30,10 +30,18 @@ export type Uploaded = { path: string; publicUrl?: string }
 export async function uploadPhotos(files: File[], purpose: 'submission' | 'place'): Promise<Uploaded[]> {
   if (files.length === 0) return []
   const blobs = await Promise.all(files.map(shrink))
-  const res = await createUploadTargets(
-    purpose,
-    blobs.map((b) => ({ type: b.type, size: b.size })),
-  )
+  let res: Awaited<ReturnType<typeof createUploadTargets>>
+  try {
+    res = await createUploadTargets(
+      purpose,
+      blobs.map((b) => ({ type: b.type, size: b.size })),
+    )
+  } catch (err) {
+    // A page opened before a new deploy still points at the old server action.
+    if (err instanceof Error && /Server Action .* was not found/.test(err.message))
+      throw new Error('เว็บเพิ่งอัปเดตเวอร์ชันใหม่ กรุณารีเฟรชหน้านี้แล้วลองอีกครั้ง')
+    throw err
+  }
   if (!res.ok) throw new Error(res.error)
   if (!res.targets) return []
 
