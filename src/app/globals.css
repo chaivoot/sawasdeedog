@@ -1870,6 +1870,20 @@ a.guarantee:hover {
 .criteria-list--warn svg {
   color: #b4501d;
 }
+/* Restrictions stand out: a warm tinted box, like a notice. */
+.place__warnings {
+  padding: 14px 16px;
+  border: 1px solid #f3c9a8;
+  border-left: 4px solid #b4501d;
+  border-radius: 12px;
+  background: #fff1e6;
+}
+.place__warnings h2 {
+  color: #8a3a12;
+}
+.place__warnings .criteria-list li {
+  color: #5c2a0e;
+}
 .info-box {
   display: flex;
   flex-direction: column;
