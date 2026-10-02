@@ -73,6 +73,14 @@ export function AreaPicker({ province, district, category, near }: Props) {
     dialogRef.current?.close()
   }
 
+  /** Forget the chosen area and show every area. */
+  function clearArea() {
+    document.cookie = `${AREA_COOKIE}=; path=/; max-age=0; samesite=lax`
+    close()
+    if (category) router.push(`/${category}`)
+    else router.refresh()
+  }
+
   function confirm() {
     if (!selected) return
     const value = selected.province.slug + (selected.district ? `/${selected.district.slug}` : '')
@@ -142,6 +150,12 @@ export function AreaPicker({ province, district, category, near }: Props) {
             <p className="sheet__empty" role="alert">
               {nearError}
             </p>
+          )}
+          {(current || near) && (
+            <button type="button" className="area-clear" onClick={clearArea}>
+              <Icon name="x" size={18} strokeWidth={2} />
+              <span>ล้างย่านที่เลือก · ดูทุกย่าน</span>
+            </button>
           )}
         </div>
 
