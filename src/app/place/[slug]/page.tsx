@@ -17,6 +17,7 @@ import { dogFriendly, farmRule, hasDogFriendlyRule } from '@/data/criteria'
 import { placeCategories, type Contacts, type Place } from '@/data/places'
 import { JsonLd } from '@/components/JsonLd'
 import { MIN_RATINGS_TO_SHOW } from '@/lib/limits'
+import { contactLinks } from '@/lib/contacts'
 import { getPlace } from '@/lib/places'
 import { DEFAULT_OG_IMAGE, absoluteUrl } from '@/lib/site'
 
@@ -62,11 +63,9 @@ function placeLd(place: Place, crumbs: Crumb[]) {
   const area = findArea(place.province, place.district)
   const url = absoluteUrl(`/place/${place.slug}`)
   const c = place.contacts
-  const sameAs = [
-    c.facebook,
-    c.website,
-    c.instagram && `https://instagram.com/${c.instagram.replace(/^@/, '')}`,
-  ].filter(Boolean)
+  const sameAs = contactLinks(c)
+    .filter((l) => l.key === 'facebook' || l.key === 'instagram' || l.key === 'website')
+    .map((l) => l.href)
   const business = {
     '@context': 'https://schema.org',
     '@type': category?.schemaType ?? 'LocalBusiness',
@@ -109,55 +108,12 @@ function placeLd(place: Place, crumbs: Crumb[]) {
   return [business, breadcrumb]
 }
 
-type ContactLink = { key: keyof Contacts; icon: IconName; label: string; value: string; href: string }
-
-function contactLinks(c: Contacts): ContactLink[] {
-  const links: ContactLink[] = []
-  if (c.phone)
-    links.push({
-      key: 'phone',
-      icon: 'phone',
-      label: 'โทร',
-      value: c.phone,
-      href: `tel:${c.phone.replace(/[^\d+]/g, '')}`,
-    })
-  if (c.line) {
-    const id = c.line.trim()
-    links.push({
-      key: 'line',
-      icon: 'chat',
-      label: 'LINE',
-      value: id,
-      href: `https://line.me/R/ti/p/${encodeURIComponent(id.startsWith('@') ? id : `~${id}`)}`,
-    })
-  }
-  if (c.instagram) {
-    const handle = c.instagram.replace(/^@/, '')
-    links.push({
-      key: 'instagram',
-      icon: 'ig',
-      label: 'Instagram',
-      value: `@${handle}`,
-      href: `https://instagram.com/${encodeURIComponent(handle)}`,
-    })
-  }
-  if (c.facebook)
-    links.push({
-      key: 'facebook',
-      icon: 'fb',
-      label: 'Facebook',
-      value: c.facebook.replace(/^https?:\/\/(www\.)?/, ''),
-      href: c.facebook,
-    })
-  if (c.website)
-    links.push({
-      key: 'website',
-      icon: 'globe',
-      label: 'เว็บไซต์',
-      value: c.website.replace(/^https?:\/\//, ''),
-      href: c.website,
-    })
-  return links
+const contactIcons: Record<keyof Contacts, IconName> = {
+  phone: 'phone',
+  line: 'chat',
+  instagram: 'ig',
+  facebook: 'fb',
+  website: 'globe',
 }
 
 function criteriaFor(place: Place): string[] {
@@ -325,7 +281,7 @@ export default async function PlacePage({ params }: Props) {
                       {...(c.key === 'phone' ? {} : { target: '_blank', rel: 'noopener noreferrer' })}
                     >
                       <span className="contact__icon">
-                        <Icon name={c.icon} size={20} strokeWidth={1.9} />
+                        <Icon name={contactIcons[c.key]} size={20} strokeWidth={1.9} />
                       </span>
                       <span className="contact__text">
                         <span className="contact__label">{c.label}</span>
