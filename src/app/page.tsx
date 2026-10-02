@@ -136,7 +136,11 @@ function FeaturedTile({ category, href, sponsor }: { category: Category; href: s
 
 function CategoryTile({ category, href, tall }: { category: Category; href: string; tall: boolean }) {
   return (
-    <Link href={href} className={`tile${tall ? ' tile--tall' : ''}`}>
+    <Link
+      href={href}
+      className={`tile${tall ? ' tile--tall' : ''}`}
+      style={{ '--tone-bg': category.tone[0], '--tone-fg': category.tone[1] } as React.CSSProperties}
+    >
       <span className="tile__icon">
         <Icon name={category.icon} size={26} />
       </span>
