@@ -108,6 +108,10 @@ function placeLd(place: Place, crumbs: Crumb[]) {
   return [business, breadcrumb]
 }
 
+// Phone opens the dialer. Facebook opens in the same tab: from a new tab, Chrome on
+// mobile hands the link to the Facebook app and closes the tab, which can leave nothing open.
+const sameTab = new Set<keyof Contacts>(['phone', 'facebook'])
+
 const contactIcons: Record<keyof Contacts, IconName> = {
   phone: 'phone',
   line: 'chat',
@@ -278,7 +282,7 @@ export default async function PlacePage({ params }: Props) {
                       key={c.key}
                       href={c.href}
                       className="contact"
-                      {...(c.key === 'phone' ? {} : { target: '_blank', rel: 'noopener noreferrer' })}
+                      {...(sameTab.has(c.key) ? {} : { target: '_blank', rel: 'noopener noreferrer' })}
                     >
                       <span className="contact__icon">
                         <Icon name={contactIcons[c.key]} size={20} strokeWidth={1.9} />
