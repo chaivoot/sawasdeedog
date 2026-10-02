@@ -44,6 +44,11 @@ export const breeds: Breed[] = [
   { slug: 'german-shepherd', name: 'เยอรมัน เชพเพิร์ด', nameEn: 'German Shepherd' },
   { slug: 'belgian-malinois', name: 'เบลเจียน มาลินัวส์', nameEn: 'Belgian Malinois' },
   { slug: 'australian-shepherd', name: 'ออสเตรเลียน เชพเพิร์ด', nameEn: 'Australian Shepherd' },
+  {
+    slug: 'miniature-american-shepherd',
+    name: 'มินิเอเจอร์ อเมริกัน เชพเพิร์ด',
+    nameEn: 'Miniature American Shepherd',
+  },
   { slug: 'rough-collie', name: 'รัฟ คอลลี่', nameEn: 'Rough Collie' },
   { slug: 'old-english-sheepdog', name: 'โอลด์ อิงลิช ชีพด็อก', nameEn: 'Old English Sheepdog' },
   { slug: 'cardigan-welsh-corgi', name: 'เวลช์ คอร์กี้ คาร์ดิแกน', nameEn: 'Cardigan Welsh Corgi' },
