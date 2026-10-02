@@ -17,11 +17,14 @@ export function ListingCard({
   place,
   listing,
   distanceKm,
+  distanceApprox,
 }: {
   place: Place
   listing?: string
   /** Shown on "ใกล้ฉัน" results. */
   distanceKm?: number
+  /** Measured to a district centre, not the place's own pin. */
+  distanceApprox?: boolean
 }) {
   const category = getCategory(place.category)
   const tagCategory = getCategory(listing ?? place.category)
@@ -64,6 +67,7 @@ export function ListingCard({
         {distanceKm != null && (
           <span className="listing-card__distance">
             <Icon name="nav" size={14} strokeWidth={2} />
+            {distanceApprox && 'ประมาณ '}
             {formatKm(distanceKm)}
           </span>
         )}

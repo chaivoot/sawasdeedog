@@ -1266,6 +1266,19 @@ a.guarantee:hover {
 .nearby__status--error {
   color: var(--color-error);
 }
+.nearby__where {
+  font-size: 14px;
+  color: var(--color-ink-2);
+}
+.nearby__relocate {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-primary);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
 .nearby__group {
   margin-top: 12px;
   font-size: 15px;
