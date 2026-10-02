@@ -100,8 +100,8 @@ function toItem(raw: Record<string, unknown>, today: string): ImportItem {
       // Photos are uploaded in the editor: hotlinked images break, and may not be ours to use.
       photos: [],
       breeds: placeBreeds.filter((b) => breedSlugs.has(b)),
-      // Imported places start hidden until someone has checked them.
-      published: false,
+      // Shown by default; research can say "published": false to keep one hidden.
+      published: raw.published !== false,
     },
     notes: strs(raw.notes),
     sources: strs(raw.sources).filter((s) => /^https?:\/\//.test(s)),

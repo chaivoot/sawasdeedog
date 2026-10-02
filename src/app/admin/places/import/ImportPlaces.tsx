@@ -147,7 +147,7 @@ export function ImportPlaces({ today }: { today: string }) {
               )}
             </div>
           )}
-          <p className="muted">ยังไม่ถูกบันทึก · ตรวจข้อมูล ใส่รูป แล้วกดบันทึก (ซ่อนไว้ก่อนจนกว่าจะเปิด)</p>
+          <p className="muted">ยังไม่ถูกบันทึก · ตรวจข้อมูล ใส่รูป แล้วกดบันทึก</p>
           {/* Remount per item so the form starts from that draft. */}
           <PlaceEditor key={`${open}-${item.draft.name}`} draft={item.draft} />
         </section>
