@@ -19,9 +19,14 @@ export default async function AdminPlaces({ searchParams }: Props) {
     <>
       <div className="admin-titlebar">
         <h1>รายการบนเว็บ</h1>
-        <Link href="/admin/places/new" className="btn btn--primary btn--sm">
-          + เพิ่มรายการ
-        </Link>
+        <div className="admin-titlebar__actions">
+          <Link href="/admin/places/import" className="btn btn--secondary btn--sm">
+            นำเข้าข้อมูล
+          </Link>
+          <Link href="/admin/places/new" className="btn btn--primary btn--sm">
+            + เพิ่มรายการ
+          </Link>
+        </div>
       </div>
       {saved && (
         <p className="admin-notice" role="status">
