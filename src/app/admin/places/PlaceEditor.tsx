@@ -349,10 +349,10 @@ export function PlaceEditor({ draft, fromSubmission }: { draft: PlaceDraft; from
           <Field id="phone" label="โทร">
             <input id="phone" name="phone" type="tel" className="input" defaultValue={draft.contacts.phone} />
           </Field>
-          <Field id="line" label="LINE ID" hint="ขึ้นต้นด้วย @ ถ้าเป็นบัญชีทางการ">
+          <Field id="line" label="LINE" hint="@บัญชีทางการ, ID ส่วนตัว หรือลิงก์ line.me" error={e.line}>
             <input id="line" name="line" className="input" defaultValue={draft.contacts.line} />
           </Field>
-          <Field id="instagram" label="Instagram">
+          <Field id="instagram" label="Instagram" hint="ชื่อบัญชี หรือวางลิงก์ก็ได้" error={e.instagram}>
             <input
               id="instagram"
               name="instagram"
@@ -360,20 +360,20 @@ export function PlaceEditor({ draft, fromSubmission }: { draft: PlaceDraft; from
               defaultValue={draft.contacts.instagram}
             />
           </Field>
-          <Field id="facebook" label="ลิงก์ Facebook" error={e.facebook}>
+          <Field id="facebook" label="Facebook" hint="ชื่อเพจ หรือวางลิงก์ก็ได้" error={e.facebook}>
             <input
               id="facebook"
               name="facebook"
-              type="url"
+              inputMode="url"
               className="input"
               defaultValue={draft.contacts.facebook}
             />
           </Field>
-          <Field id="website" label="เว็บไซต์" error={e.website} full>
+          <Field id="website" label="เว็บไซต์" hint="ไม่ต้องใส่ https:// ก็ได้" error={e.website} full>
             <input
               id="website"
               name="website"
-              type="url"
+              inputMode="url"
               className="input"
               defaultValue={draft.contacts.website}
             />

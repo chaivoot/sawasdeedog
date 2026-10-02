@@ -8,6 +8,7 @@ import { findArea } from '@/data/areas'
 import { breeds } from '@/data/breeds'
 import { requireAdmin } from '@/lib/admin'
 import { deletePlace, slugTaken, upsertPlace, type PlaceInput } from '@/lib/admin-places'
+import { facebookUrl, instagramHandle, lineLink, websiteUrl } from '@/lib/contacts'
 import { MAX_PLACE_PHOTOS } from '@/lib/limits'
 import { db, isSupabaseConfigured } from '@/lib/supabase'
 import type { SubmissionStatus } from '@/lib/submissions'
@@ -80,10 +81,18 @@ export async function savePlaceAction(_prev: PlaceFormState, form: FormData): Pr
   const mapsUrl = text(form, 'mapsUrl')
   if (!isHttpUrl(mapsUrl)) errors.mapsUrl = 'ใส่ลิงก์ Google Maps'
 
-  for (const key of ['facebook', 'website']) {
-    const v = text(form, key)
-    if (v && !isHttpUrl(v)) errors[key] = 'ต้องเป็นลิงก์ที่ขึ้นต้นด้วย https://'
-  }
+  // Store contacts in one canonical form, whatever was pasted.
+  const instagramRaw = text(form, 'instagram')
+  const instagram = instagramHandle(instagramRaw)
+  if (instagramRaw && !instagram) errors.instagram = 'ใส่ชื่อบัญชี หรือลิงก์ instagram.com'
+  const facebookRaw = text(form, 'facebook')
+  const facebook = facebookUrl(facebookRaw)
+  if (facebookRaw && !facebook) errors.facebook = 'ใส่ชื่อเพจ หรือลิงก์ facebook.com'
+  const lineRaw = text(form, 'line')
+  if (lineRaw && !lineLink(lineRaw)) errors.line = 'ใส่ LINE ID หรือลิงก์ line.me'
+  const websiteRaw = text(form, 'website')
+  const website = websiteUrl(websiteRaw)
+  if (websiteRaw && !website) errors.website = 'ลิงก์เว็บไซต์ไม่ถูกต้อง'
 
   const filterSlugs = new Set(allCategories.flatMap((c) => c.filters.map((f) => f.slug)))
   const attributes = form
@@ -127,10 +136,10 @@ export async function savePlaceAction(_prev: PlaceFormState, form: FormData): Pr
     hours: optional(form, 'hours'),
     price: optional(form, 'price'),
     phone: optional(form, 'phone'),
-    line: optional(form, 'line'),
-    instagram: optional(form, 'instagram'),
-    facebook: optional(form, 'facebook'),
-    website: optional(form, 'website'),
+    line: lineRaw || null,
+    instagram: instagram ?? null,
+    facebook: facebook ?? null,
+    website: website ?? null,
     maps_url: mapsUrl,
     photos,
     breeds: placeBreeds,
