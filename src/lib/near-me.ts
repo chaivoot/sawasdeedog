@@ -17,6 +17,12 @@ export function savedPosition(): LatLng | undefined {
   }
 }
 
+export function clearSavedPosition() {
+  try {
+    sessionStorage.removeItem(KEY)
+  } catch {}
+}
+
 export type PositionError = 'unsupported' | 'denied' | 'unavailable'
 
 export function requestPosition(): Promise<LatLng> {
@@ -32,7 +38,7 @@ export function requestPosition(): Promise<LatLng> {
       },
       (err) =>
         reject((err.code === err.PERMISSION_DENIED ? 'denied' : 'unavailable') satisfies PositionError),
-      { enableHighAccuracy: false, timeout: 12000, maximumAge: 5 * 60 * 1000 },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 60 * 1000 },
     )
   })
 }

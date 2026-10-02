@@ -74,6 +74,9 @@ export default async function AdminPlaces({ searchParams }: Props) {
                   </span>
                   <span className="admin-row__meta">
                     {p.published === false && <span className="admin-badge">ซ่อนอยู่</span>}
+                    {p.lat == null && !p.serviceAreas?.length && (
+                      <span className="admin-badge">ไม่มีพิกัด</span>
+                    )}
                     <span>เช็ค {formatDay(p.checkedAt)}</span>
                   </span>
                 </Link>

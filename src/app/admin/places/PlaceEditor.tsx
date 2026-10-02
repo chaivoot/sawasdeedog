@@ -273,6 +273,16 @@ export function PlaceEditor({ draft, fromSubmission }: { draft: PlaceDraft; from
               placeholder="เช่น 13.7279, 100.7782"
               inputMode="decimal"
             />
+            {draft.coords && (
+              <a
+                className="field__hint"
+                href={`https://www.google.com/maps?q=${encodeURIComponent(draft.coords)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                ตรวจหมุดบนแผนที่ ↗
+              </a>
+            )}
           </Field>
           <Field id="checkedAt" label="วันที่ทีมเช็คล่าสุด" error={e.checkedAt}>
             <input

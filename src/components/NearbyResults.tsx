@@ -4,13 +4,19 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import type { Place } from '@/data/places'
 import { listingHref, type ListingParams } from '@/lib/listing'
-import { positionErrorText, requestPosition, savedPosition, type PositionError } from '@/lib/near-me'
+import {
+  clearSavedPosition,
+  positionErrorText,
+  requestPosition,
+  savedPosition,
+  type PositionError,
+} from '@/lib/near-me'
 import { EmptyState } from './EmptyState'
 import { ListingCard } from './ListingCard'
 
 type Result = {
   area: { name: string; path: string } | null
-  near: { place: Place; km: number }[]
+  near: { place: Place; km: number; approx: boolean }[]
   local: Place[]
 }
 
@@ -28,6 +34,8 @@ export function NearbyResults({
   params: ListingParams
 }) {
   const [state, setState] = useState<State>({ kind: 'locating' })
+  // Bumped by "หาตำแหน่งใหม่" to drop the saved position and ask the browser again.
+  const [attempt, setAttempt] = useState(0)
   const query = listingHref('', { ...params, near: false }).replace(/^\?/, '')
 
   useEffect(() => {
@@ -54,7 +62,30 @@ export function NearbyResults({
     return () => {
       alive = false
     }
-  }, [category, query])
+  }, [category, query, attempt])
+
+  function relocate() {
+    clearSavedPosition()
+    setState({ kind: 'locating' })
+    setAttempt((n) => n + 1)
+  }
+
+  // Shows where we think the visitor is, so a wrong fix (Wi-Fi/IP based) is easy to spot.
+  const where = (area: Result['area']) => (
+    <p className="nearby__where">
+      {area ? (
+        <>
+          ตำแหน่งของคุณ: แถว<strong>{area.name}</strong>
+        </>
+      ) : (
+        'ตำแหน่งของคุณ: นอกพื้นที่ที่เรารู้จัก'
+      )}
+      {' · '}
+      <button type="button" className="nearby__relocate" onClick={relocate}>
+        หาตำแหน่งใหม่
+      </button>
+    </p>
+  )
 
   if (state.kind === 'locating')
     return (
@@ -62,23 +93,41 @@ export function NearbyResults({
         กำลังหาที่ใกล้คุณ…
       </p>
     )
-  if (state.kind === 'error') return <p className="nearby__status nearby__status--error">{state.message}</p>
+  if (state.kind === 'error')
+    return (
+      <p className="nearby__status nearby__status--error">
+        {state.message}{' '}
+        <button type="button" className="nearby__relocate" onClick={relocate}>
+          ลองอีกครั้ง
+        </button>
+      </p>
+    )
 
   const { area, near, local } = state.result
   if (near.length === 0 && local.length === 0)
     return (
-      <EmptyState
-        title={`ยังไม่มี${noun}ใกล้คุณ`}
-        body="เรายังคัดไม่ครบทุกย่าน ถ้ารู้จักที่ดี ๆ แถวนี้ เสนอให้ทีมช่วยเช็คได้เลย"
-        primary={{ href: '/submit', label: 'เสนอสถานที่' }}
-        secondary={area ? { href: area.path, label: `ดูทั้งหมดใน${area.name}` } : undefined}
-      />
+      <>
+        {where(area)}
+        <EmptyState
+          title={`ยังไม่มี${noun}ใกล้คุณ`}
+          body="เรายังคัดไม่ครบทุกย่าน ถ้ารู้จักที่ดี ๆ แถวนี้ เสนอให้ทีมช่วยเช็คได้เลย"
+          primary={{ href: '/submit', label: 'เสนอสถานที่' }}
+          secondary={area ? { href: area.path, label: `ดูทั้งหมดใน${area.name}` } : undefined}
+        />
+      </>
     )
 
   return (
     <>
-      {near.map(({ place, km }) => (
-        <ListingCard key={place.slug} place={place} listing={category} distanceKm={km} />
+      {where(area)}
+      {near.map(({ place, km, approx }) => (
+        <ListingCard
+          key={place.slug}
+          place={place}
+          listing={category}
+          distanceKm={km}
+          distanceApprox={approx}
+        />
       ))}
       {local.length > 0 && (
         <>
@@ -92,7 +141,7 @@ export function NearbyResults({
         </>
       )}
       <p className="nearby__credit">
-        ระยะทางเป็นเส้นตรง · ย่านจาก{' '}
+        ระยะทางเป็นเส้นตรง (“ประมาณ” = วัดถึงกลางเขตที่ให้บริการ) · ย่านจาก{' '}
         <Link href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">
           © OpenStreetMap
         </Link>
