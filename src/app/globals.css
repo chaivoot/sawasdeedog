@@ -1191,6 +1191,29 @@ a.guarantee:hover {
   color: var(--color-ink);
 }
 
+.admin-edit-fab {
+  position: fixed;
+  right: 16px;
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  z-index: 40;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: var(--radius-chip);
+  background: var(--color-ink);
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  box-shadow: var(--shadow-nav);
+}
+.admin-edit-fab:hover {
+  background: var(--color-primary);
+  color: #fff;
+}
+
 .buyer-note {
   padding: 14px 16px;
   border: 1px solid var(--color-line);
