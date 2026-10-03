@@ -1,3 +1,4 @@
+import { breedPhotos } from '@/data/breed-photos.generated'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -7,7 +8,7 @@ import { FarmBuyerNote } from '@/components/FarmBuyerNote'
 import { Icon } from '@/components/Icon'
 import { ListingCard } from '@/components/ListingCard'
 import { SiteHeader } from '@/components/SiteHeader'
-import { breeds, getBreed } from '@/data/breeds'
+import { breeds, breedPhoto, getBreed } from '@/data/breeds'
 import { farmRule } from '@/data/criteria'
 import { farmsForBreed } from '@/lib/places'
 
@@ -23,11 +24,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const breed = getBreed((await params).breed)
   if (!breed) return {}
   const farms = await farmsForBreed(breed.slug)
+  const photo = breedPhoto(breed.slug)
   return {
     title: `ฟาร์ม${breed.name} (${breed.nameEn}) ออกใบเพ็ดดีกรีได้`,
     description: `รวม ${farms.length} ฟาร์ม${breed.name} (${breed.nameEn}) ที่ผ่านเกณฑ์จากทุกจังหวัด ${farmRule.banner}`,
     alternates: { canonical: `/farm/${breed.slug}` },
     robots: farms.length === 0 ? { index: false, follow: true } : undefined,
+    openGraph: photo ? { images: [photo] } : undefined,
   }
 }
 
@@ -35,6 +38,8 @@ export default async function FarmBreedPage({ params }: Props) {
   const breed = getBreed((await params).breed)
   if (!breed) notFound()
   const farms = await farmsForBreed(breed.slug)
+  const photo = breedPhoto(breed.slug)
+  const credit = breedPhotos[breed.slug]
 
   return (
     <>
@@ -45,9 +50,14 @@ export default async function FarmBreedPage({ params }: Props) {
         />
         <div className="page-head">
           <div className="page-title">
-            <span className="page-title__icon">
-              <Icon name="farm" size={26} />
-            </span>
+            {photo ? (
+              // eslint-disable-next-line @next/next/no-img-element -- static breed photo
+              <img className="page-title__photo" src={photo} alt={breed.name} />
+            ) : (
+              <span className="page-title__icon">
+                <Icon name="farm" size={26} />
+              </span>
+            )}
             <div className="page-title__text">
               <span className="page-title__eyebrow">ฟาร์ม</span>
               <h1>{breed.name}</h1>
@@ -77,6 +87,15 @@ export default async function FarmBreedPage({ params }: Props) {
             primary={{ href: '/submit?category=farm', label: 'เสนอฟาร์ม' }}
             secondary={{ href: '/farm', label: 'ดูสายพันธุ์ทั้งหมด' }}
           />
+        )}
+        {credit && (
+          <p className="photo-credit">
+            ภาพ{breed.name}: {credit.author} ·{' '}
+            <a href={credit.source} target="_blank" rel="noopener noreferrer">
+              {credit.license}
+            </a>{' '}
+            · <Link href="/credits">เครดิตภาพทั้งหมด</Link>
+          </p>
         )}
       </main>
     </>

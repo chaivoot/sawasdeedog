@@ -1143,6 +1143,26 @@ p {
 .page-title h1 {
   font-size: 24px;
 }
+.page-title__photo {
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  object-fit: cover;
+}
+.credit-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-left: 18px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.photo-credit {
+  margin-top: 24px;
+  font-size: 12px;
+  color: var(--color-muted);
+}
 .page-title__icon {
   width: 48px;
   height: 48px;
@@ -1688,6 +1708,14 @@ a.guarantee:hover {
   color: var(--color-ink);
   border-color: var(--color-primary-100);
 }
+.breed-row__photo {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  object-fit: cover;
+  background: var(--color-warm-50);
+}
 .breed-row > svg {
   color: var(--color-muted);
 }
@@ -1719,6 +1747,10 @@ a.guarantee:hover {
 @media (min-width: 900px) {
   .breed-row {
     height: 76px;
+  }
+  .breed-row__photo {
+    width: 54px;
+    height: 54px;
   }
   .search-field--lg {
     height: 56px;
