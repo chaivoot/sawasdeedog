@@ -19,7 +19,7 @@ const plexThaiLooped = IBM_Plex_Sans_Thai_Looped({
 
 export const metadata: Metadata = {
   title: {
-    default: 'SawasdeeDog | หา Pet Friendly ที่จริงใจ ให้หมาคุณ',
+    default: 'SawasdeeDog | รวมคาเฟ่ ที่พัก โรงพยาบาลสัตว์ หมาเข้าได้จริง',
     template: '%s | SawasdeeDog',
   },
   description: SITE_DESCRIPTION,
