@@ -1,7 +1,14 @@
 'use client'
 
 import { startTransition, useActionState, useState } from 'react'
-import { categories, extraCategoryOptions, getCategory, trainerStyles } from '@/data/categories'
+import {
+  categories,
+  extraCategoryOptions,
+  extraTypeOptions,
+  getCategory,
+  trainerStyles,
+  type Category,
+} from '@/data/categories'
 import { provinces } from '@/data/areas'
 import { breeds } from '@/data/breeds'
 import { categoryRule, STAY_MIN_DOG_KG } from '@/data/criteria'
@@ -59,6 +66,9 @@ export function PlaceEditor({ draft, fromSubmission }: { draft: PlaceDraft; from
   const hasTrainer = allCategories.some((c) => c.slug === 'trainer')
   const districts = provinces.find((p) => p.slug === province)?.districts ?? []
   const e = state.errors ?? {}
+  // An extra category's own type ("ลานวิ่ง" in a café also listed as a park) is ticked with its filters.
+  const checkOptions = (c: Category) =>
+    c.slug === category?.slug ? c.filters : [...extraTypeOptions(c), ...c.filters]
 
   async function addPhotos(files: File[]) {
     const room = MAX_PLACE_PHOTOS - photos.length
@@ -307,7 +317,7 @@ export function PlaceEditor({ draft, fromSubmission }: { draft: PlaceDraft; from
         </div>
       </fieldset>
 
-      {allCategories.some((c) => c.filters.length > 0 || c.warnings?.length) && (
+      {allCategories.some((c) => checkOptions(c).length > 0 || c.warnings?.length) && (
         <fieldset className="admin-fieldset">
           <legend>ผ่านเกณฑ์อะไรบ้าง</legend>
           {[...new Set(allCategories.map((c) => categoryRule(c.slug)?.criterion).filter(Boolean))].map(
@@ -372,12 +382,12 @@ export function PlaceEditor({ draft, fromSubmission }: { draft: PlaceDraft; from
               </div>
             ))}
           {allCategories
-            .filter((c) => c.filters.length > 0)
+            .filter((c) => checkOptions(c).length > 0)
             .map((c) => (
               <div key={c.slug} className="admin-check-group">
                 {allCategories.length > 1 && <span className="field__label">{c.name}</span>}
                 <div className="admin-checks">
-                  {c.filters.map((f) => (
+                  {checkOptions(c).map((f) => (
                     <label key={f.slug} className="checkbox">
                       <input
                         type="checkbox"

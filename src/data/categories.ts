@@ -29,6 +29,17 @@ export type Category = {
 // Order is the order of the home grid. Farm is browsed by breed, not area.
 // TODO(build-spec): types/filters for categories other than cafe and trainer
 // are drafted from the home-card descriptions; confirm against build-spec.md.
+/**
+ * A place's type within one of its extra categories, kept with its attributes
+ * ("park:pool"), since the type column belongs to the main category.
+ */
+export const extraTypeToken = (category: string, type: string) => `${category}:${type}`
+
+/** Type options, as attribute tokens, for a category a place is listed in as an extra. */
+export function extraTypeOptions(c: Category): Option[] {
+  return (c.types ?? []).map((t) => ({ slug: extraTypeToken(c.slug, t.slug), label: t.label }))
+}
+
 export const categories: Category[] = [
   {
     slug: 'cafe',

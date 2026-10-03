@@ -3,7 +3,13 @@
 import { randomBytes } from 'node:crypto'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
-import { extraCategoryOptions, getCategory, trainerStyles, type TrainerStyle } from '@/data/categories'
+import {
+  extraCategoryOptions,
+  extraTypeOptions,
+  getCategory,
+  trainerStyles,
+  type TrainerStyle,
+} from '@/data/categories'
 import { findArea } from '@/data/areas'
 import { breeds } from '@/data/breeds'
 import { STAY_MIN_DOG_KG } from '@/data/criteria'
@@ -113,7 +119,11 @@ export async function savePlaceAction(_prev: PlaceFormState, form: FormData): Pr
   if (websiteRaw && !website) errors.website = 'ลิงก์เว็บไซต์ไม่ถูกต้อง'
 
   const filterSlugs = new Set(
-    allCategories.flatMap((c) => [...c.filters, ...(c.warnings ?? [])].map((f) => f.slug)),
+    allCategories.flatMap((c) =>
+      [...c.filters, ...(c.warnings ?? []), ...(c === category ? [] : extraTypeOptions(c))].map(
+        (f) => f.slug,
+      ),
+    ),
   )
   const attributes = form
     .getAll('attributes')
