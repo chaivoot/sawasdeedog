@@ -201,15 +201,7 @@ export const categories: Category[] = [
     listTitle: 'ฌาปนกิจสัตว์เลี้ยง & พิธีส่งน้องหมา',
     shortName: 'ที่ฌาปนกิจ',
     description: 'ฌาปนกิจ และพิธีส่งน้องอย่างอบอุ่น',
-    // Not types: most places offer both, and people look for one or the other.
-    filters: [
-      { slug: 'individual', label: 'เผาเดี่ยว' },
-      { slug: 'communal', label: 'เผารวม' },
-      { slug: 'pickup', label: 'รับร่างถึงบ้าน' },
-      { slug: 'ashes', label: 'ได้รับอัฐิคืน' },
-      { slug: 'witness', label: 'ร่วมพิธีได้' },
-      { slug: 'open-24h', label: 'ติดต่อได้ 24 ชม.' },
-    ],
+    filters: [],
   },
   {
     slug: 'farm',
