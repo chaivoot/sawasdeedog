@@ -3319,3 +3319,24 @@ a.guarantee:hover {
 .callout--quiet .callout__text span {
   color: var(--color-ink-2);
 }
+
+/* Listing counts on the home tiles */
+.tile__count {
+  font-size: 12px;
+  color: var(--color-muted);
+}
+.featured__count {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-accent);
+}
+@media (min-width: 900px) {
+  .tile__count {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--tone-fg, var(--color-primary));
+  }
+  .featured__count {
+    font-size: 14px;
+  }
+}

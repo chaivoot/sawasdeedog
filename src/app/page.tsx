@@ -6,7 +6,7 @@ import { Icon } from '@/components/Icon'
 import { SiteHeader } from '@/components/SiteHeader'
 import { categories, featuredCategories, type Category } from '@/data/categories'
 import { AREA_COOKIE, NEAR_ME, areaPath, parseAreaCookie, type Area } from '@/data/areas'
-import { activeSponsor } from '@/lib/places'
+import { activeSponsor, listIndexEntries } from '@/lib/places'
 import { todayInBangkok } from '@/lib/format'
 import type { Sponsor } from '@/data/sponsors'
 import { JsonLd } from '@/components/JsonLd'
@@ -54,6 +54,10 @@ export default async function HomePage() {
   const area = parseAreaCookie(areaCookie)
   const today = todayInBangkok()
   const sponsor = activeSponsor(today)
+  // Listings per category, countrywide (a place counts under each category it is listed in).
+  const counts = new Map<string, number>()
+  for (const e of await listIndexEntries())
+    for (const c of e.categories) counts.set(c, (counts.get(c) ?? 0) + 1)
   const featured = sponsor
     ? (categories.find((c) => c.slug === sponsor.category) ?? dailyPick(today))
     : dailyPick(today)
@@ -77,9 +81,20 @@ export default async function HomePage() {
         </div>
 
         <div className="home-grid">
-          <FeaturedTile category={featured} href={categoryHref(featured, area, near)} sponsor={sponsor} />
+          <FeaturedTile
+            category={featured}
+            href={categoryHref(featured, area, near)}
+            sponsor={sponsor}
+            count={counts.get(featured.slug) ?? 0}
+          />
           {rest.map((c, i) => (
-            <CategoryTile key={c.slug} category={c} href={categoryHref(c, area, near)} tall={i === 0} />
+            <CategoryTile
+              key={c.slug}
+              category={c}
+              href={categoryHref(c, area, near)}
+              tall={i === 0}
+              count={counts.get(c.slug) ?? 0}
+            />
           ))}
         </div>
 
@@ -109,7 +124,17 @@ export default async function HomePage() {
   )
 }
 
-function FeaturedTile({ category, href, sponsor }: { category: Category; href: string; sponsor?: Sponsor }) {
+function FeaturedTile({
+  category,
+  href,
+  sponsor,
+  count,
+}: {
+  category: Category
+  href: string
+  sponsor?: Sponsor
+  count: number
+}) {
   return (
     <Link href={href} className="featured">
       <div className="featured__content">
@@ -125,6 +150,7 @@ function FeaturedTile({ category, href, sponsor }: { category: Category; href: s
         </div>
         <div className="featured__body">
           <span className="featured__name">{category.name}</span>
+          <span className="featured__count">{count} รายการ</span>
           <span className="featured__tagline">{category.tagline ?? category.description}</span>
         </div>
         {sponsor ? (
@@ -153,7 +179,17 @@ function FeaturedTile({ category, href, sponsor }: { category: Category; href: s
   )
 }
 
-function CategoryTile({ category, href, tall }: { category: Category; href: string; tall: boolean }) {
+function CategoryTile({
+  category,
+  href,
+  tall,
+  count,
+}: {
+  category: Category
+  href: string
+  tall: boolean
+  count: number
+}) {
   return (
     <Link
       href={href}
@@ -165,6 +201,7 @@ function CategoryTile({ category, href, tall }: { category: Category; href: stri
       </span>
       <span className="tile__text">
         <span className="tile__name">{category.name}</span>
+        <span className="tile__count">{count} รายการ</span>
         <span className="tile__desc">{category.description}</span>
       </span>
       <span className="tile__more">
