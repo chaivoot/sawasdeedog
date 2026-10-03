@@ -10,7 +10,7 @@ import { activeSponsor } from '@/lib/places'
 import { todayInBangkok } from '@/lib/format'
 import type { Sponsor } from '@/data/sponsors'
 import { JsonLd } from '@/components/JsonLd'
-import { SITE_NAME, SOCIAL_PROFILES, absoluteUrl, siteUrl } from '@/lib/site'
+import { SITE_DESCRIPTION, SITE_NAME, SOCIAL_PROFILES, absoluteUrl, siteUrl } from '@/lib/site'
 
 export const metadata: Metadata = { alternates: { canonical: '/' } }
 
@@ -19,7 +19,10 @@ const siteLd = [
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: SITE_NAME,
+    // So Google shows "SawasdeeDog" as the site name rather than the bare domain.
+    alternateName: ['Sawasdee Dog', 'สวัสดีด็อก'],
     url: siteUrl(),
+    description: SITE_DESCRIPTION,
     inLanguage: 'th-TH',
   },
   {
@@ -67,7 +70,8 @@ export default async function HomePage() {
             <h1>หา Pet Friendly ที่จริงใจ ให้หมาคุณ</h1>
             <p>ค้นหาบริการต่างๆ ที่เราคัดมาแล้ว ให้กับน้องหมาของคุณเลย</p>
           </div>
-          <div className="home-intro__area">
+          {/* Picker labels ("เลือกย่าน", province names) are not a summary of the page. */}
+          <div className="home-intro__area" data-nosnippet>
             <AreaPicker province={area?.province.slug} district={area?.district?.slug} near={near} />
           </div>
         </div>

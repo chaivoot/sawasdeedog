@@ -165,7 +165,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
               )}
             </div>
           </div>
-          <div className="page-head__side">
+          <div className="page-head__side" data-nosnippet>
             <AreaPicker
               province={area?.province.slug}
               district={area?.district?.slug}
