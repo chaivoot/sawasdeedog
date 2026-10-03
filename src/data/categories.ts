@@ -193,17 +193,22 @@ export const categories: Category[] = [
     ],
   },
   {
-    slug: 'transport',
-    icon: 'transport',
-    tone: ['#e0eef8', '#235f8f'],
-    name: 'ขนส่ง',
+    slug: 'farewell',
+    icon: 'farewell',
+    tone: ['#e9ecf1', '#4b5a6e'],
+    name: 'การเดินทางครั้งสุดท้าย',
     schemaType: 'LocalBusiness',
-    listTitle: 'ขนส่งสัตว์เลี้ยง & แท็กซี่หมา',
-    description: 'ในเมือง ต่างจังหวัด ไปสนามบิน',
+    listTitle: 'ฌาปนกิจสัตว์เลี้ยง & พิธีส่งน้องหมา',
+    shortName: 'ที่ฌาปนกิจ',
+    description: 'ฌาปนกิจ และพิธีส่งน้องอย่างอบอุ่น',
+    // Not types: most places offer both, and people look for one or the other.
     filters: [
-      { slug: 'in-city', label: 'ในเมือง' },
-      { slug: 'intercity', label: 'ต่างจังหวัด' },
-      { slug: 'airport', label: 'ไปสนามบิน' },
+      { slug: 'individual', label: 'เผาเดี่ยว' },
+      { slug: 'communal', label: 'เผารวม' },
+      { slug: 'pickup', label: 'รับร่างถึงบ้าน' },
+      { slug: 'ashes', label: 'ได้รับอัฐิคืน' },
+      { slug: 'witness', label: 'ร่วมพิธีได้' },
+      { slug: 'open-24h', label: 'ติดต่อได้ 24 ชม.' },
     ],
   },
   {
@@ -251,5 +256,6 @@ export function extraCategoryOptions(main: string): Category[] {
 }
 
 /** Categories the home page's daily "วันนี้ชวนไป" tile rotates through. */
-const NOT_FEATURED = ['farm', 'sitter', 'boarding', 'transport', 'rehab']
+// Farewell is there when needed, never something to suggest for the day.
+const NOT_FEATURED = ['farm', 'sitter', 'boarding', 'farewell', 'rehab']
 export const featuredCategories = categories.filter((c) => !NOT_FEATURED.includes(c.slug))
