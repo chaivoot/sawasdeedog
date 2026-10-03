@@ -91,8 +91,14 @@ export default async function HomePage() {
           <Icon name="right" size={20} strokeWidth={2} />
         </Link>
 
-        <Link href="/contact" className="home-contact">
-          มีเรื่องอยากบอกทีมงาน? ติดต่อเรา
+        <Link href="/contact" className="callout callout--quiet">
+          <Icon name="chat" size={22} strokeWidth={1.9} />
+          <span className="callout__text">
+            <b>ติดต่อทีมงาน</b>
+            <br />
+            <span>เจ้าของร้าน สปอนเซอร์ หรือเรื่องอื่น ๆ</span>
+          </span>
+          <Icon name="right" size={20} strokeWidth={2} />
         </Link>
       </main>
     </>

@@ -3304,10 +3304,18 @@ a.guarantee:hover {
   font-size: 13px !important;
   text-align: center;
 }
-.home-contact {
-  align-self: center;
-  font-size: 14px;
+.callout--quiet {
+  background: var(--color-surface);
+  color: var(--color-ink);
+  border: 1px solid var(--color-line);
+}
+.callout--quiet:hover {
+  color: var(--color-ink);
+  background: var(--color-primary-50);
+}
+.callout--quiet > svg {
+  color: var(--color-primary);
+}
+.callout--quiet .callout__text span {
   color: var(--color-ink-2);
-  text-decoration: underline;
-  text-underline-offset: 3px;
 }
