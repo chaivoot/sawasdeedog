@@ -1680,6 +1680,16 @@ a.guarantee:hover {
 
 /* ---------- Farm ---------- */
 
+.breed-head {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 4px;
+}
+.breed-head__search {
+  width: 100%;
+  max-width: 520px;
+}
 .breed-list {
   display: flex;
   flex-direction: column;
@@ -1688,13 +1698,18 @@ a.guarantee:hover {
 @media (min-width: 900px) {
   .breed-list {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
   }
 }
+@media (min-width: 1200px) {
+  .breed-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
 .breed-row {
-  height: 64px;
-  padding: 0 14px 0 16px;
+  min-height: 64px;
+  padding: 8px 14px 8px 12px;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -1746,7 +1761,7 @@ a.guarantee:hover {
 }
 @media (min-width: 900px) {
   .breed-row {
-    height: 76px;
+    min-height: 76px;
   }
   .breed-row__photo {
     width: 54px;

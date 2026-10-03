@@ -20,9 +20,9 @@ export function BreedSearch({ breeds, intro }: { breeds: BreedWithCount[]; intro
 
   return (
     <>
-      <div className="page-head page-head--end">
+      <div className="breed-head">
         {intro}
-        <div className="page-head__side page-head__side--wide">
+        <div className="breed-head__search">
           <label className="search-field search-field--lg">
             <Icon name="search" size={20} strokeWidth={2} />
             <span className="sr-only">ค้นหาสายพันธุ์</span>
