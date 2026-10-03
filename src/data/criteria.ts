@@ -18,8 +18,8 @@ export const dogFriendly = {
 
 /**
  * The Dog Friendly rule is about where dogs are welcome, so it applies to every
- * category except trainers (judged on training method), and farms, stays and
- * farewell services (their own criteria).
+ * category except trainers (judged on training method), farms and stays (own
+ * criteria) and farewell services (no listing rule: it doesn't fit there).
  */
 export function hasDogFriendlyRule(categorySlug: string) {
   return !['trainer', 'farm', 'stay', 'farewell'].includes(categorySlug)
@@ -39,17 +39,6 @@ export const stayRule = {
   body: `ที่พักส่วนใหญ่มีบางโซนที่น้องหมาเข้าไม่ได้ เราจึงใช้เกณฑ์แยก คือต้องรับน้องหมาที่หนัก ${STAY_MIN_DOG_KG} กิโลกรัมขึ้นไปได้ ที่พักที่รับเฉพาะน้องตัวเล็กกว่านั้นเราไม่ลิสต์ ส่วนข้อจำกัดอื่น เช่น จำกัดน้ำหนักที่กี่กิโล ห้ามเข้าร้านอาหาร ห้ามลงสระ หรือห้ามบางสายพันธุ์ เราขึ้นเตือนไว้ในหน้าที่พักแต่ละที่`,
 }
 
-/**
- * Pet cremation: what matters is honesty at a hard time, so the bar is a price
- * given upfront and, for an individual cremation, the owner's own dog's ashes.
- */
-export const farewellRule = {
-  banner: 'ทุกที่ในนี้บอกราคาชัดเจน และให้เจ้าของร่วมพิธีได้',
-  short: 'บอกราคาชัดเจน ร่วมพิธีได้',
-  criterion: 'บอกราคาชัดเจนก่อนตกลง และให้เจ้าของร่วมพิธีได้',
-  body: 'ช่วงที่ต้องส่งน้องเป็นช่วงที่ตัดสินใจยาก เราจึงลิสต์เฉพาะที่ที่บอกราคาชัดเจนตั้งแต่แรก ไม่มีค่าใช้จ่ายเพิ่มทีหลัง และให้เจ้าของดูหรือร่วมพิธีได้ ถ้าเลือกเผาเดี่ยว ต้องเผาแยกและได้อัฐิของน้องเราจริง',
-}
-
 /** Warnings for a place: its weight limit and the restrictions ticked for its categories. */
 export function placeWarnings(
   p: { maxDogKg?: number; maxDogs?: number; attributes: string[] },
@@ -67,7 +56,6 @@ export function categoryRule(
   categorySlug: string,
 ): { anchor: string; banner: string; short: string; criterion: string } | undefined {
   if (categorySlug === 'stay') return { anchor: 'stay', ...stayRule }
-  if (categorySlug === 'farewell') return { anchor: 'farewell', ...farewellRule }
   if (hasDogFriendlyRule(categorySlug)) return { anchor: 'dog-friendly', ...dogFriendly }
 }
 
