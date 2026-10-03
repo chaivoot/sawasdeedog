@@ -769,7 +769,8 @@ p {
 }
 
 .tile {
-  height: 104px;
+  /* Grows with the name and count (larger system fonts on Android wrap more); a row's tiles stretch to match. */
+  min-height: 104px;
   padding: 10px 6px;
   display: flex;
   flex-direction: column;
@@ -813,7 +814,7 @@ p {
   display: none;
 }
 .tile--tall {
-  height: 188px;
+  min-height: 188px;
 }
 
 @media (min-width: 900px) {
@@ -896,7 +897,7 @@ p {
 
 .featured {
   grid-column: span 2;
-  height: 188px;
+  min-height: 188px;
   padding: 14px;
   display: flex;
   flex-direction: column;
