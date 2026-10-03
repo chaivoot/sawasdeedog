@@ -90,6 +90,10 @@ export default async function HomePage() {
           </span>
           <Icon name="right" size={20} strokeWidth={2} />
         </Link>
+
+        <Link href="/contact" className="home-contact">
+          มีเรื่องอยากบอกทีมงาน? ติดต่อเรา
+        </Link>
       </main>
     </>
   )

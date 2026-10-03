@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation'
 const links = [
   { href: '/', label: 'หมวดทั้งหมด' },
   { href: '/criteria', label: 'เกณฑ์การคัดเลือก' },
+  { href: '/contact', label: 'ติดต่อเรา' },
 ]
 
 export function SiteNav() {
