@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { getCategory } from '@/data/categories'
+import { extraTypeOptions, getCategory } from '@/data/categories'
 import { findArea } from '@/data/areas'
 import { getBreed } from '@/data/breeds'
 import type { Place } from '@/data/places'
@@ -29,7 +29,12 @@ export function ListingCard({
   const category = getCategory(place.category)
   const tagCategory = getCategory(listing ?? place.category)
   const area = findArea(place.province, place.district)
-  const typeLabel = category?.types?.find((t) => t.slug === place.type)?.label ?? category?.name ?? ''
+  // Listed under one of its extra categories: describe it in that category's terms.
+  const typeLabel =
+    tagCategory && tagCategory !== category
+      ? (extraTypeOptions(tagCategory).find((t) => place.attributes.includes(t.slug))?.label ??
+        tagCategory.name)
+      : (category?.types?.find((t) => t.slug === place.type)?.label ?? category?.name ?? '')
   const tags =
     place.category === 'farm'
       ? (place.breeds ?? []).map((b) => getBreed(b)?.name).filter(Boolean)

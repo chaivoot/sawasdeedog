@@ -1,6 +1,6 @@
 import 'server-only'
 import { cache } from 'react'
-import { categories, type TrainerStyle } from '@/data/categories'
+import { categories, extraTypeToken, type TrainerStyle } from '@/data/categories'
 import { breeds, type Breed } from '@/data/breeds'
 import { placeCategories, samplePlaces, type Place } from '@/data/places'
 import { sponsors, type Sponsor } from '@/data/sponsors'
@@ -95,12 +95,17 @@ export type PlaceQuery = {
   filters?: string[]
 }
 
+/** Is the place of this type within the given category (main or extra)? */
+export function hasType(p: Place, category: string, type: string): boolean {
+  return p.category === category ? p.type === type : p.attributes.includes(extraTypeToken(category, type))
+}
+
 async function listPlacesUncached(q: PlaceQuery): Promise<Place[]> {
   if (!isSupabaseConfigured()) {
     return samplePlaces
       .filter((p) => placeCategories(p).includes(q.category))
       .filter((p) => !q.area || coversArea(p, q.area))
-      .filter((p) => !q.type || (p.category === q.category && p.type === q.type))
+      .filter((p) => !q.type || hasType(p, q.category, q.type))
       .filter((p) => !q.trainerStyle || p.trainerStyle === q.trainerStyle)
       .filter((p) => (q.filters ?? []).every((f) => p.attributes.includes(f)))
       .sort(byChecked)
@@ -112,8 +117,11 @@ async function listPlacesUncached(q: PlaceQuery): Promise<Place[]> {
     .eq('published', true)
     .or(`category.eq.${q.category},extra_categories.cs.{${q.category}}`)
   // Area is matched below: a place shows up by its address or by its service areas.
-  // Types belong to the main category only.
-  if (q.type) query = query.eq('category', q.category).eq('type', q.type)
+  // The type column is the main category's; extra categories keep theirs in the attributes.
+  if (q.type)
+    query = query.or(
+      `and(category.eq.${q.category},type.eq.${q.type}),attributes.cs.{"${extraTypeToken(q.category, q.type)}"}`,
+    )
   if (q.trainerStyle) query = query.eq('trainer_style', q.trainerStyle)
   if (q.filters?.length) query = query.contains('attributes', q.filters)
   const { data, error } = await query.order('checked_at', { ascending: false })

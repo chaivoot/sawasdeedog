@@ -1,4 +1,4 @@
-import { getCategory, trainerStyles } from '@/data/categories'
+import { extraTypeOptions, getCategory, trainerStyles } from '@/data/categories'
 import { provinces } from '@/data/areas'
 import { breeds } from '@/data/breeds'
 import { STAY_MIN_DOG_KG } from '@/data/criteria'
@@ -61,7 +61,11 @@ function toItem(raw: Record<string, unknown>, today: string): ImportItem {
 
   const filterSlugs = new Set(
     [category, ...extraCategories.map((c) => getCategory(c))].flatMap((c) =>
-      [...(c?.filters ?? []), ...(c?.warnings ?? [])].map((f) => f.slug),
+      [
+        ...(c?.filters ?? []),
+        ...(c?.warnings ?? []),
+        ...(c && c !== category ? extraTypeOptions(c) : []),
+      ].map((f) => f.slug),
     ),
   )
   const maxDogKg = Number(raw.maxDogKg)
