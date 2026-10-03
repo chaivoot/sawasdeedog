@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { IBM_Plex_Sans_Thai_Looped, Mitr } from 'next/font/google'
-import { DEFAULT_OG_IMAGE, SITE_NAME, siteUrl } from '@/lib/site'
+import { DEFAULT_OG_IMAGE, SITE_DESCRIPTION, SITE_NAME, siteUrl } from '@/lib/site'
 import './globals.css'
 
 const mitr = Mitr({
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     default: 'SawasdeeDog | หา Pet Friendly ที่จริงใจ ให้หมาคุณ',
     template: '%s | SawasdeeDog',
   },
-  description: 'ค้นหาบริการต่างๆ ที่เราคัดมาแล้ว ให้กับน้องหมาของคุณเลย',
+  description: SITE_DESCRIPTION,
   metadataBase: new URL(siteUrl()),
   applicationName: SITE_NAME,
   openGraph: {
