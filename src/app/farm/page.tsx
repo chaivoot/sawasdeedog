@@ -41,6 +41,9 @@ export default async function FarmPage() {
             </div>
           }
         />
+        <p className="photo-credit">
+          ภาพสายพันธุ์จาก Wikimedia Commons · <Link href="/credits">เครดิตภาพ</Link>
+        </p>
       </main>
     </>
   )

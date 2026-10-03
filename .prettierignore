@@ -3,3 +3,4 @@ design/
 node_modules/
 src/components/icon-paths.ts
 package-lock.json
+src/data/breed-photos.generated.ts

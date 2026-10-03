@@ -1,4 +1,11 @@
+import { breedPhotos } from './breed-photos.generated'
+
 export type Breed = { slug: string; name: string; nameEn: string }
+
+/** A breed's photo in public/breeds/, if we have one (credits in breed-photos.generated). */
+export function breedPhoto(slug: string): string | undefined {
+  return breedPhotos[slug] ? `/breeds/${slug}.webp` : undefined
+}
 
 // Breeds a farm can be listed under. The public /farm page only shows breeds
 // that have at least one farm, so adding a breed here costs nothing until it's used.

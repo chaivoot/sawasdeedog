@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useState, type ReactNode } from 'react'
+import { breedPhoto } from '@/data/breeds'
 import type { BreedWithCount } from '@/lib/places'
 import { Icon } from './Icon'
 import { LogoMark } from './Logo'
@@ -50,6 +51,8 @@ export function BreedSearch({ breeds, intro }: { breeds: BreedWithCount[]; intro
           <div className="breed-list">
             {shown.map((b) => (
               <Link key={b.slug} href={`/farm/${b.slug}`} className="breed-row">
+                {/* eslint-disable-next-line @next/next/no-img-element -- small static thumbnails */}
+                <img className="breed-row__photo" src={breedPhoto(b.slug)} alt="" loading="lazy" />
                 <span className="breed-row__names">
                   <span className="breed-row__th">{b.name}</span>
                   <span className="breed-row__en">{b.nameEn}</span>
