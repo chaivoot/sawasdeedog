@@ -5,6 +5,7 @@ import { AdminEditButton } from '@/components/AdminEditButton'
 import { Breadcrumb, type Crumb } from '@/components/Breadcrumb'
 import { Checked } from '@/components/Checked'
 import { FarmBuyerNote } from '@/components/FarmBuyerNote'
+import { PedigreeBadge } from '@/components/PedigreeBadge'
 import { Icon, type IconName } from '@/components/Icon'
 import { PlaceGallery } from '@/components/PlaceGallery'
 import { RatingWidget } from '@/components/RatingWidget'
@@ -13,7 +14,7 @@ import { SiteHeader } from '@/components/SiteHeader'
 import { getCategory, trainerStyles } from '@/data/categories'
 import { findArea } from '@/data/areas'
 import { getBreed } from '@/data/breeds'
-import { categoryRule, farmRule, placeWarnings } from '@/data/criteria'
+import { categoryRule, placeWarnings } from '@/data/criteria'
 import { placeCategories, type Contacts, type Place } from '@/data/places'
 import { JsonLd } from '@/components/JsonLd'
 import { MIN_RATINGS_TO_SHOW } from '@/lib/limits'
@@ -136,7 +137,6 @@ function criteriaFor(place: Place): string[] {
     const c = categoryRule(s)?.criterion
     if (c && !items.includes(c)) items.push(c)
   }
-  if (place.category === 'farm') items.push(farmRule.criterion)
   if (place.trainerStyle) {
     const style = trainerStyles.find((s) => s.slug === place.trainerStyle)
     if (style) items.push(`แนวการฝึก ${style.label}`)
@@ -204,6 +204,7 @@ export default async function PlacePage({ params }: Props) {
                 {extraNames.map((n) => ` · ${n}`)}
               </span>
               <h1>{place.name}</h1>
+              {isFarm && <PedigreeBadge attributes={place.attributes} large />}
               {area && (
                 <span className="place__area">
                   <Icon name="pin" size={18} strokeWidth={2} />

@@ -222,7 +222,8 @@ export const categories: Category[] = [
     schemaType: 'LocalBusiness',
     listTitle: 'ฟาร์มสุนัข',
     description: 'เลือกตามสายพันธุ์ ไม่ต้องเลือกย่าน',
-    filters: [],
+    // Not a listing rule: research often can't confirm it, so it is shown as a badge when known.
+    filters: [{ slug: 'pedigree', label: 'มีใบเพ็ดดีกรี' }],
   },
 ]
 

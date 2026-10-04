@@ -9,9 +9,9 @@ import { SiteHeader } from '@/components/SiteHeader'
 import { breedsWithFarms } from '@/lib/places'
 
 export const metadata: Metadata = {
-  title: 'ฟาร์มสุนัขที่ออกใบเพ็ดดีกรีได้',
+  title: 'ฟาร์มสุนัข เลือกตามสายพันธุ์',
   alternates: { canonical: '/farm' },
-  description: `เลือกสายพันธุ์ แล้วดูฟาร์มที่ผ่านเกณฑ์จากทุกจังหวัด ${farmRule.banner}`,
+  description: `เลือกสายพันธุ์ แล้วดูฟาร์มจากทุกจังหวัด ฟาร์มที่ออกใบเพ็ดดีกรีได้มีป้ายบอกชัด`,
 }
 
 export const revalidate = 3600
@@ -32,9 +32,9 @@ export default async function FarmPage() {
                 </span>
                 <h1>ฟาร์ม</h1>
               </div>
-              <p className="lead">เลือกสายพันธุ์ แล้วดูฟาร์มที่ผ่านเกณฑ์จากทุกจังหวัด</p>
+              <p className="lead">เลือกสายพันธุ์ แล้วดูฟาร์มจากทุกจังหวัด</p>
               <Link href="/criteria#farm" className="guarantee">
-                <Icon name="checkc" size={18} strokeWidth={2} />
+                <Icon name="award" size={18} strokeWidth={2} />
                 {farmRule.banner}
               </Link>
               <FarmBuyerNote />
