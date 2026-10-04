@@ -8,6 +8,7 @@ import type { Area } from '@/data/areas'
 import { coversArea, areaKeys } from './geo'
 import { ratingStats } from './ratings'
 import { db, isSupabaseConfigured } from './supabase'
+import { todayInBangkok } from './format'
 
 // All reads of listings go through here. With Supabase configured they come
 // from the `places` table; otherwise from the built-in sample data.
@@ -85,7 +86,24 @@ async function withRatings(places: Place[]): Promise<Place[]> {
   return places.map((p) => (p.id && stats.has(p.id) ? { ...p, rating: stats.get(p.id) } : p))
 }
 
-const byChecked = (a: Place, b: Place) => b.checkedAt.localeCompare(a.checkedAt)
+/** FNV-1a: a small, stable string hash. */
+function hash(s: string): number {
+  let h = 2166136261
+  for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 16777619)
+  return h >>> 0
+}
+
+/**
+ * Listings in a fresh order each day, so no place stays at the top just for
+ * being checked last. The order holds all day (going back to a list finds
+ * things where they were) and is the same for everyone.
+ */
+function dailyOrder(places: Place[], day = todayInBangkok()): Place[] {
+  return places
+    .map((p) => ({ p, k: hash(`${day}:${p.slug}`) }))
+    .sort((a, b) => a.k - b.k)
+    .map((x) => x.p)
+}
 
 export type PlaceQuery = {
   category: string
@@ -102,13 +120,13 @@ export function hasType(p: Place, category: string, type: string): boolean {
 
 async function listPlacesUncached(q: PlaceQuery): Promise<Place[]> {
   if (!isSupabaseConfigured()) {
-    return samplePlaces
+    const places = samplePlaces
       .filter((p) => placeCategories(p).includes(q.category))
       .filter((p) => !q.area || coversArea(p, q.area))
       .filter((p) => !q.type || hasType(p, q.category, q.type))
       .filter((p) => !q.trainerStyle || p.trainerStyle === q.trainerStyle)
       .filter((p) => (q.filters ?? []).every((f) => p.attributes.includes(f)))
-      .sort(byChecked)
+    return dailyOrder(places)
   }
   // Category slugs are fixed identifiers from data/categories, safe to put in the filter string.
   let query = db()
@@ -124,10 +142,10 @@ async function listPlacesUncached(q: PlaceQuery): Promise<Place[]> {
     )
   if (q.trainerStyle) query = query.eq('trainer_style', q.trainerStyle)
   if (q.filters?.length) query = query.contains('attributes', q.filters)
-  const { data, error } = await query.order('checked_at', { ascending: false })
+  const { data, error } = await query
   if (error) throw error
   const places = (data as PlaceRow[]).map(rowToPlace).filter((p) => !q.area || coversArea(p, q.area))
-  return withRatings(places)
+  return withRatings(dailyOrder(places))
 }
 
 /** Cached per request so generateMetadata and the page share one query. */
@@ -168,7 +186,7 @@ export async function breedsWithFarms(): Promise<BreedWithCount[]> {
 }
 
 export async function farmsForBreed(breed: string): Promise<Place[]> {
-  return withRatings((await farms()).filter((f) => f.breeds?.includes(breed)).sort(byChecked))
+  return withRatings(dailyOrder((await farms()).filter((f) => f.breeds?.includes(breed))))
 }
 
 export function activeSponsor(today: string): Sponsor | undefined {
