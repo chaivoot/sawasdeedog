@@ -127,6 +127,7 @@ export const categories: Category[] = [
       { slug: 'mobile', label: 'ถึงบ้าน' },
     ],
     filters: [],
+    warnings: [{ slug: 'small-dogs-only', label: 'รับเฉพาะน้องหมาตัวเล็ก' }],
   },
   {
     slug: 'stay',
@@ -170,6 +171,7 @@ export const categories: Category[] = [
       { slug: 'overnight', label: 'ค้างคืน' },
     ],
     filters: [],
+    warnings: [{ slug: 'small-dogs-only', label: 'รับเฉพาะน้องหมาตัวเล็ก' }],
   },
   {
     slug: 'sitter',
@@ -184,6 +186,7 @@ export const categories: Category[] = [
       { slug: 'walking', label: 'พาเดิน' },
     ],
     filters: [],
+    warnings: [{ slug: 'small-dogs-only', label: 'รับเฉพาะน้องหมาตัวเล็ก' }],
   },
   {
     slug: 'park',
@@ -202,7 +205,7 @@ export const categories: Category[] = [
       { slug: 'free', label: 'เข้าฟรี' },
       { slug: 'paid', label: 'เสียค่าเข้า' },
     ],
-    // Listed even with size limits (parkRule); its weight limit and these are shown as warnings.
+    // Listed even with size limits (serviceRule); its weight limit and these are shown as warnings.
     warnings: [
       { slug: 'small-dogs-only', label: 'รับเฉพาะน้องหมาตัวเล็ก' },
       { slug: 'leash-only', label: 'ต้องจูงสายตลอด ปล่อยวิ่งไม่ได้' },

@@ -12,7 +12,7 @@ import {
 } from '@/data/categories'
 import { findArea } from '@/data/areas'
 import { breeds } from '@/data/breeds'
-import { STAY_MIN_DOG_KG } from '@/data/criteria'
+import { STAY_MIN_DOG_KG, takesWeightLimit } from '@/data/criteria'
 import { requireAdmin } from '@/lib/admin'
 import {
   deletePlace,
@@ -133,13 +133,16 @@ export async function savePlaceAction(_prev: PlaceFormState, form: FormData): Pr
       ),
     ),
   )
-  const attributes = form
-    .getAll('attributes')
-    .filter((a): a is string => typeof a === 'string' && filterSlugs.has(a))
+  // A warning shared by two categories is ticked in both groups; keep it once.
+  const attributes = [
+    ...new Set(
+      form.getAll('attributes').filter((a): a is string => typeof a === 'string' && filterSlugs.has(a)),
+    ),
+  ]
 
-  // Stays and dog parks: the heaviest dog taken (empty = no limit); a stay below the listing minimum is an error.
+  // Stays and dog services: the heaviest dog taken (empty = no limit); a stay below the listing minimum is an error.
   const isStay = allCategories.some((c) => c.slug === 'stay')
-  const hasWeightLimit = isStay || allCategories.some((c) => c.slug === 'park')
+  const hasWeightLimit = allCategories.some((c) => takesWeightLimit(c.slug))
   const maxDogKgText = hasWeightLimit ? text(form, 'maxDogKg') : ''
   const maxDogKg = maxDogKgText ? Number(maxDogKgText) : null
   if (maxDogKg !== null && (!Number.isInteger(maxDogKg) || maxDogKg <= 0))

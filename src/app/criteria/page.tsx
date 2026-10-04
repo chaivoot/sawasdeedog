@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Icon } from '@/components/Icon'
 import { SiteHeader } from '@/components/SiteHeader'
-import { dogFriendly, farmRule, forceFreeDefinition, parkRule, stayRule } from '@/data/criteria'
+import { dogFriendly, farmRule, forceFreeDefinition, serviceRule, stayRule } from '@/data/criteria'
 
 export const metadata: Metadata = {
   title: 'เกณฑ์การคัดเลือก',
@@ -18,8 +18,8 @@ const rules = [
   },
   {
     id: 'no-conditions',
-    title: 'ไม่มีเงื่อนไขแอบแฝง',
-    body: 'คำว่า "รับน้องหมา" ต้องหมายถึงรับจริง ถ้ารับแต่ให้อยู่ได้แค่โซนนอก เข้าห้องแอร์ไม่ได้ หรือรับเฉพาะน้องตัวเล็ก แบบนี้เราไม่ลิสต์ ใช้เกณฑ์เดียวกันทุกหมวด ทั้งคาเฟ่ ร้านอาบน้ำ ฝากเลี้ยง และอื่น ๆ ยกเว้นที่พัก และลานวิ่ง & สระว่ายน้ำ ซึ่งมีเกณฑ์ของตัวเอง',
+    title: 'คาเฟ่และร้านอาหาร: ไม่มีเงื่อนไขแอบแฝง',
+    body: 'หลายร้านติดป้าย Pet Friendly ตามกระแส แต่พอไปจริงกลับมีเงื่อนไข คำว่า "รับน้องหมา" ของเราต้องหมายถึงรับจริง ถ้ารับแต่ให้อยู่ได้แค่โซนนอก เข้าห้องแอร์ไม่ได้ ต้องอยู่ในรถเข็น หรือรับเฉพาะน้องตัวเล็ก แบบนี้เราไม่ลิสต์',
   },
   {
     id: 'stay',
@@ -27,9 +27,9 @@ const rules = [
     body: stayRule.body,
   },
   {
-    id: 'park',
-    title: 'ลานวิ่ง & สระว่ายน้ำ: แจ้งข้อจำกัดไว้ชัด',
-    body: parkRule.body,
+    id: 'service',
+    title: 'บริการสำหรับน้องหมา: แจ้งข้อจำกัดไว้ชัด',
+    body: serviceRule.body,
   },
   {
     id: 'trainer',
