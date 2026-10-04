@@ -10,7 +10,7 @@ import {
   type Category,
 } from '@/data/categories'
 import { provinces } from '@/data/areas'
-import { breeds } from '@/data/breeds'
+import { breedMatches, breeds, breedsByName } from '@/data/breeds'
 import { categoryRule, STAY_MIN_DOG_KG } from '@/data/criteria'
 import type { Contacts } from '@/data/places'
 import { Icon } from '@/components/Icon'
@@ -438,11 +438,14 @@ export function PlaceEditor({ draft, fromSubmission }: { draft: PlaceDraft; from
             />
           </label>
           <div className="admin-checks">
-            {breeds.map((b) => {
+            {/* Ticked breeds first, then ก–ฮ. */}
+            {[
+              ...breedsByName.filter((b) => draft.breeds.includes(b.slug)),
+              ...breedsByName.filter((b) => !draft.breeds.includes(b.slug)),
+            ].map((b) => {
               const checked = farmBreeds.includes(b.slug)
-              const q = breedQuery.trim().toLowerCase()
               // Hidden, not removed: ticked breeds must stay in the form while filtering.
-              const match = checked || !q || b.name.includes(q) || b.nameEn.toLowerCase().includes(q)
+              const match = checked || breedMatches(b, breedQuery)
               return (
                 <label key={b.slug} className="checkbox" hidden={!match}>
                   <input

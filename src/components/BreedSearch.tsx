@@ -2,21 +2,14 @@
 
 import Link from 'next/link'
 import { useState, type ReactNode } from 'react'
-import { breedPhoto } from '@/data/breeds'
+import { breedMatches, breedPhoto } from '@/data/breeds'
 import type { BreedWithCount } from '@/lib/places'
 import { Icon } from './Icon'
 import { LogoMark } from './Logo'
 
-function normalize(s: string) {
-  return s.toLowerCase().replace(/\s+/g, '')
-}
-
 export function BreedSearch({ breeds, intro }: { breeds: BreedWithCount[]; intro: ReactNode }) {
   const [query, setQuery] = useState('')
-  const q = normalize(query)
-  const shown = q
-    ? breeds.filter((b) => normalize(b.name).includes(q) || normalize(b.nameEn).includes(q))
-    : breeds
+  const shown = breeds.filter((b) => breedMatches(b, query))
 
   return (
     <>

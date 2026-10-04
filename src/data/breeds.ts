@@ -92,3 +92,14 @@ export const breeds: Breed[] = [
 export function getBreed(slug: string): Breed | undefined {
   return breeds.find((b) => b.slug === slug)
 }
+
+const compact = (s: string) => s.toLowerCase().replace(/\s+/g, '')
+
+/** Search by Thai or English name, ignoring case and spaces ("บอร์เดอร์คอลลี่" finds "บอร์เดอร์ คอลลี่"). */
+export function breedMatches(b: { name: string; nameEn: string }, query: string): boolean {
+  const q = compact(query)
+  return !q || compact(b.name).includes(q) || compact(b.nameEn).includes(q)
+}
+
+/** Breeds in Thai alphabetical order, for pickers. */
+export const breedsByName = [...breeds].sort((a, b) => a.name.localeCompare(b.name, 'th'))
