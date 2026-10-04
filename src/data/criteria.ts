@@ -59,12 +59,19 @@ export function categoryRule(
   if (hasDogFriendlyRule(categorySlug)) return { anchor: 'dog-friendly', ...dogFriendly }
 }
 
-/** Farms are listed only if they can issue a pedigree certificate for the puppy. */
+/** Farm attribute for "issues a pedigree certificate"; shown as a badge, not required to be listed. */
+export const PEDIGREE = 'pedigree'
+
+/**
+ * Farms aren't required to issue a pedigree (it often can't be confirmed from outside),
+ * so the ones we could confirm carry a badge instead.
+ */
 export const farmRule = {
-  banner: 'ทุกฟาร์มในนี้ออกใบเพ็ดดีกรี (Pedigree) ให้น้องได้',
-  criterion: 'ออกใบเพ็ดดีกรี (Pedigree) ให้น้องได้',
-  // We can verify a pedigree, not each litter's health checks, so we say so plainly.
-  scope: 'เราตรวจสอบเฉพาะว่าฟาร์มออกใบเพ็ดดีกรีได้ ไม่ได้รับรองสุขภาพของพ่อแม่พันธุ์หรือลูกสุนัข',
+  badge: 'มีใบเพ็ดดีกรี',
+  banner: 'ฟาร์มที่มีป้าย "มีใบเพ็ดดีกรี" คือฟาร์มที่เราพบหลักฐานว่าออกใบเพ็ดดีกรี (Pedigree) ให้น้องได้',
+  // We can check for a pedigree, not each litter's health checks, so we say so plainly.
+  scope:
+    'ป้าย "มีใบเพ็ดดีกรี" หมายถึงเราพบหลักฐานว่าฟาร์มออกใบเพ็ดดีกรีได้ ฟาร์มที่ไม่มีป้ายอาจออกได้แต่เรายังยืนยันไม่ได้ และเราไม่ได้รับรองสุขภาพของพ่อแม่พันธุ์หรือลูกสุนัข',
   buyerChecks: [
     'ผลตรวจสะโพกและข้อศอกของพ่อแม่พันธุ์',
     'ผลตรวจตาของพ่อแม่พันธุ์',

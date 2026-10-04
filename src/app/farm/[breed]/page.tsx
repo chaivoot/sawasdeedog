@@ -26,8 +26,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const farms = await farmsForBreed(breed.slug)
   const photo = breedPhoto(breed.slug)
   return {
-    title: `ฟาร์ม${breed.name} (${breed.nameEn}) ออกใบเพ็ดดีกรีได้`,
-    description: `รวม ${farms.length} ฟาร์ม${breed.name} (${breed.nameEn}) ที่ผ่านเกณฑ์จากทุกจังหวัด ${farmRule.banner}`,
+    title: `ฟาร์ม${breed.name} (${breed.nameEn})`,
+    description: `รวม ${farms.length} ฟาร์ม${breed.name} (${breed.nameEn}) จากทุกจังหวัด ${farmRule.banner}`,
     alternates: { canonical: `/farm/${breed.slug}` },
     robots: farms.length === 0 ? { index: false, follow: true } : undefined,
     openGraph: photo ? { images: [photo] } : undefined,
@@ -82,7 +82,7 @@ export default async function FarmBreedPage({ params }: Props) {
         ) : (
           <EmptyState
             compact
-            title={`ยังไม่มีฟาร์ม${breed.name}ที่ผ่านเกณฑ์`}
+            title={`ยังไม่มีฟาร์ม${breed.name}ในรายการ`}
             body="รู้จักฟาร์มสายพันธุ์นี้ที่ดูแลหมาดี เสนอให้ทีมช่วยเช็คได้เลย"
             primary={{ href: '/submit?category=farm', label: 'เสนอฟาร์ม' }}
             secondary={{ href: '/farm', label: 'ดูสายพันธุ์ทั้งหมด' }}

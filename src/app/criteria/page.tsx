@@ -34,7 +34,7 @@ const rules = [
   {
     id: 'farm',
     title: 'ฟาร์ม',
-    body: `เราลิสต์เฉพาะฟาร์มที่ออกใบเพ็ดดีกรี (Pedigree) หรือใบรับรองสายพันธุ์ให้น้องได้ ${farmRule.scope} ก่อนซื้อควรขอดูเอง เช่น ${farmRule.buyerChecks.join(', ')}`,
+    body: `เราลิสต์ฟาร์มตามสายพันธุ์ ฟาร์มที่เราพบหลักฐานว่าออกใบเพ็ดดีกรี (Pedigree) ให้น้องได้จะมีป้าย "${farmRule.badge}" ${farmRule.scope} ก่อนซื้อควรขอดูเอง เช่น ${farmRule.buyerChecks.join(', ')}`,
   },
   {
     id: 'report',

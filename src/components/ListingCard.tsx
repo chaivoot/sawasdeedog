@@ -6,6 +6,7 @@ import type { Place } from '@/data/places'
 import { formatKm } from '@/lib/geo'
 import { Checked } from './Checked'
 import { Icon } from './Icon'
+import { PedigreeBadge } from './PedigreeBadge'
 import { Photo } from './Photo'
 import { RatingBadge } from './Stars'
 
@@ -56,6 +57,7 @@ export function ListingCard({
           )}
         </span>
         <RatingBadge rating={place.rating} />
+        {place.category === 'farm' && <PedigreeBadge attributes={place.attributes} />}
         {place.category === 'farm' ? (
           <>
             <span className="listing-card__province mobile-only">

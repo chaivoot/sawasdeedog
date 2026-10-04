@@ -67,7 +67,7 @@ export function BreedSearch({ breeds, intro }: { breeds: BreedWithCount[]; intro
             <span className="empty__icon">
               <LogoMark size={44} />
             </span>
-            <h2>ยังไม่มีฟาร์ม{query.trim()}ที่ผ่านเกณฑ์</h2>
+            <h2>ยังไม่มีฟาร์ม{query.trim()}ในรายการ</h2>
             <p>รู้จักฟาร์มสายพันธุ์นี้ที่ดูแลหมาดี เสนอให้ทีมช่วยเช็คได้เลย</p>
             <div className="empty__actions">
               <Link href="/submit?category=farm" className="btn btn--primary btn--block">
