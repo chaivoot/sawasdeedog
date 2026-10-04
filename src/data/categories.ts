@@ -123,7 +123,7 @@ export const categories: Category[] = [
     slug: 'stay',
     icon: 'stay',
     tone: ['#ffe8d6', '#b4501d'],
-    name: 'ที่พักพร้อมหมา',
+    name: 'ที่พักหมาพักได้',
     schemaType: 'LodgingBusiness',
     listTitle: 'ที่พักหมาพักได้',
     description: 'โรงแรม รีสอร์ท หมาพักได้ เจ้าของพักด้วยได้',
