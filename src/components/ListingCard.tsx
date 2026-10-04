@@ -29,6 +29,8 @@ export function ListingCard({
   const category = getCategory(place.category)
   const tagCategory = getCategory(listing ?? place.category)
   const area = findArea(place.province, place.district)
+  // Pinned to the top of this list by the team. Shown quietly, without calling it a recommendation.
+  const pinned = !!listing && (place.pinnedIn ?? []).includes(listing)
   // Listed under one of its extra categories: describe it in that category's terms.
   const typeLabel =
     tagCategory && tagCategory !== category
@@ -44,7 +46,15 @@ export function ListingCard({
     <Link href={`/place/${place.slug}`} className="listing-card">
       <Photo src={place.photos[0]} alt={place.name} />
       <div className="listing-card__body">
-        <span className="listing-card__name">{place.name}</span>
+        <span className="listing-card__name">
+          {place.name}
+          {pinned && (
+            <span className="listing-card__pin" title="ปักหมุด">
+              <Icon name="pushpin" size={14} strokeWidth={2} />
+              <span className="sr-only">ปักหมุด</span>
+            </span>
+          )}
+        </span>
         <RatingBadge rating={place.rating} />
         {place.category === 'farm' ? (
           <>
