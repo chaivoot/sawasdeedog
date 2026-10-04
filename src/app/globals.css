@@ -3341,3 +3341,25 @@ a.guarantee:hover {
     font-size: 14px;
   }
 }
+
+/* Admin: category tabs on the listings page */
+.admin-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 4px 0 12px;
+}
+.admin-tabs .chip {
+  height: 34px;
+  font-size: 13.5px;
+  text-decoration: none;
+}
+.admin-tabs .chip[aria-current='page'] {
+  background: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary);
+}
+.admin-badge--pin {
+  background: var(--color-accent-50);
+  color: var(--color-accent-text);
+}

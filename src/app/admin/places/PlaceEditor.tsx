@@ -15,7 +15,7 @@ import { categoryRule, STAY_MIN_DOG_KG } from '@/data/criteria'
 import type { Contacts } from '@/data/places'
 import { Icon } from '@/components/Icon'
 import { cleanServiceAreas, serviceAreaLabels } from '@/lib/geo'
-import { MAX_PLACE_PHOTOS } from '@/lib/limits'
+import { MAX_PINS, MAX_PLACE_PHOTOS } from '@/lib/limits'
 import { uploadPhotos } from '@/lib/upload-client'
 import { savePlaceAction, type PlaceFormState } from '../actions'
 
@@ -46,6 +46,8 @@ export type PlaceDraft = {
   /** Stays: most dogs per room; empty = no limit. */
   maxDogs: string
   published: boolean
+  /** Categories this place is pinned to the top of. */
+  pinnedIn: string[]
 }
 
 export function PlaceEditor({ draft, fromSubmission }: { draft: PlaceDraft; fromSubmission?: string }) {
@@ -313,6 +315,23 @@ export function PlaceEditor({ draft, fromSubmission }: { draft: PlaceDraft; from
               <input type="checkbox" name="published" defaultChecked={draft.published} />
               แสดงบนเว็บ
             </label>
+            {allCategories.map((c) => (
+              <label key={c.slug} className="checkbox">
+                <input
+                  type="checkbox"
+                  name="pinnedIn"
+                  value={c.slug}
+                  defaultChecked={draft.pinnedIn.includes(c.slug)}
+                />
+                ปักหมุดไว้บนสุดในหมวด{c.name}
+              </label>
+            ))}
+            <span className="field__hint">ปักหมุดได้หมวดละไม่เกิน {MAX_PINS} รายการ</span>
+            {e.pinnedIn && (
+              <span className="field__error" role="alert">
+                {e.pinnedIn}
+              </span>
+            )}
           </div>
         </div>
       </fieldset>

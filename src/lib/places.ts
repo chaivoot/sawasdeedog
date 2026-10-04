@@ -42,6 +42,8 @@ export type PlaceRow = {
   photos: string[]
   breeds: string[]
   published: boolean
+  /** Added by 0006_pins.sql; missing before that migration runs. */
+  pinned_in?: string[] | null
 }
 
 export function rowToPlace(r: PlaceRow): Place {
@@ -76,6 +78,7 @@ export function rowToPlace(r: PlaceRow): Place {
     photos: r.photos ?? [],
     breeds: r.breeds ?? [],
     published: r.published,
+    pinnedIn: r.pinned_in ?? [],
   }
 }
 
@@ -95,13 +98,13 @@ function hash(s: string): number {
 
 /**
  * Listings in a fresh order each day, so no place stays at the top just for
- * being checked last. The order holds all day (going back to a list finds
+ * being checked last; places pinned in the category come first. The order holds all day (going back to a list finds
  * things where they were) and is the same for everyone.
  */
-function dailyOrder(places: Place[], day = todayInBangkok()): Place[] {
+function dailyOrder(places: Place[], category: string, day = todayInBangkok()): Place[] {
   return places
-    .map((p) => ({ p, k: hash(`${day}:${p.slug}`) }))
-    .sort((a, b) => a.k - b.k)
+    .map((p) => ({ p, pinned: p.pinnedIn?.includes(category) ? 0 : 1, k: hash(`${day}:${p.slug}`) }))
+    .sort((a, b) => a.pinned - b.pinned || a.k - b.k)
     .map((x) => x.p)
 }
 
@@ -126,7 +129,7 @@ async function listPlacesUncached(q: PlaceQuery): Promise<Place[]> {
       .filter((p) => !q.type || hasType(p, q.category, q.type))
       .filter((p) => !q.trainerStyle || p.trainerStyle === q.trainerStyle)
       .filter((p) => (q.filters ?? []).every((f) => p.attributes.includes(f)))
-    return dailyOrder(places)
+    return dailyOrder(places, q.category)
   }
   // Category slugs are fixed identifiers from data/categories, safe to put in the filter string.
   let query = db()
@@ -145,7 +148,7 @@ async function listPlacesUncached(q: PlaceQuery): Promise<Place[]> {
   const { data, error } = await query
   if (error) throw error
   const places = (data as PlaceRow[]).map(rowToPlace).filter((p) => !q.area || coversArea(p, q.area))
-  return withRatings(dailyOrder(places))
+  return withRatings(dailyOrder(places, q.category))
 }
 
 /** Cached per request so generateMetadata and the page share one query. */
@@ -186,7 +189,12 @@ export async function breedsWithFarms(): Promise<BreedWithCount[]> {
 }
 
 export async function farmsForBreed(breed: string): Promise<Place[]> {
-  return withRatings(dailyOrder((await farms()).filter((f) => f.breeds?.includes(breed))))
+  return withRatings(
+    dailyOrder(
+      (await farms()).filter((f) => f.breeds?.includes(breed)),
+      'farm',
+    ),
+  )
 }
 
 export function activeSponsor(today: string): Sponsor | undefined {

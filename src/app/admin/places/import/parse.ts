@@ -113,6 +113,7 @@ function toItem(raw: Record<string, unknown>, today: string): ImportItem {
       maxDogs: Number.isInteger(Number(raw.maxDogs)) && Number(raw.maxDogs) > 0 ? String(raw.maxDogs) : '',
       // Shown by default; research can say "published": false to keep one hidden.
       published: raw.published !== false,
+      pinnedIn: [],
     },
     notes: strs(raw.notes),
     sources: strs(raw.sources).filter((s) => /^https?:\/\//.test(s)),

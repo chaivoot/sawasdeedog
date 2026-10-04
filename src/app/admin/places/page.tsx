@@ -1,18 +1,37 @@
 import Link from 'next/link'
-import { getCategory } from '@/data/categories'
+import { categories, getCategory } from '@/data/categories'
+import { placeCategories } from '@/data/places'
 import { findArea } from '@/data/areas'
 import { listAllPlaces } from '@/lib/admin-places'
 import { backfillCoordsAction } from '../actions'
 import { requireAdminPage } from '@/lib/admin-page'
 import { formatDay } from '@/lib/format'
 
-type Props = { searchParams: Promise<{ q?: string; saved?: string; coords?: string }> }
+type Props = { searchParams: Promise<{ q?: string; c?: string; saved?: string; coords?: string }> }
 
 export default async function AdminPlaces({ searchParams }: Props) {
   await requireAdminPage()
-  const { q, saved, coords } = await searchParams
-  const places = await listAllPlaces(q)
-  const missingCoords = places.filter((p) => p.mapsUrl && p.lat == null).length
+  const { q, c, saved, coords } = await searchParams
+  const all = await listAllPlaces(q)
+  const missingCoords = all.filter((p) => p.mapsUrl && p.lat == null).length
+  // A place counts under every category it is listed in, main or extra.
+  const current = getCategory(c ?? '')
+  const places = current
+    ? all
+        .filter((p) => placeCategories(p).includes(current.slug))
+        // Pinned first, as on the site.
+        .sort(
+          (a, b) =>
+            Number(!!b.pinnedIn?.includes(current.slug)) - Number(!!a.pinnedIn?.includes(current.slug)),
+        )
+    : all
+  const countIn = (slug: string) => all.filter((p) => placeCategories(p).includes(slug)).length
+  const tabHref = (slug?: string) => {
+    const sp = new URLSearchParams()
+    if (q) sp.set('q', q)
+    if (slug) sp.set('c', slug)
+    return `/admin/places${sp.size ? `?${sp}` : ''}`
+  }
   const [coordsFound, coordsTried] = (coords ?? '').split('-').map(Number)
 
   return (
@@ -48,6 +67,7 @@ export default async function AdminPlaces({ searchParams }: Props) {
         </form>
       )}
       <form className="admin-search" role="search">
+        {current && <input type="hidden" name="c" value={current.slug} />}
         <input
           name="q"
           defaultValue={q}
@@ -59,6 +79,21 @@ export default async function AdminPlaces({ searchParams }: Props) {
           ค้นหา
         </button>
       </form>
+      <nav className="admin-tabs" aria-label="หมวด">
+        <Link href={tabHref()} className="chip" aria-current={!current ? 'page' : undefined}>
+          ทั้งหมด {all.length}
+        </Link>
+        {categories.map((cat) => (
+          <Link
+            key={cat.slug}
+            href={tabHref(cat.slug)}
+            className="chip"
+            aria-current={current?.slug === cat.slug ? 'page' : undefined}
+          >
+            {cat.name} {countIn(cat.slug)}
+          </Link>
+        ))}
+      </nav>
       {places.length === 0 ? (
         <p className="admin-empty">ไม่มีรายการ</p>
       ) : (
@@ -78,6 +113,12 @@ export default async function AdminPlaces({ searchParams }: Props) {
                     </span>
                   </span>
                   <span className="admin-row__meta">
+                    {current && p.pinnedIn?.includes(current.slug) && (
+                      <span className="admin-badge admin-badge--pin">ปักหมุด</span>
+                    )}
+                    {!current && !!p.pinnedIn?.length && (
+                      <span className="admin-badge admin-badge--pin">ปักหมุด</span>
+                    )}
                     {p.published === false && <span className="admin-badge">ซ่อนอยู่</span>}
                     {p.lat == null && !p.serviceAreas?.length && (
                       <span className="admin-badge">ไม่มีพิกัด</span>

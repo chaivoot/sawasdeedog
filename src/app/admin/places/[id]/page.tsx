@@ -48,6 +48,7 @@ export default async function EditPlace({ params }: Props) {
           maxDogKg: place.maxDogKg ? String(place.maxDogKg) : '',
           maxDogs: place.maxDogs ? String(place.maxDogs) : '',
           published: place.published !== false,
+          pinnedIn: place.pinnedIn ?? [],
         }}
       />
       <form action={deletePlaceAction} className="admin-danger">

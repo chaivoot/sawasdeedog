@@ -29,6 +29,7 @@ export default async function NewPlace({ searchParams }: Props) {
     photos: [],
     contacts: {},
     published: true,
+    pinnedIn: [],
   }
 
   return (
