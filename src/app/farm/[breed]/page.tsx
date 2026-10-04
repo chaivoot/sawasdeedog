@@ -74,7 +74,7 @@ export default async function FarmBreedPage({ params }: Props) {
             <span className="result-count">{farms.length} ฟาร์ม จากทุกจังหวัด</span>
             <div className="listing-list">
               {farms.map((p) => (
-                <ListingCard key={p.slug} place={p} />
+                <ListingCard key={p.slug} place={p} listing="farm" />
               ))}
             </div>
             <FarmBuyerNote />
