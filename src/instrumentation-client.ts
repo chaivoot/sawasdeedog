@@ -1,7 +1,17 @@
 import posthog from 'posthog-js'
-import { POSTHOG_KEY, POSTHOG_PROXY, isAdminPath, isLiveHost, track } from '@/lib/analytics'
+import {
+  POSTHOG_KEY,
+  POSTHOG_PROXY,
+  isAdminPath,
+  isLiveHost,
+  isTeamDevice,
+  markTeamDevice,
+  track,
+} from '@/lib/analytics'
 
-if (POSTHOG_KEY && isLiveHost(window.location.hostname)) {
+if (isAdminPath(window.location.pathname)) markTeamDevice()
+
+if (POSTHOG_KEY && isLiveHost(window.location.hostname) && !isTeamDevice()) {
   try {
     posthog.init(POSTHOG_KEY, {
       api_host: POSTHOG_PROXY,
@@ -15,6 +25,11 @@ if (POSTHOG_KEY && isLiveHost(window.location.hostname)) {
   } catch {
     // Analytics must never break the site.
   }
+}
+
+// Reaching the admin by an in-app link marks the device too.
+export function onRouterTransitionStart(url: string) {
+  if (isAdminPath(new URL(url, window.location.href).pathname)) markTeamDevice()
 }
 
 // Server-rendered links say what they are with data-track="event" plus data-* properties,

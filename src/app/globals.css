@@ -1670,7 +1670,11 @@ a.guarantee:hover {
   max-width: 300px;
 }
 @media (min-width: 900px) {
-  .listing-list .empty {
+  .listing-list .empty,
+  .nearby__status,
+  .nearby__where,
+  .nearby__group,
+  .nearby__credit {
     grid-column: 1 / -1;
   }
   .empty p,

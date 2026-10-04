@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { markTeamDevice } from './analytics'
 
 // Public pages are cached for everyone, so admin-only UI asks /api/me in the
 // browser. One request per page load, shared by every component that asks.
@@ -10,6 +11,10 @@ function fetchIsAdmin(): Promise<boolean> {
   pending ??= fetch('/api/me', { cache: 'no-store' })
     .then((r) => (r.ok ? r.json() : { admin: false }))
     .then((d: { admin?: boolean }) => d.admin === true)
+    .then((admin) => {
+      if (admin) markTeamDevice()
+      return admin
+    })
     .catch(() => false)
   return pending
 }
