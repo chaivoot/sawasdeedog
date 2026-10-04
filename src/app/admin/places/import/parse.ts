@@ -89,7 +89,8 @@ function toItem(raw: Record<string, unknown>, today: string): ImportItem {
   const maxDogKg = Number(raw.maxDogKg)
   if (raw.maxDogKg != null && !(Number.isInteger(maxDogKg) && maxDogKg > 0))
     warnings.push(`น้ำหนักสูงสุด "${str(raw.maxDogKg)}" ไม่ใช่ตัวเลข`)
-  else if (maxDogKg < STAY_MIN_DOG_KG) warnings.push(`รับน้องหมาแค่ ${maxDogKg} กก. ไม่ผ่านเกณฑ์ที่พัก`)
+  else if ([category?.slug, ...extraCategories].includes('stay') && maxDogKg < STAY_MIN_DOG_KG)
+    warnings.push(`รับน้องหมาแค่ ${maxDogKg} กก. ไม่ผ่านเกณฑ์ที่พัก`)
   const attributes = strs(raw.attributes)
   for (const a of attributes) if (!filterSlugs.has(a)) warnings.push(`ไม่รู้จักเกณฑ์ "${a}"`)
 

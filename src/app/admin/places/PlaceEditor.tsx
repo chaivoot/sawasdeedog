@@ -65,6 +65,7 @@ export function PlaceEditor({ draft, fromSubmission }: { draft: PlaceDraft; from
   // Drop extras that stop being valid when the main category changes.
   const activeExtras = extras.filter((s) => extraOptions.some((c) => c.slug === s))
   const allCategories = [category, ...activeExtras.map((s) => getCategory(s))].filter((c) => !!c)
+  const isStay = allCategories.some((c) => c.slug === 'stay')
   const hasTrainer = allCategories.some((c) => c.slug === 'trainer')
   const districts = provinces.find((p) => p.slug === province)?.districts ?? []
   const e = state.errors ?? {}
@@ -346,12 +347,16 @@ export function PlaceEditor({ draft, fromSubmission }: { draft: PlaceDraft; from
               </p>
             ),
           )}
-          {allCategories.some((c) => c.slug === 'stay') && (
+          {allCategories.some((c) => c.slug === 'stay' || c.slug === 'park') && (
             <div className="admin-check-group">
               <Field
                 id="maxDogKg"
                 label="จำกัดน้ำหนักน้องหมา (กก.)"
-                hint={`เว้นว่าง = ไม่จำกัด · ต่ำกว่า ${STAY_MIN_DOG_KG} กก. ไม่ผ่านเกณฑ์`}
+                hint={
+                  isStay
+                    ? `เว้นว่าง = ไม่จำกัด · ต่ำกว่า ${STAY_MIN_DOG_KG} กก. ไม่ผ่านเกณฑ์`
+                    : 'เว้นว่าง = ไม่จำกัด · ขึ้นเป็นคำเตือนในหน้าที่นั้น'
+                }
                 error={e.maxDogKg}
               >
                 <input
@@ -363,28 +368,32 @@ export function PlaceEditor({ draft, fromSubmission }: { draft: PlaceDraft; from
                   placeholder="ไม่จำกัด"
                 />
               </Field>
-              <Field
-                id="maxDogs"
-                label="จำนวนน้องหมาต่อห้อง (ตัว)"
-                hint="เว้นว่าง = ไม่จำกัด"
-                error={e.maxDogs}
-              >
-                <input
+              {isStay && (
+                <Field
                   id="maxDogs"
-                  name="maxDogs"
-                  className="input"
-                  inputMode="numeric"
-                  defaultValue={draft.maxDogs}
-                  placeholder="ไม่จำกัด"
-                />
-              </Field>
+                  label="จำนวนน้องหมาต่อห้อง (ตัว)"
+                  hint="เว้นว่าง = ไม่จำกัด"
+                  error={e.maxDogs}
+                >
+                  <input
+                    id="maxDogs"
+                    name="maxDogs"
+                    className="input"
+                    inputMode="numeric"
+                    defaultValue={draft.maxDogs}
+                    placeholder="ไม่จำกัด"
+                  />
+                </Field>
+              )}
             </div>
           )}
           {allCategories
             .filter((c) => c.warnings?.length)
             .map((c) => (
               <div key={`${c.slug}-warnings`} className="admin-check-group">
-                <span className="field__label">ข้อห้าม (ขึ้นเป็นคำเตือนในหน้าที่พัก)</span>
+                <span className="field__label">
+                  {allCategories.length > 1 ? `${c.name}: ` : ''}ข้อจำกัด (ขึ้นเป็นคำเตือนในหน้าที่นั้น)
+                </span>
                 <div className="admin-checks">
                   {c.warnings!.map((w) => (
                     <label key={w.slug} className="checkbox">

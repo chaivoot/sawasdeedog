@@ -18,11 +18,11 @@ export const dogFriendly = {
 
 /**
  * The Dog Friendly rule is about where dogs are welcome, so it applies to every
- * category except trainers (judged on training method), farms and stays (own
- * criteria) and farewell services (no listing rule: it doesn't fit there).
+ * category except trainers (judged on training method), farms, stays and dog parks
+ * (own criteria) and farewell services (no listing rule: it doesn't fit there).
  */
 export function hasDogFriendlyRule(categorySlug: string) {
-  return !['trainer', 'farm', 'stay', 'farewell'].includes(categorySlug)
+  return !['trainer', 'farm', 'stay', 'park', 'farewell'].includes(categorySlug)
 }
 
 /** Stays must take dogs at least this heavy. */
@@ -39,6 +39,17 @@ export const stayRule = {
   body: `ที่พักส่วนใหญ่มีบางโซนที่น้องหมาเข้าไม่ได้ เราจึงใช้เกณฑ์แยก คือต้องรับน้องหมาที่หนัก ${STAY_MIN_DOG_KG} กิโลกรัมขึ้นไปได้ ที่พักที่รับเฉพาะน้องตัวเล็กกว่านั้นเราไม่ลิสต์ ส่วนข้อจำกัดอื่น เช่น จำกัดน้ำหนักที่กี่กิโล ห้ามเข้าร้านอาหาร ห้ามลงสระ หรือห้ามบางสายพันธุ์ เราขึ้นเตือนไว้ในหน้าที่พักแต่ละที่`,
 }
 
+/**
+ * Dog runs and pools are made for dogs, but many split by size or take only small
+ * dogs, so they're listed anyway and their limits are shown as warnings up front.
+ */
+export const parkRule = {
+  banner: 'ที่ไหนจำกัดขนาดน้องหมาหรือมีกฎ เช่น ต้องจูงสาย เราขึ้นเตือนไว้ในหน้าของที่นั้น',
+  short: 'ข้อจำกัดแจ้งไว้ในหน้าแต่ละที่',
+  criterion: 'แจ้งข้อจำกัดไว้ชัด ไม่มีเงื่อนไขแอบแฝง',
+  body: 'ลานวิ่งและสระว่ายน้ำทำมาเพื่อน้องหมาอยู่แล้ว แต่หลายที่แยกโซนตามขนาดหรือรับเฉพาะน้องตัวเล็ก เราจึงลิสต์ไว้ทั้งหมด แล้วขึ้นเตือนข้อจำกัดไว้ในหน้าของแต่ละที่ เช่น จำกัดน้ำหนักที่กี่กิโล ต้องจูงสายตลอด หรือต้องจองคิวก่อน จะได้รู้ก่อนไป',
+}
+
 /** Warnings for a place: its weight limit and the restrictions ticked for its categories. */
 export function placeWarnings(
   p: { maxDogKg?: number; maxDogs?: number; attributes: string[] },
@@ -47,7 +58,7 @@ export function placeWarnings(
   const out: string[] = []
   if (p.maxDogKg) out.push(`จำกัดน้ำหนักน้องหมาไม่เกิน ${p.maxDogKg} กก.`)
   if (p.maxDogs) out.push(`รับน้องหมาได้ไม่เกิน ${p.maxDogs} ตัวต่อห้อง`)
-  for (const w of warnings) if (p.attributes.includes(w.slug)) out.push(w.label)
+  for (const w of warnings) if (p.attributes.includes(w.slug) && !out.includes(w.label)) out.push(w.label)
   return out
 }
 
@@ -56,6 +67,7 @@ export function categoryRule(
   categorySlug: string,
 ): { anchor: string; banner: string; short: string; criterion: string } | undefined {
   if (categorySlug === 'stay') return { anchor: 'stay', ...stayRule }
+  if (categorySlug === 'park') return { anchor: 'park', ...parkRule }
   if (hasDogFriendlyRule(categorySlug)) return { anchor: 'dog-friendly', ...dogFriendly }
 }
 
