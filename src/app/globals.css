@@ -654,6 +654,14 @@ p {
 .segmented--tall button {
   height: 40px;
 }
+/* Four or more choices don't fit one row in the filter column: two per row, never broken words. */
+.segmented:has(> button:nth-child(4)) {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.segmented button {
+  white-space: nowrap;
+}
 @media (min-width: 900px) {
   .segmented:not(.segmented--tall) button {
     font-size: 14px;
