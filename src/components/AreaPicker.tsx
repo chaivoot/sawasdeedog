@@ -3,6 +3,7 @@
 import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { AREA_COOKIE, NEAR_ME, findArea, popularProvinces, provinces } from '@/data/areas'
+import { track } from '@/lib/analytics'
 import { positionErrorText, requestPosition, type PositionError } from '@/lib/near-me'
 import { Icon } from './Icon'
 
@@ -51,11 +52,13 @@ export function AreaPicker({ province, district, category, near }: Props) {
     try {
       await requestPosition()
       setCookie(NEAR_ME)
+      track('near_me', { category })
       close()
       if (category) router.push(`/${category}?near=1`)
       else router.refresh()
     } catch (err) {
       setNearError(positionErrorText[err as PositionError] ?? positionErrorText.unavailable)
+      track('near_me_failed', { category, reason: String(err) })
     } finally {
       setLocating(false)
     }
@@ -85,6 +88,11 @@ export function AreaPicker({ province, district, category, near }: Props) {
     if (!selected) return
     const value = selected.province.slug + (selected.district ? `/${selected.district.slug}` : '')
     setCookie(value)
+    track('area_pick', {
+      category,
+      province: selected.province.slug,
+      district: selected.district?.slug,
+    })
     close()
     if (category) router.push(`/${category}/${value}`)
     else router.refresh()

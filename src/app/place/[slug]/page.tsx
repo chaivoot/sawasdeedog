@@ -275,6 +275,9 @@ export default async function PlacePage({ params }: Props) {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn--primary btn--navigate place__navigate"
+                data-track="navigate_click"
+                data-place={place.slug}
+                data-category={place.category}
               >
                 <Icon name="nav" size={24} strokeWidth={2} />
                 <span>นำทางด้วย Google Maps</span>
@@ -325,6 +328,10 @@ export default async function PlacePage({ params }: Props) {
                       key={c.key}
                       href={c.href}
                       className="contact"
+                      data-track="contact_click"
+                      data-channel={c.key}
+                      data-place={place.slug}
+                      data-category={place.category}
                       {...(sameTab.has(c.key) ? {} : { target: '_blank', rel: 'noopener noreferrer' })}
                     >
                       <span className="contact__icon">

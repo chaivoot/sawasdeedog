@@ -11,6 +11,7 @@ export function CallButton({ label = 'โทรหาทีมงาน' }: { la
     <button
       type="button"
       className="btn btn--primary btn--block"
+      data-track="team_call_click"
       onClick={() => {
         window.location.href = `tel:+66${PARTS.join('').slice(1)}`
       }}
