@@ -136,7 +136,19 @@ function FeaturedTile({
   count: number
 }) {
   return (
-    <Link href={href} className="featured">
+    <Link href={href} className={`featured${category.cover ? ' featured--photo' : ''}`}>
+      {category.cover && (
+        // eslint-disable-next-line @next/next/no-img-element -- static files in public/, two sizes via srcset
+        <img
+          className="featured__photo"
+          src={`/featured/${category.slug}-800.jpg`}
+          srcSet={`/featured/${category.slug}-800.jpg 800w, /featured/${category.slug}-1600.jpg 1600w`}
+          sizes="(min-width: 900px) 66vw, 66vw"
+          alt=""
+          fetchPriority="high"
+          style={{ objectPosition: category.cover.position }}
+        />
+      )}
       <div className="featured__content">
         <div className="featured__top">
           {sponsor ? (
@@ -172,9 +184,11 @@ function FeaturedTile({
           </span>
         )}
       </div>
-      <span className="featured__badge featured__badge--large">
-        <Icon name={category.icon} size={60} />
-      </span>
+      {!category.cover && (
+        <span className="featured__badge featured__badge--large">
+          <Icon name={category.icon} size={60} />
+        </span>
+      )}
     </Link>
   )
 }

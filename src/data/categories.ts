@@ -24,6 +24,11 @@ export type Category = {
   filters: Option[]
   /** Restrictions a place may have; stored with the attributes, shown as warnings, never filtered on. */
   warnings?: Option[]
+  /**
+   * Photo behind the featured home tile: /featured/<slug>-800.jpg and -1600.jpg in public/
+   * (Pexels, free to use). `position` is the CSS object-position that keeps the dog in view.
+   */
+  cover?: { position: string }
 }
 
 // Order is the order of the home grid. Farm is browsed by breed, not area.
@@ -43,6 +48,7 @@ export function extraTypeOptions(c: Category): Option[] {
 export const categories: Category[] = [
   {
     slug: 'cafe',
+    cover: { position: '50% 30%' },
     icon: 'cafe',
     tone: ['#dff3e8', '#1e7a4c'],
     name: 'คาเฟ่ & ร้านอาหาร',
@@ -62,6 +68,7 @@ export const categories: Category[] = [
   },
   {
     slug: 'vet',
+    cover: { position: '50% 65%' },
     icon: 'vet',
     tone: ['#ffe4e4', '#b03a3a'],
     name: 'โรงพยาบาลสัตว์ & คลินิก',
@@ -77,6 +84,7 @@ export const categories: Category[] = [
   },
   {
     slug: 'trainer',
+    cover: { position: '40% 75%' },
     icon: 'trainer',
     tone: ['#e3ecff', '#2a4fb3'],
     name: 'ครูฝึกหมา',
@@ -107,6 +115,7 @@ export const categories: Category[] = [
   },
   {
     slug: 'grooming',
+    cover: { position: '60% 35%' },
     icon: 'grooming',
     tone: ['#dff4f4', '#1c7373'],
     name: 'อาบน้ำ & ตัดขน',
@@ -121,6 +130,7 @@ export const categories: Category[] = [
   },
   {
     slug: 'stay',
+    cover: { position: '60% 35%' },
     icon: 'stay',
     tone: ['#ffe8d6', '#b4501d'],
     name: 'ที่พักหมาพักได้',
@@ -177,6 +187,7 @@ export const categories: Category[] = [
   },
   {
     slug: 'park',
+    cover: { position: '40% 50%' },
     icon: 'park',
     tone: ['#fff1c2', '#7a5a00'],
     name: 'ลานวิ่ง & สระว่ายน้ำหมา',
