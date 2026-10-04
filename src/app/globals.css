@@ -1004,6 +1004,38 @@ p {
 .featured__content {
   display: contents;
 }
+/* Photo tile: the picture fills the card; a blue wash from the text side keeps type readable. */
+.featured--photo {
+  position: relative;
+  isolation: isolate;
+}
+.featured__photo {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.featured--photo::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    to top,
+    rgb(8 46 104 / 0.92) 0%,
+    rgb(8 46 104 / 0.72) 45%,
+    rgb(8 46 104 / 0.25) 100%
+  );
+  transition: background-color 0.15s;
+}
+.featured--photo:hover {
+  background: var(--color-primary);
+}
+.featured--photo:hover::before {
+  background-color: rgb(8 46 104 / 0.12);
+}
 
 @media (min-width: 900px) {
   .featured {
@@ -1050,6 +1082,15 @@ p {
   .featured__badge--large svg {
     width: 60px;
     height: 60px;
+  }
+  .featured--photo::before {
+    background: linear-gradient(
+      to right,
+      rgb(8 46 104 / 0.95) 0%,
+      rgb(8 46 104 / 0.85) 38%,
+      rgb(8 46 104 / 0.25) 70%,
+      rgb(8 46 104 / 0) 100%
+    );
   }
 }
 
