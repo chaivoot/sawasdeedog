@@ -44,6 +44,8 @@ export type PlaceRow = {
   published: boolean
   /** Added by 0006_pins.sql; missing before that migration runs. */
   pinned_in?: string[] | null
+  /** Added by 0007_pinned_at.sql. */
+  pinned_at?: string | null
 }
 
 export function rowToPlace(r: PlaceRow): Place {
@@ -79,6 +81,7 @@ export function rowToPlace(r: PlaceRow): Place {
     breeds: r.breeds ?? [],
     published: r.published,
     pinnedIn: r.pinned_in ?? [],
+    pinnedAt: r.pinned_at ?? undefined,
   }
 }
 
@@ -98,14 +101,20 @@ function hash(s: string): number {
 
 /**
  * Listings in a fresh order each day, so no place stays at the top just for
- * being checked last; places pinned in the category come first. The order holds all day (going back to a list finds
- * things where they were) and is the same for everyone.
+ * being checked last. The order holds all day (going back to a list finds
+ * things where they were) and is the same for everyone. Places pinned in the
+ * category come first, the most recently pinned on top.
  */
 function dailyOrder(places: Place[], category: string, day = todayInBangkok()): Place[] {
   return places
     .map((p) => ({ p, pinned: p.pinnedIn?.includes(category) ? 0 : 1, k: hash(`${day}:${p.slug}`) }))
-    .sort((a, b) => a.pinned - b.pinned || a.k - b.k)
+    .sort((a, b) => a.pinned - b.pinned || (a.pinned === 0 ? byPinnedAt(a.p, b.p) : 0) || a.k - b.k)
     .map((x) => x.p)
+}
+
+/** Latest pin first; pins from before pin times were kept come last. */
+export function byPinnedAt(a: Place, b: Place): number {
+  return (b.pinnedAt ?? '').localeCompare(a.pinnedAt ?? '')
 }
 
 export type PlaceQuery = {

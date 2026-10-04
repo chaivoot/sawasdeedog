@@ -3,6 +3,7 @@ import { categories, getCategory } from '@/data/categories'
 import { placeCategories } from '@/data/places'
 import { findArea } from '@/data/areas'
 import { listAllPlaces } from '@/lib/admin-places'
+import { byPinnedAt } from '@/lib/places'
 import { backfillCoordsAction } from '../actions'
 import { requireAdminPage } from '@/lib/admin-page'
 import { formatDay } from '@/lib/format'
@@ -22,7 +23,8 @@ export default async function AdminPlaces({ searchParams }: Props) {
         // Pinned first, as on the site.
         .sort(
           (a, b) =>
-            Number(!!b.pinnedIn?.includes(current.slug)) - Number(!!a.pinnedIn?.includes(current.slug)),
+            Number(!!b.pinnedIn?.includes(current.slug)) - Number(!!a.pinnedIn?.includes(current.slug)) ||
+            (a.pinnedIn?.includes(current.slug) ? byPinnedAt(a, b) : 0),
         )
     : all
   const countIn = (slug: string) => all.filter((p) => placeCategories(p).includes(slug)).length
