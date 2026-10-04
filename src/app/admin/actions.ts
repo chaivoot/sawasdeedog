@@ -14,7 +14,14 @@ import { findArea } from '@/data/areas'
 import { breeds } from '@/data/breeds'
 import { STAY_MIN_DOG_KG } from '@/data/criteria'
 import { requireAdmin } from '@/lib/admin'
-import { deletePlace, pinCount, slugTaken, upsertPlace, type PlaceInput } from '@/lib/admin-places'
+import {
+  deletePlace,
+  getPlaceById,
+  pinCount,
+  slugTaken,
+  upsertPlace,
+  type PlaceInput,
+} from '@/lib/admin-places'
 import { cleanServiceAreas, parseLatLng, resolveMapsLatLng } from '@/lib/geo'
 import { facebookUrl, instagramHandle, lineLink, websiteUrl } from '@/lib/contacts'
 import { MAX_PINS, MAX_PLACE_PHOTOS } from '@/lib/limits'
@@ -175,6 +182,14 @@ export async function savePlaceAction(_prev: PlaceFormState, form: FormData): Pr
 
   if (Object.keys(errors).length) return { errors }
 
+  // A newly added pin moves the place to the top of the pinned ones; unchanged pins keep their time.
+  const before = id ? ((await getPlaceById(id))?.pinnedIn ?? []) : []
+  const pinTime = !pinnedIn.length
+    ? { pinned_at: null }
+    : pinnedIn.some((c) => !before.includes(c))
+      ? { pinned_at: new Date().toISOString() }
+      : {}
+
   const input: PlaceInput = {
     slug,
     name,
@@ -204,6 +219,7 @@ export async function savePlaceAction(_prev: PlaceFormState, form: FormData): Pr
     breeds: placeBreeds,
     published: form.get('published') === 'on',
     pinned_in: pinnedIn,
+    ...pinTime,
   }
 
   try {

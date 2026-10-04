@@ -49,6 +49,8 @@ export type Place = {
   published?: boolean
   /** Categories this place is pinned in: shown first on those lists. */
   pinnedIn?: string[]
+  /** When a pin was last added (ISO); the latest pin comes first. */
+  pinnedAt?: string
   /** User star ratings; absent when nobody has rated yet. */
   rating?: { count: number; avg: number }
 }
