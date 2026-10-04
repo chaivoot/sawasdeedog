@@ -137,13 +137,14 @@ export async function savePlaceAction(_prev: PlaceFormState, form: FormData): Pr
     .getAll('attributes')
     .filter((a): a is string => typeof a === 'string' && filterSlugs.has(a))
 
-  // Stays: the heaviest dog taken (empty = no limit); below the listing minimum is an error.
+  // Stays and dog parks: the heaviest dog taken (empty = no limit); a stay below the listing minimum is an error.
   const isStay = allCategories.some((c) => c.slug === 'stay')
-  const maxDogKgText = isStay ? text(form, 'maxDogKg') : ''
+  const hasWeightLimit = isStay || allCategories.some((c) => c.slug === 'park')
+  const maxDogKgText = hasWeightLimit ? text(form, 'maxDogKg') : ''
   const maxDogKg = maxDogKgText ? Number(maxDogKgText) : null
   if (maxDogKg !== null && (!Number.isInteger(maxDogKg) || maxDogKg <= 0))
     errors.maxDogKg = 'ใส่เป็นตัวเลขกิโลกรัม เช่น 25'
-  else if (maxDogKg !== null && maxDogKg < STAY_MIN_DOG_KG)
+  else if (isStay && maxDogKg !== null && maxDogKg < STAY_MIN_DOG_KG)
     errors.maxDogKg = `รับน้องหมาไม่ถึง ${STAY_MIN_DOG_KG} กก. ไม่ผ่านเกณฑ์ที่พัก`
   const maxDogsText = isStay ? text(form, 'maxDogs') : ''
   const maxDogs = maxDogsText ? Number(maxDogsText) : null

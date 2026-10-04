@@ -202,6 +202,14 @@ export const categories: Category[] = [
       { slug: 'free', label: 'เข้าฟรี' },
       { slug: 'paid', label: 'เสียค่าเข้า' },
     ],
+    // Listed even with size limits (parkRule); its weight limit and these are shown as warnings.
+    warnings: [
+      { slug: 'small-dogs-only', label: 'รับเฉพาะน้องหมาตัวเล็ก' },
+      { slug: 'leash-only', label: 'ต้องจูงสายตลอด ปล่อยวิ่งไม่ได้' },
+      { slug: 'registration-required', label: 'ต้องลงทะเบียนน้องหมาก่อนเข้า' },
+      { slug: 'booking-required', label: 'ต้องจองคิวล่วงหน้า' },
+      { slug: 'vaccine-record', label: 'ต้องแสดงสมุดวัคซีน' },
+    ],
   },
   {
     slug: 'farewell',
