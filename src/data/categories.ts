@@ -125,8 +125,8 @@ export const categories: Category[] = [
     tone: ['#ffe8d6', '#b4501d'],
     name: 'ที่พักพร้อมหมา',
     schemaType: 'LodgingBusiness',
-    listTitle: 'ที่พักพาหมาไปได้',
-    description: 'โรงแรม รีสอร์ท ที่เจ้าของพักด้วยได้',
+    listTitle: 'ที่พักหมาพักได้',
+    description: 'โรงแรม รีสอร์ท หมาพักได้ เจ้าของพักด้วยได้',
     types: [
       { slug: 'hotel', label: 'โรงแรม' },
       { slug: 'resort', label: 'รีสอร์ท' },
