@@ -51,10 +51,10 @@ function seoDescription(category: Category, area: Area | undefined, count: numbe
       ? `${area.district.name} ${area.province.name}`
       : area.province.name
     : ''
+  // The search phrase ("ที่พักหมาพักได้", "คาเฟ่หมาเข้าได้") rather than the short tile name.
+  const noun = category.listTitle ?? category.name
   const lead =
-    count > 0
-      ? `รวม ${count} ${category.name}${where ? `ใน${where}` : ''}`
-      : `${category.name}${where ? `ใน${where}` : ''}`
+    count > 0 ? `รวม ${count} ${noun}${where ? `ใน${where}` : ''}` : `${noun}${where ? `ใน${where}` : ''}`
   const rule = categoryRule(category.slug)?.banner ?? category.description
   return `${lead} ที่ทีม SawasdeeDog คัดแล้ว · ${rule}`
 }
