@@ -33,6 +33,26 @@ function findProvince(v: string) {
   return provinces.find((p) => p.slug === v.toLowerCase() || norm(p.name) === n)
 }
 
+function findDistrict(province: (typeof provinces)[number], v: string) {
+  return province.districts.find((d) => d.slug === v.toLowerCase() || norm(d.name) === norm(v))
+}
+
+/**
+ * Service areas as area tokens ("bangkok", "bangkok/lat-krabang"). Research may give
+ * Thai names instead ("กรุงเทพมหานคร", "กรุงเทพมหานคร/เขตลาดกระบัง"); both work.
+ */
+function serviceAreaTokens(values: string[], warnings: string[]): string[] {
+  const tokens: string[] = []
+  for (const v of values) {
+    const [p, d] = v.split('/').map((x) => x.trim())
+    const province = findProvince(p)
+    const district = province && d ? findDistrict(province, d) : undefined
+    if (!province || (d && !district)) warnings.push(`ไม่รู้จักพื้นที่ให้บริการ "${v}"`)
+    else tokens.push(district ? `${province.slug}/${district.slug}` : province.slug)
+  }
+  return cleanServiceAreas(tokens)
+}
+
 function toItem(raw: Record<string, unknown>, today: string): ImportItem {
   const warnings: string[] = []
   const name = str(raw.name)
@@ -51,9 +71,7 @@ function toItem(raw: Record<string, unknown>, today: string): ImportItem {
   const province = findProvince(str(raw.province))
   if (!province) warnings.push(`ไม่รู้จักจังหวัด "${str(raw.province)}"`)
   const districtRaw = str(raw.district)
-  const district = province?.districts.find(
-    (d) => d.slug === districtRaw.toLowerCase() || norm(d.name) === norm(districtRaw),
-  )
+  const district = province && districtRaw ? findDistrict(province, districtRaw) : undefined
   if (districtRaw && !district) warnings.push(`ไม่รู้จักเขต/อำเภอ "${districtRaw}"`)
 
   const coords = parseLatLng(str(raw.coords))
@@ -104,7 +122,7 @@ function toItem(raw: Record<string, unknown>, today: string): ImportItem {
         website: str(raw.website) || undefined,
       },
       mapsUrl: str(raw.mapsUrl),
-      serviceAreas: cleanServiceAreas(strs(raw.serviceAreas)),
+      serviceAreas: serviceAreaTokens(strs(raw.serviceAreas), warnings),
       coords: coords ? `${coords.lat}, ${coords.lng}` : '',
       // Photos are uploaded in the editor: hotlinked images break, and may not be ours to use.
       photos: [],
