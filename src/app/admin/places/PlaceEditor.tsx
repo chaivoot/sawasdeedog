@@ -11,7 +11,7 @@ import {
 } from '@/data/categories'
 import { provinces } from '@/data/areas'
 import { breedMatches, breeds, breedsByName } from '@/data/breeds'
-import { categoryRule, STAY_MIN_DOG_KG } from '@/data/criteria'
+import { categoryRule, STAY_MIN_DOG_KG, takesWeightLimit } from '@/data/criteria'
 import type { Contacts } from '@/data/places'
 import { Icon } from '@/components/Icon'
 import { cleanServiceAreas, serviceAreaLabels } from '@/lib/geo'
@@ -347,7 +347,7 @@ export function PlaceEditor({ draft, fromSubmission }: { draft: PlaceDraft; from
               </p>
             ),
           )}
-          {allCategories.some((c) => c.slug === 'stay' || c.slug === 'park') && (
+          {allCategories.some((c) => takesWeightLimit(c.slug)) && (
             <div className="admin-check-group">
               <Field
                 id="maxDogKg"

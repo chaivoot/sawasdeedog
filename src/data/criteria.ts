@@ -17,12 +17,20 @@ export const dogFriendly = {
 }
 
 /**
- * The Dog Friendly rule is about where dogs are welcome, so it applies to every
- * category except trainers (judged on training method), farms, stays and dog parks
- * (own criteria) and farewell services (no listing rule: it doesn't fit there).
+ * The Dog Friendly rule is for places made for people that welcome dogs (cafés and
+ * restaurants), where "pet friendly" is often a trend with hidden conditions.
+ * Stays have their own rule; dog services have theirs (serviceRule).
  */
 export function hasDogFriendlyRule(categorySlug: string) {
-  return !['trainer', 'farm', 'stay', 'park', 'farewell'].includes(categorySlug)
+  return categorySlug === 'cafe'
+}
+
+/** Services made for dogs: listed even with size limits, which show as warnings. */
+export const SERVICE_CATEGORIES = ['vet', 'rehab', 'grooming', 'boarding', 'sitter', 'park']
+
+/** Categories whose places can have a weight limit (shown as a warning). */
+export function takesWeightLimit(categorySlug: string) {
+  return categorySlug === 'stay' || SERVICE_CATEGORIES.includes(categorySlug)
 }
 
 /** Stays must take dogs at least this heavy. */
@@ -40,14 +48,14 @@ export const stayRule = {
 }
 
 /**
- * Dog runs and pools are made for dogs, but many split by size or take only small
- * dogs, so they're listed anyway and their limits are shown as warnings up front.
+ * Dog services exist for dogs already, so the bar is just that: they take dogs (not
+ * cats only). Size limits and other conditions are listed and shown as warnings.
  */
-export const parkRule = {
-  banner: 'ที่ไหนจำกัดขนาดน้องหมาหรือมีกฎ เช่น ต้องจูงสาย เราขึ้นเตือนไว้ในหน้าของที่นั้น',
+export const serviceRule = {
+  banner: 'บริการสำหรับน้องหมา ที่ไหนจำกัดขนาดหรือมีเงื่อนไข เราขึ้นเตือนไว้ในหน้าของที่นั้น',
   short: 'ข้อจำกัดแจ้งไว้ในหน้าแต่ละที่',
   criterion: 'แจ้งข้อจำกัดไว้ชัด ไม่มีเงื่อนไขแอบแฝง',
-  body: 'ลานวิ่งและสระว่ายน้ำทำมาเพื่อน้องหมาอยู่แล้ว แต่หลายที่แยกโซนตามขนาดหรือรับเฉพาะน้องตัวเล็ก เราจึงลิสต์ไว้ทั้งหมด แล้วขึ้นเตือนข้อจำกัดไว้ในหน้าของแต่ละที่ เช่น จำกัดน้ำหนักที่กี่กิโล ต้องจูงสายตลอด หรือต้องจองคิวก่อน จะได้รู้ก่อนไป',
+  body: 'โรงพยาบาลสัตว์ ฟิตเนส อาบน้ำตัดขน ฝากเลี้ยง พี่เลี้ยง ลานวิ่ง และสระว่ายน้ำ ทำมาเพื่อน้องหมาอยู่แล้ว เราจึงลิสต์ทุกที่ที่รับน้องหมา (ไม่ลิสต์ที่ที่รับเฉพาะแมว) ถ้าที่ไหนจำกัดขนาดหรือมีเงื่อนไข เช่น จำกัดน้ำหนักที่กี่กิโล รับเฉพาะน้องตัวเล็ก ต้องจูงสาย หรือต้องจองคิวก่อน เราขึ้นเตือนไว้ในหน้าของที่นั้น จะได้รู้ก่อนไป',
 }
 
 /** Warnings for a place: its weight limit and the restrictions ticked for its categories. */
@@ -67,7 +75,7 @@ export function categoryRule(
   categorySlug: string,
 ): { anchor: string; banner: string; short: string; criterion: string } | undefined {
   if (categorySlug === 'stay') return { anchor: 'stay', ...stayRule }
-  if (categorySlug === 'park') return { anchor: 'park', ...parkRule }
+  if (SERVICE_CATEGORIES.includes(categorySlug)) return { anchor: 'service', ...serviceRule }
   if (hasDogFriendlyRule(categorySlug)) return { anchor: 'dog-friendly', ...dogFriendly }
 }
 
