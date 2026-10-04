@@ -44,7 +44,7 @@ export function ListingCard({
 
   return (
     <Link href={`/place/${place.slug}`} className="listing-card">
-      <Photo src={place.photos[0]} alt={place.name} />
+      <Photo src={place.photos[0]} alt={place.name} small />
       <div className="listing-card__body">
         <span className="listing-card__name">
           {place.name}

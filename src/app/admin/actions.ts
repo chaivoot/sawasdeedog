@@ -25,6 +25,7 @@ import {
 import { cleanServiceAreas, parseLatLng, resolveMapsLatLng } from '@/lib/geo'
 import { facebookUrl, instagramHandle, lineLink, websiteUrl } from '@/lib/contacts'
 import { MAX_PINS, MAX_PLACE_PHOTOS } from '@/lib/limits'
+import { removePlacePhotos } from '@/lib/place-photos'
 import { db, isSupabaseConfigured } from '@/lib/supabase'
 import type { SubmissionStatus } from '@/lib/submissions'
 
@@ -183,7 +184,8 @@ export async function savePlaceAction(_prev: PlaceFormState, form: FormData): Pr
   if (Object.keys(errors).length) return { errors }
 
   // A newly added pin moves the place to the top of the pinned ones; unchanged pins keep their time.
-  const before = id ? ((await getPlaceById(id))?.pinnedIn ?? []) : []
+  const existing = id ? await getPlaceById(id) : undefined
+  const before = existing?.pinnedIn ?? []
   const pinTime = !pinnedIn.length
     ? { pinned_at: null }
     : pinnedIn.some((c) => !before.includes(c))
@@ -230,6 +232,8 @@ export async function savePlaceAction(_prev: PlaceFormState, form: FormData): Pr
     console.error(err)
     return { message: 'บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง' }
   }
+  // Photos taken off this place: delete their files once the save has gone through.
+  await removePlacePhotos((existing?.photos ?? []).filter((p) => !photos.includes(p)))
 
   revalidatePath('/', 'layout')
   redirect(`/admin/places?saved=${encodeURIComponent(slug)}`)
@@ -238,7 +242,11 @@ export async function savePlaceAction(_prev: PlaceFormState, form: FormData): Pr
 export async function deletePlaceAction(form: FormData) {
   await requireAdmin()
   const id = text(form, 'id')
-  if (id) await deletePlace(id)
+  if (id) {
+    const photos = (await getPlaceById(id))?.photos ?? []
+    await deletePlace(id)
+    await removePlacePhotos(photos)
+  }
   revalidatePath('/', 'layout')
   redirect('/admin/places')
 }

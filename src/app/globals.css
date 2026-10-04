@@ -3426,3 +3426,39 @@ a.guarantee:hover {
   background: var(--color-accent-50);
   color: var(--color-accent-text);
 }
+
+/* Admin: photo storage page */
+.admin-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 32px;
+  margin: 8px 0 24px;
+}
+.admin-stats dt {
+  font-size: 13px;
+  color: var(--color-muted);
+}
+.admin-stats dd {
+  margin: 2px 0 0;
+  font-size: 17px;
+  font-weight: 600;
+}
+.admin-section {
+  margin-top: 28px;
+}
+.admin-section h2 {
+  font-size: 18px;
+  margin-bottom: 6px;
+}
+.admin-hint {
+  font-size: 14px;
+  color: var(--color-muted);
+  margin-bottom: 10px;
+}
+.admin-files {
+  max-height: 280px;
+  overflow: auto;
+  margin: 8px 0 0;
+  padding-left: 18px;
+  font-size: 13px;
+}

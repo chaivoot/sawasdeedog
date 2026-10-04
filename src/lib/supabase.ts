@@ -1,8 +1,7 @@
 import 'server-only'
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 
-export const PLACE_PHOTOS_BUCKET = 'place-photos'
-export const SUBMISSION_PHOTOS_BUCKET = 'submission-photos'
+export { PLACE_PHOTOS_BUCKET, SUBMISSION_PHOTOS_BUCKET } from './supabase-names'
 
 let client: SupabaseClient | undefined
 
