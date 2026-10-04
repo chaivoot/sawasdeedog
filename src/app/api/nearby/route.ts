@@ -5,12 +5,10 @@ import { approxDistanceKm } from '@/lib/area-distance'
 import { coversArea, distanceKm } from '@/lib/geo'
 import { parseListingParams } from '@/lib/listing'
 import { locateArea } from '@/lib/locate'
+import { NEAR_ME_KM } from '@/lib/limits'
 import { listPlaces } from '@/lib/places'
 
 export const dynamic = 'force-dynamic'
-
-/** Storefronts within this distance are listed (straight line, so roads are longer). */
-const MAX_KM = 40
 
 /**
  * Places near a point for one category: by distance (approximate for places
@@ -50,7 +48,7 @@ export async function GET(req: Request) {
     )
     .filter((x): x is { place: Place; km: number; approx: boolean } => x.km != null)
     .sort((a, b) => a.km - b.km)
-    .filter((x) => x.km <= MAX_KM)
+    .filter((x) => x.km <= NEAR_ME_KM)
 
   return Response.json(
     {

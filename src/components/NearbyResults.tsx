@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import type { Place } from '@/data/places'
+import { NEAR_ME_KM } from '@/lib/limits'
 import { listingHref, type ListingParams } from '@/lib/listing'
 import {
   clearSavedPosition,
@@ -109,7 +110,7 @@ export function NearbyResults({
       <>
         {where(area)}
         <EmptyState
-          title={`ยังไม่มี${noun}ใกล้คุณ`}
+          title={`ยังไม่มี${noun}ในระยะ ${NEAR_ME_KM} กม.`}
           body="เรายังคัดไม่ครบทุกย่าน ถ้ารู้จักที่ดี ๆ แถวนี้ เสนอให้ทีมช่วยเช็คได้เลย"
           primary={{ href: '/submit', label: 'เสนอสถานที่' }}
           secondary={area ? { href: area.path, label: `ดูทั้งหมดใน${area.name}` } : undefined}
@@ -141,7 +142,8 @@ export function NearbyResults({
         </>
       )}
       <p className="nearby__credit">
-        ระยะทางเป็นเส้นตรง (“ประมาณ” = วัดถึงกลางเขตที่ให้บริการ) · ย่านจาก{' '}
+        แสดงที่อยู่ในระยะ {NEAR_ME_KM} กม. · ระยะทางเป็นเส้นตรง (“ประมาณ” = วัดถึงกลางเขตที่ให้บริการ) ·
+        ย่านจาก{' '}
         <Link href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">
           © OpenStreetMap
         </Link>
