@@ -2,6 +2,8 @@
 export const MAX_PHOTOS = 5
 /** Per-place photo limit in the admin editor. */
 export const MAX_PLACE_PHOTOS = 12
+/** Most places one category can pin to the top of its list. */
+export const MAX_PINS = 6
 /** Photos are downscaled in the browser before upload; this caps the result. */
 export const MAX_PHOTO_MB = 10
 export const PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp']

@@ -41,6 +41,15 @@ export async function upsertPlace(input: PlaceInput, id: string | undefined, by:
   return (data as { id: string }).id
 }
 
+/** How many other places are pinned in a category (admin limit check). */
+export async function pinCount(category: string, exceptId?: string): Promise<number> {
+  let q = db().from('places').select('id', { count: 'exact', head: true }).contains('pinned_in', [category])
+  if (exceptId) q = q.neq('id', exceptId)
+  const { count, error } = await q
+  if (error) throw error
+  return count ?? 0
+}
+
 export async function deletePlace(id: string): Promise<void> {
   const { error } = await db().from('places').delete().eq('id', id)
   if (error) throw error

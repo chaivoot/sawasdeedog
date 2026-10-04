@@ -14,10 +14,10 @@ import { findArea } from '@/data/areas'
 import { breeds } from '@/data/breeds'
 import { STAY_MIN_DOG_KG } from '@/data/criteria'
 import { requireAdmin } from '@/lib/admin'
-import { deletePlace, slugTaken, upsertPlace, type PlaceInput } from '@/lib/admin-places'
+import { deletePlace, pinCount, slugTaken, upsertPlace, type PlaceInput } from '@/lib/admin-places'
 import { cleanServiceAreas, parseLatLng, resolveMapsLatLng } from '@/lib/geo'
 import { facebookUrl, instagramHandle, lineLink, websiteUrl } from '@/lib/contacts'
-import { MAX_PLACE_PHOTOS } from '@/lib/limits'
+import { MAX_PINS, MAX_PLACE_PHOTOS } from '@/lib/limits'
 import { db, isSupabaseConfigured } from '@/lib/supabase'
 import type { SubmissionStatus } from '@/lib/submissions'
 
@@ -162,6 +162,17 @@ export async function savePlaceAction(_prev: PlaceFormState, form: FormData): Pr
   if (!SLUG_RE.test(slug)) errors.slug = 'ใช้ได้เฉพาะ a-z 0-9 และขีด (-)'
   else if (await slugTaken(slug, id)) errors.slug = 'slug นี้มีรายการอื่นใช้แล้ว'
 
+  // Pins only count in categories the place is listed in, and each category holds MAX_PINS.
+  const pinnedIn = form
+    .getAll('pinnedIn')
+    .filter((c): c is string => typeof c === 'string' && allCategories.some((x) => x.slug === c))
+  for (const c of pinnedIn) {
+    if ((await pinCount(c, id)) >= MAX_PINS) {
+      errors.pinnedIn = `หมวด${getCategory(c)?.name}ปักหมุดครบ ${MAX_PINS} รายการแล้ว เอาหมุดรายการอื่นออกก่อน`
+      break
+    }
+  }
+
   if (Object.keys(errors).length) return { errors }
 
   const input: PlaceInput = {
@@ -192,6 +203,7 @@ export async function savePlaceAction(_prev: PlaceFormState, form: FormData): Pr
     photos,
     breeds: placeBreeds,
     published: form.get('published') === 'on',
+    pinned_in: pinnedIn,
   }
 
   try {

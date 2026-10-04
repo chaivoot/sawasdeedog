@@ -47,6 +47,8 @@ export type Place = {
   breeds?: string[]
   /** Hidden from the site when false (admin only). */
   published?: boolean
+  /** Categories this place is pinned in: shown first on those lists. */
+  pinnedIn?: string[]
   /** User star ratings; absent when nobody has rated yet. */
   rating?: { count: number; avg: number }
 }
@@ -136,6 +138,7 @@ export const samplePlaces: Place[] = [
     name: 'คาเฟ่ตัวอย่าง D',
     category: 'cafe',
     type: 'cafe',
+    pinnedIn: ['cafe'],
     province: 'bangkok',
     district: 'bang-na',
     checkedAt: '2026-09-02',
