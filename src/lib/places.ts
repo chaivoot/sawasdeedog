@@ -1,7 +1,7 @@
 import 'server-only'
 import { cache } from 'react'
 import { categories, extraTypeToken, type TrainerStyle } from '@/data/categories'
-import { breeds, type Breed } from '@/data/breeds'
+import { breedsByName, type Breed } from '@/data/breeds'
 import { placeCategories, samplePlaces, type Place } from '@/data/places'
 import { sponsors, type Sponsor } from '@/data/sponsors'
 import type { Area } from '@/data/areas'
@@ -189,10 +189,10 @@ async function farms(): Promise<Place[]> {
   return (data as PlaceRow[]).map(rowToPlace)
 }
 
-/** Breeds that have at least one farm, in the curated order of data/breeds. */
+/** Breeds that have at least one farm, ก–ฮ by Thai name. */
 export async function breedsWithFarms(): Promise<BreedWithCount[]> {
   const all = await farms()
-  return breeds
+  return breedsByName
     .map((b) => ({ ...b, farmCount: all.filter((f) => f.breeds?.includes(b.slug)).length }))
     .filter((b) => b.farmCount > 0)
 }
