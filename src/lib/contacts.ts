@@ -93,13 +93,32 @@ export function websiteUrl(v?: string): string | undefined {
   return u && /^https?:$/.test(u.protocol) && u.hostname.includes('.') ? u.toString() : undefined
 }
 
+/**
+ * Phone numbers typed into one field ("081-583-6964, 089-103-1669", "… หรือ …",
+ * or two numbers separated by spaces), one per entry. A range like 02-887-8321-3 stays whole.
+ */
+export function splitPhones(v?: string): string[] {
+  const parts = (v ?? '').split(/[,;/|\n]|\s+(?:หรือ|และ|or)\s+/i).flatMap((p) => {
+    const words = p.trim().split(/\s+/)
+    // "081 583 6964" is one number; "081-583-6964 089-103-1669" is two.
+    return words.length > 1 && words.every((w) => w.replace(/\D/g, '').length >= 9) ? words : [p.trim()]
+  })
+  return parts.filter((p) => p.replace(/\D/g, '').length >= 3)
+}
+
 export type ContactLink = { key: keyof Contacts; label: string; value: string; href: string }
 
 /** Contact rows for a place page, skipping anything that doesn't make a working link. */
 export function contactLinks(c: Contacts): ContactLink[] {
   const links: ContactLink[] = []
-  if (c.phone?.trim())
-    links.push({ key: 'phone', label: 'โทร', value: c.phone, href: `tel:${c.phone.replace(/[^\d+]/g, '')}` })
+  for (const phone of splitPhones(c.phone))
+    // A range ("02-887-8321-3") dials its first number.
+    links.push({
+      key: 'phone',
+      label: 'โทร',
+      value: phone,
+      href: `tel:${phone.replace(/(\d{4})-\d{1,2}$/, '$1').replace(/[^\d+]/g, '')}`,
+    })
   const line = lineLink(c.line)
   if (line) links.push({ key: 'line', label: 'LINE', value: line.label, href: line.href })
   const ig = instagramHandle(c.instagram)

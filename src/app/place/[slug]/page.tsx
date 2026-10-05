@@ -18,7 +18,7 @@ import { categoryRule, placeWarnings } from '@/data/criteria'
 import { placeCategories, type Contacts, type Place } from '@/data/places'
 import { JsonLd } from '@/components/JsonLd'
 import { MIN_RATINGS_TO_SHOW } from '@/lib/limits'
-import { contactLinks } from '@/lib/contacts'
+import { contactLinks, splitPhones } from '@/lib/contacts'
 import { serviceAreaLabels } from '@/lib/geo'
 import { getPlace } from '@/lib/places'
 import { DEFAULT_OG_IMAGE, absoluteUrl } from '@/lib/site'
@@ -76,7 +76,7 @@ function placeLd(place: Place, crumbs: Crumb[]) {
     url,
     description: place.description,
     image: place.photos.length ? place.photos.map(absoluteUrl) : undefined,
-    telephone: c.phone,
+    telephone: splitPhones(c.phone)[0],
     hasMap: place.mapsUrl,
     geo:
       place.lat != null && place.lng != null
@@ -324,9 +324,9 @@ export default async function PlacePage({ params }: Props) {
               <section className="place__aside-section place__contacts">
                 <h2>ติดต่อ</h2>
                 <div className="contact-list">
-                  {contacts.map((c) => (
+                  {contacts.map((c, i) => (
                     <a
-                      key={c.key}
+                      key={`${c.key}-${i}`}
                       href={c.href}
                       className="contact"
                       data-track="contact_click"
