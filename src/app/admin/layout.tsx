@@ -55,6 +55,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             <Link href="/admin">ข้อมูลที่ส่งมา</Link>
             <Link href="/admin/places">รายการบนเว็บ</Link>
             <Link href="/admin/places/new">+ เพิ่มรายการ</Link>
+            <Link href="/admin/articles">บทความ</Link>
             <Link href="/admin/photos">รูปภาพ</Link>
           </nav>
           <span className="admin-header__who">
