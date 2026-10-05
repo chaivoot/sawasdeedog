@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 
 const links = [
   { href: '/', label: 'หมวดทั้งหมด' },
-  { href: '/criteria', label: 'เกณฑ์การคัดเลือก' },
+  { href: '/stories', label: 'เรื่องหมาๆ' },
   { href: '/contact', label: 'ติดต่อเรา' },
 ]
 
