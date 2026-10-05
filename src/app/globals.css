@@ -3492,3 +3492,135 @@ a.guarantee:hover {
 .near-count {
   white-space: nowrap;
 }
+
+/* ---------- Articles (เรื่องหมาๆ) ---------- */
+
+.story-list {
+  display: grid;
+  gap: 14px;
+}
+.story-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  color: inherit;
+  text-decoration: none;
+}
+.story-card__cover {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  display: block;
+}
+.story-card__text {
+  padding: 14px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.story-card__title {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+.story-card__excerpt {
+  color: var(--color-muted);
+  line-height: 1.6;
+}
+.story-card__date {
+  font-size: 13px;
+  color: var(--color-muted);
+}
+.article__head {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.article__head h1 {
+  font-size: 26px;
+  line-height: 1.35;
+}
+.article__meta {
+  font-size: 14px;
+  color: var(--color-muted);
+}
+.article__cover {
+  width: 100%;
+  border-radius: var(--radius-card);
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+.article-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  font-size: 17px;
+  line-height: 1.8;
+}
+.article-body h2 {
+  font-size: 21px;
+  line-height: 1.4;
+  margin-top: 12px;
+}
+.article-body h3 {
+  font-size: 18px;
+  line-height: 1.4;
+  margin-top: 4px;
+}
+.article-body ul {
+  padding-left: 1.3em;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.article-body a {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+.article-body__image {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.article-body__image img {
+  width: 100%;
+  border-radius: var(--radius-card);
+}
+.article-body__image figcaption {
+  font-size: 14px;
+  color: var(--color-muted);
+  text-align: center;
+}
+.article-body__place .listing-card {
+  margin: 0;
+}
+@media (min-width: 768px) {
+  .story-list {
+    grid-template-columns: 1fr 1fr;
+  }
+  .article__head h1 {
+    font-size: 34px;
+  }
+}
+
+.admin-article-body {
+  font-family: inherit;
+  line-height: 1.7;
+}
+.admin-article-cover {
+  max-width: 320px;
+  border-radius: 12px;
+}
+.admin-upload-btn {
+  align-self: flex-start;
+  cursor: pointer;
+}
+.admin-article-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}

@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next'
 import { areaCategories } from '@/data/categories'
 import { findArea } from '@/data/areas'
+import { listPublishedArticles, type Article } from '@/lib/articles'
 import { breedsWithFarms, listIndexEntries, type IndexEntry } from '@/lib/places'
 import { areaKeys } from '@/lib/geo'
 import { absoluteUrl } from '@/lib/site'
@@ -12,8 +13,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // A database outage must not fail the deploy; serve the static pages until the next rebuild.
   let entries: IndexEntry[] = []
   let farmBreeds: { slug: string }[] = []
+  let articles: Article[] = []
   try {
-    ;[entries, farmBreeds] = await Promise.all([listIndexEntries(), breedsWithFarms()])
+    ;[entries, farmBreeds, articles] = await Promise.all([
+      listIndexEntries(),
+      breedsWithFarms(),
+      listPublishedArticles(),
+    ])
   } catch (e) {
     console.error('sitemap: could not load places', e)
   }
@@ -26,6 +32,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: absoluteUrl('/contact'), changeFrequency: 'yearly', priority: 0.3 },
     { url: absoluteUrl('/farm'), changeFrequency: 'weekly', priority: 0.7 },
   ]
+
+  if (articles.length > 0) {
+    urls.push({
+      url: absoluteUrl('/stories'),
+      lastModified: articles[0].updatedAt,
+      changeFrequency: 'weekly',
+      priority: 0.6,
+    })
+    for (const a of articles)
+      urls.push({
+        url: absoluteUrl(`/stories/${a.slug}`),
+        lastModified: a.updatedAt,
+        changeFrequency: 'monthly',
+        priority: 0.6,
+      })
+  }
 
   for (const b of farmBreeds) {
     urls.push({ url: absoluteUrl(`/farm/${b.slug}`), changeFrequency: 'weekly', priority: 0.6 })
