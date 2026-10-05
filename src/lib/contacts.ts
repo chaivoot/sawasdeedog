@@ -41,9 +41,34 @@ export function facebookUrl(v?: string): string | undefined {
   return `https://www.facebook.com${path}${id ? `?id=${id}` : ''}`
 }
 
-/** What to show for a Facebook link: "facebook.com/peopleandtail". */
+function decode(v: string): string {
+  try {
+    return decodeURIComponent(v)
+  } catch {
+    return v
+  }
+}
+
+/**
+ * What to show for a Facebook link: "facebook.com/peopleandtail" for a page; a post,
+ * group or numeric profile link would be a long, unreadable URL, so it says "Facebook".
+ */
 export function facebookLabel(url: string): string {
-  return url.replace(/^https?:\/\/(www\.)?/, '')
+  const u = asUrl(url)
+  const parts = u?.pathname.split('/').filter(Boolean) ?? []
+  if (parts.length === 1 && parts[0] !== 'profile.php' && !/^\d+$/.test(parts[0]))
+    return `facebook.com/${decode(parts[0])}`
+  return 'เปิดใน Facebook'
+}
+
+/** What to show for a website: the host and readable path, cut short when long. */
+export function websiteLabel(url: string): string {
+  const u = asUrl(url)
+  if (!u) return url
+  const host = u.hostname.replace(/^www\./, '')
+  const path = decode(u.pathname).replace(/\/+$/, '')
+  const full = host + path
+  return full.length > 40 ? `${host}${path ? '/…' : ''}` : full
 }
 
 /** Link to open a LINE account: from "@official", a personal ID, or a line.me / lin.ee link. */
@@ -92,7 +117,7 @@ export function contactLinks(c: Contacts): ContactLink[] {
     links.push({
       key: 'website',
       label: 'เว็บไซต์',
-      value: web.replace(/^https?:\/\//, '').replace(/\/$/, ''),
+      value: websiteLabel(web),
       href: web,
     })
   return links
