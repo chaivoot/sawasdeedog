@@ -1,6 +1,5 @@
 const TZ = 'Asia/Bangkok'
 
-const monthYear = new Intl.DateTimeFormat('th-TH', { month: 'short', year: 'numeric', timeZone: TZ })
 const dayMonthYear = new Intl.DateTimeFormat('th-TH', {
   day: 'numeric',
   month: 'short',
@@ -13,9 +12,9 @@ function parse(iso: string) {
   return new Date(`${iso}T12:00:00Z`)
 }
 
-/** "ก.ย. 2569" */
-export function formatMonth(iso: string) {
-  return monthYear.format(parse(iso))
+/** "2026": the year (C.E.) of a YYYY-MM-DD date. */
+export function formatYear(iso: string) {
+  return iso.slice(0, 4)
 }
 
 /** "12 ก.ย. 2569" */
