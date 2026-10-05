@@ -4,10 +4,10 @@ import Link from 'next/link'
 import { useIsAdmin } from '@/lib/use-is-admin'
 import { Icon } from './Icon'
 
-/** Header call to action: visitors suggest a place, admins add one straight to the site. */
+/** Header call to action: visitors suggest a place; admins go to the place list (add, import or edit from there). */
 export function AddPlaceButton({ variant }: { variant: 'pill' | 'button' }) {
   const admin = useIsAdmin()
-  const href = admin ? '/admin/places/new' : '/submit'
+  const href = admin ? '/admin/places' : '/submit'
   const label = admin ? 'เพิ่มสถานที่' : 'เสนอสถานที่'
   return variant === 'pill' ? (
     <Link href={href} className="submit-pill">
