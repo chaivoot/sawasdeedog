@@ -163,6 +163,14 @@ async function listPlacesUncached(q: PlaceQuery): Promise<Place[]> {
 /** Cached per request so generateMetadata and the page share one query. */
 export const listPlaces = cache(listPlacesUncached)
 
+/** Every published place, unordered and without ratings (for counting). */
+export const listAllPlaces = cache(async (): Promise<Place[]> => {
+  if (!isSupabaseConfigured()) return samplePlaces
+  const { data, error } = await db().from('places').select('*').eq('published', true)
+  if (error) throw error
+  return (data as PlaceRow[]).map(rowToPlace)
+})
+
 /** Published place by slug (public pages). Cached per request. */
 export const getPlace = cache(getPlaceUncached)
 
