@@ -74,11 +74,10 @@ export const categories: Category[] = [
     name: 'โรงพยาบาลสัตว์ & คลินิก',
     schemaType: 'VeterinaryCare',
     listTitle: 'โรงพยาบาลสัตว์ & คลินิกรักษาหมา',
-    description: 'โรงพยาบาล คลินิก และเฉพาะทาง',
+    description: 'โรงพยาบาลและคลินิก',
     types: [
       { slug: 'hospital', label: 'โรงพยาบาล' },
       { slug: 'clinic', label: 'คลินิก' },
-      { slug: 'specialist', label: 'เฉพาะทาง' },
     ],
     filters: [{ slug: 'open-24h', label: 'เปิด 24 ชม.' }],
   },
