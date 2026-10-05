@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { cookies } from 'next/headers'
 import { AreaPicker } from '@/components/AreaPicker'
 import { Icon } from '@/components/Icon'
+import { NearCount } from '@/components/NearCount'
 import { SiteHeader } from '@/components/SiteHeader'
 import { categories, featuredCategories, type Category } from '@/data/categories'
 import { AREA_COOKIE, NEAR_ME, areaPath, parseAreaCookie, type Area } from '@/data/areas'
@@ -86,6 +87,7 @@ export default async function HomePage() {
             href={categoryHref(featured, area, near)}
             sponsor={sponsor}
             count={counts.get(featured.slug) ?? 0}
+            near={near}
           />
           {rest.map((c, i) => (
             <CategoryTile
@@ -94,6 +96,7 @@ export default async function HomePage() {
               href={categoryHref(c, area, near)}
               tall={i === 0}
               count={counts.get(c.slug) ?? 0}
+              near={near}
             />
           ))}
         </div>
@@ -129,11 +132,14 @@ function FeaturedTile({
   href,
   sponsor,
   count,
+  near,
 }: {
   category: Category
   href: string
   sponsor?: Sponsor
   count: number
+  /** "ใกล้ฉัน" mode: add how many are near the visitor. */
+  near: boolean
 }) {
   return (
     <Link href={href} className={`featured${category.cover ? ' featured--photo' : ''}`}>
@@ -162,7 +168,10 @@ function FeaturedTile({
         </div>
         <div className="featured__body">
           <span className="featured__name">{category.name}</span>
-          <span className="featured__count">{count} รายการ</span>
+          <span className="featured__count">
+            {count} รายการ
+            {near && count > 0 && <NearCount category={category.slug} />}
+          </span>
           <span className="featured__tagline">{category.tagline ?? category.description}</span>
         </div>
         {sponsor ? (
@@ -198,11 +207,14 @@ function CategoryTile({
   href,
   tall,
   count,
+  near,
 }: {
   category: Category
   href: string
   tall: boolean
   count: number
+  /** "ใกล้ฉัน" mode: add how many are near the visitor. */
+  near: boolean
 }) {
   return (
     <Link
@@ -215,7 +227,10 @@ function CategoryTile({
       </span>
       <span className="tile__text">
         <span className="tile__name">{category.name}</span>
-        <span className="tile__count">{count} รายการ</span>
+        <span className="tile__count">
+          {count} รายการ
+          {near && count > 0 && <NearCount category={category.slug} />}
+        </span>
         <span className="tile__desc">{category.description}</span>
       </span>
       <span className="tile__more">

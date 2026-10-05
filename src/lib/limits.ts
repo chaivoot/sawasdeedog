@@ -10,4 +10,4 @@ export const PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 /** Average stars are shown only once this many people have rated a place. */
 export const MIN_RATINGS_TO_SHOW = 3
 /** "ใกล้ฉัน" lists storefronts within this straight-line distance (roads are longer). */
-export const NEAR_ME_KM = 15
+export const NEAR_ME_KM = 20

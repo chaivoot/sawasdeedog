@@ -3487,3 +3487,8 @@ a.guarantee:hover {
   font-size: 14.5px;
   margin-top: 4px;
 }
+
+/* "(ใกล้ฉัน 2)" after a home tile's count: wraps as a whole. */
+.near-count {
+  white-space: nowrap;
+}

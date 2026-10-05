@@ -1,11 +1,8 @@
 import { getCategory, type TrainerStyle } from '@/data/categories'
 import { areaName } from '@/data/areas'
-import type { Place } from '@/data/places'
-import { approxDistanceKm } from '@/lib/area-distance'
-import { coversArea, distanceKm } from '@/lib/geo'
 import { parseListingParams } from '@/lib/listing'
 import { locateArea } from '@/lib/locate'
-import { NEAR_ME_KM } from '@/lib/limits'
+import { matchNearby } from '@/lib/nearby'
 import { listPlaces } from '@/lib/places'
 
 export const dynamic = 'force-dynamic'
@@ -34,21 +31,7 @@ export async function GET(req: Request) {
     locateArea(here),
   ])
 
-  const pinned = (p: Place) => p.lat != null && p.lng != null
-  // Without a pin, a place that is in or visits the visitor's district is listed as local.
-  const local = area ? places.filter((p) => !pinned(p) && coversArea(p, area)) : []
-  const isLocal = new Set(local.map((p) => p.slug))
-  // Everything else by distance: exact for pins, else to the nearest district it is in or visits.
-  const near = places
-    .filter((p) => !isLocal.has(p.slug))
-    .map((p) =>
-      pinned(p)
-        ? { place: p, km: distanceKm(here, { lat: p.lat!, lng: p.lng! }), approx: false }
-        : { place: p, km: approxDistanceKm(here, p), approx: true },
-    )
-    .filter((x): x is { place: Place; km: number; approx: boolean } => x.km != null)
-    .sort((a, b) => a.km - b.km)
-    .filter((x) => x.km <= NEAR_ME_KM)
+  const { local, near } = matchNearby(places, here, area)
 
   return Response.json(
     {
