@@ -109,6 +109,7 @@
 - ไม่มี `type` แต่ **ต้องมี `trainerStyle`**
   - `rplus` = Force-Free: ไม่ใช้ความเจ็บ ความอึดอัด หรือความกลัว
   - `balance` = Balance: ใช้ทั้งรางวัลและการบังคับ (correction)
+  - บอกว่าฝึกเชิงบวก แต่ยังกระตุก/ดึงสายจูง ใช้ slip lead โซ่กระตุก ปลอกคอหนามหรือไฟฟ้า = `balance` ใช้ Force-Free ไม่ได้
 - ตัวกรอง: `home-visit` (สอนถึงบ้าน), `day-school` (โรงเรียนไปกลับ), `board-and-train` (ฝากฝึก), `group-class` (คลาสกลุ่ม), `online` (ออนไลน์)
 - ระบุไม่ได้ชัดว่าเป็นแนวไหน ให้ใส่ `"published": false` และอธิบายใน notes
 
