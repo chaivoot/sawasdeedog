@@ -19,7 +19,7 @@ export default async function AdminHome({ searchParams }: Props) {
   const requested = (await searchParams).status
   const status = tabs.find((t) => t.status === requested)?.status ?? 'pending'
   const rows = await listSubmissions(status)
-  const dateFmt = new Intl.DateTimeFormat('th-TH', {
+  const dateFmt = new Intl.DateTimeFormat('th-TH-u-ca-gregory', {
     dateStyle: 'medium',
     timeStyle: 'short',
     timeZone: 'Asia/Bangkok',

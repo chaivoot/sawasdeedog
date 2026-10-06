@@ -1,6 +1,6 @@
 const TZ = 'Asia/Bangkok'
 
-const dayMonthYear = new Intl.DateTimeFormat('th-TH', {
+const dayMonthYear = new Intl.DateTimeFormat('th-TH-u-ca-gregory', {
   day: 'numeric',
   month: 'short',
   year: 'numeric',
@@ -17,7 +17,7 @@ export function formatYear(iso: string) {
   return iso.slice(0, 4)
 }
 
-/** "12 ก.ย. 2569" */
+/** "12 ก.ย. 2026" (Thai month, C.E. year, like the last-checked year) */
 export function formatDay(iso: string) {
   return dayMonthYear.format(parse(iso))
 }
