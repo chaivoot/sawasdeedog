@@ -33,7 +33,11 @@ export function latLngFromMapsUrl(url: string): LatLng | undefined {
   return undefined
 }
 
-/** Follows short links (maps.app.goo.gl, goo.gl/maps) to the full URL, then reads its coordinates. */
+/**
+ * Follows short links (maps.app.goo.gl, goo.gl/maps) to the full URL, then reads its coordinates.
+ * Links shared from the Maps app often land on `?q=<name, address>&ftid=<place id>` with no
+ * coordinates at all; for those the place is looked up by name and matched on its place id.
+ */
 export async function resolveMapsLatLng(url: string): Promise<LatLng | undefined> {
   const direct = latLngFromMapsUrl(url)
   if (direct) return direct
@@ -46,14 +50,49 @@ export async function resolveMapsLatLng(url: string): Promise<LatLng | undefined
       return undefined
     }
     const next = res.headers.get('location')
-    if (!next) return undefined
+    if (!next) break
     current = new URL(next, current).toString()
     // Consent interstitials carry the real URL in ?continue=
     const cont = new URL(current).searchParams.get('continue')
     const found = latLngFromMapsUrl(current) ?? (cont ? latLngFromMapsUrl(cont) : undefined)
     if (found) return found
+    if (cont) current = cont
   }
-  return undefined
+  return latLngFromPlaceId(current)
+}
+
+/** `?q=…&ftid=0x…:0x…` → search Maps for q and take the pin of the result with that place id. */
+async function latLngFromPlaceId(url: string): Promise<LatLng | undefined> {
+  let params: URLSearchParams
+  try {
+    params = new URL(url).searchParams
+  } catch {
+    return undefined
+  }
+  const ftid = params.get('ftid')
+  const q = params.get('q')
+  if (!ftid || !/^0x[0-9a-f]+:0x[0-9a-f]+$/i.test(ftid) || !q) return undefined
+  let body: string
+  try {
+    const res = await fetch(`https://www.google.com/search?tbm=map&hl=th&gl=th&q=${encodeURIComponent(q)}`, {
+      headers: { 'user-agent': 'Mozilla/5.0' },
+      signal: AbortSignal.timeout(6000),
+    })
+    if (!res.ok) return undefined
+    body = await res.text()
+  } catch {
+    return undefined
+  }
+  const at = body.indexOf(ftid)
+  if (at < 0) return undefined
+  // The result's pin sits just before its place id: [null,null,lat,lng]
+  let best: { p: LatLng; gap: number } | undefined
+  for (const m of body.matchAll(/\[null,null,(-?\d+\.\d+),(-?\d+\.\d+)\]/g)) {
+    const p = pair(m[1], m[2])
+    const gap = Math.abs((m.index ?? 0) - at)
+    if (p && gap < 500 && (!best || gap < best.gap)) best = { p, gap }
+  }
+  return best?.p
 }
 
 /** Great-circle distance in km. */
