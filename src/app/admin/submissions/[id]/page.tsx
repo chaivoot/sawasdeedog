@@ -15,7 +15,7 @@ export default async function SubmissionPage({ params }: Props) {
   if (!s) notFound()
   const photos = await submissionPhotoUrls(s.photos)
   const place = s.place_slug ? await getPlace(s.place_slug) : undefined
-  const dateFmt = new Intl.DateTimeFormat('th-TH', {
+  const dateFmt = new Intl.DateTimeFormat('th-TH-u-ca-gregory', {
     dateStyle: 'long',
     timeStyle: 'short',
     timeZone: 'Asia/Bangkok',
