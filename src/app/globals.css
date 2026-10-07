@@ -2157,7 +2157,8 @@ a.guarantee:hover {
   .place__buyer-note {
     order: 4;
   }
-  .place__report {
+  .place__report,
+  .place__nearby {
     order: 7;
   }
   .place-grid {
@@ -3680,6 +3681,36 @@ a.guarantee:hover {
 }
 .place__booking-note {
   margin: 6px 2px 0;
+  font-size: 12px;
+  color: var(--color-muted);
+}
+
+/* Stays: vets and dog-friendly cafes near the stay */
+.place__nearby-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.place__nearby-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+@media (min-width: 900px) {
+  .place__nearby-list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+.place__nearby-group h3 {
+  font-size: 16px;
+  color: var(--color-ink-2);
+}
+.place__nearby-more {
+  font-size: 14px;
+  font-weight: 600;
+}
+.place__nearby-note {
   font-size: 12px;
   color: var(--color-muted);
 }
