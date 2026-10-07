@@ -2,6 +2,7 @@ import { extraTypeOptions, getCategory, trainerStyles } from '@/data/categories'
 import { provinces } from '@/data/areas'
 import { breeds } from '@/data/breeds'
 import { STAY_MIN_DOG_KG } from '@/data/criteria'
+import { isAgodaUrl } from '@/lib/agoda'
 import { cleanServiceAreas, parseLatLng } from '@/lib/geo'
 import type { PlaceDraft } from '../PlaceEditor'
 
@@ -65,6 +66,8 @@ function toItem(raw: Record<string, unknown>, today: string): ImportItem {
   const validType = category?.types?.some((t) => t.slug === type) ? type : undefined
   if (type && !validType) warnings.push(`ประเภท "${type}" ไม่ตรงกับหมวด`)
 
+  if (str(raw.agodaUrl) && !isAgodaUrl(str(raw.agodaUrl)))
+    warnings.push('ลิงก์ Agoda ไม่ใช่หน้า agoda.com (ไม่ได้ใส่)')
   const extraCategories = strs(raw.extraCategories).filter((c) => getCategory(c) && c !== category?.slug)
   const trainerStyle = str(raw.trainerStyle)
 
@@ -130,6 +133,7 @@ function toItem(raw: Record<string, unknown>, today: string): ImportItem {
       breeds: placeBreeds.filter((b) => breedSlugs.has(b)),
       maxDogKg: Number.isInteger(maxDogKg) && maxDogKg > 0 ? String(maxDogKg) : '',
       maxDogs: Number.isInteger(Number(raw.maxDogs)) && Number(raw.maxDogs) > 0 ? String(raw.maxDogs) : '',
+      agodaUrl: isAgodaUrl(str(raw.agodaUrl)) ? str(raw.agodaUrl) : '',
       // Shown by default; research can say "published": false to keep one hidden.
       published: raw.published !== false,
       pinnedIn: [],

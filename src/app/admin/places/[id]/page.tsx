@@ -47,6 +47,7 @@ export default async function EditPlace({ params }: Props) {
           breeds: place.breeds ?? [],
           maxDogKg: place.maxDogKg ? String(place.maxDogKg) : '',
           maxDogs: place.maxDogs ? String(place.maxDogs) : '',
+          agodaUrl: place.agodaUrl ?? '',
           published: place.published !== false,
           pinnedIn: place.pinnedIn ?? [],
         }}
