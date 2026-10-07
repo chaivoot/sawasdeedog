@@ -285,7 +285,7 @@ export default async function PlacePage({ params }: Props) {
                 href={place.mapsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn btn--primary btn--navigate place__navigate"
+                className={`btn btn--navigate place__navigate ${place.category === 'stay' ? 'btn--navigate-outline' : 'btn--primary'}`}
                 data-track="navigate_click"
                 data-place={place.slug}
                 data-category={place.category}

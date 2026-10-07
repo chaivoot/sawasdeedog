@@ -373,6 +373,17 @@ p {
     font-size: 19px;
   }
 }
+/* Stays: directions step back so "check room prices" leads. */
+.btn--navigate-outline {
+  background: var(--color-surface);
+  color: var(--color-primary);
+  border: 2px solid var(--color-primary);
+  box-shadow: none;
+}
+.btn--navigate-outline:hover {
+  background: var(--color-primary-50);
+  color: var(--color-primary);
+}
 
 /* ---------- Area button & picker ---------- */
 
