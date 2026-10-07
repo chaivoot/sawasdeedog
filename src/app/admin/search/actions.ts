@@ -5,7 +5,7 @@ import { requireAdmin } from '@/lib/admin'
 import { dueUrls, inspectAndStore, listIndexStatus, sitemapUrls } from '@/lib/index-status'
 
 /** Pages per click: five at a time stays well inside the function time limit and the API's 600/minute. */
-const INSPECT_BATCH = 40
+const INSPECT_BATCH = 30
 
 export async function inspectBatchAction() {
   await requireAdmin()

@@ -3457,6 +3457,13 @@ a.guarantee:hover {
   color: var(--color-muted);
   margin-bottom: 10px;
 }
+/* Admin: note shown beside a submit button while its action runs */
+.admin-pending {
+  margin-left: 8px;
+  font-size: 14px;
+  color: var(--color-muted);
+}
+
 /* Admin: Search Console tables */
 .admin-table-wrap {
   overflow-x: auto;
