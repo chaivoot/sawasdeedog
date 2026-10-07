@@ -285,7 +285,7 @@ export default async function PlacePage({ params }: Props) {
                 href={place.mapsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`btn btn--navigate place__navigate ${place.category === 'stay' ? 'btn--navigate-outline' : 'btn--primary'}`}
+                className="btn btn--primary btn--navigate place__navigate"
                 data-track="navigate_click"
                 data-place={place.slug}
                 data-category={place.category}
@@ -300,7 +300,7 @@ export default async function PlacePage({ params }: Props) {
                   href={agoda}
                   target="_blank"
                   rel="noopener noreferrer sponsored"
-                  className="btn btn--primary btn--navigate"
+                  className="btn btn--navigate btn--booking"
                   data-track="agoda_click"
                   data-place={place.slug}
                 >
