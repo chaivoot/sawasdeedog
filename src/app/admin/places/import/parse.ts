@@ -136,8 +136,8 @@ function toItem(raw: Record<string, unknown>, today: string): ImportItem {
       maxDogs: Number.isInteger(Number(raw.maxDogs)) && Number(raw.maxDogs) > 0 ? String(raw.maxDogs) : '',
       agodaUrl: isAgodaUrl(str(raw.agodaUrl)) ? str(raw.agodaUrl) : '',
       petFee: str(raw.petFee) || undefined,
-      // Shown by default; research can say "published": false to keep one hidden.
-      published: raw.published !== false,
+      // Hidden until the team has checked it and added photos; "published": true shows it at once.
+      published: raw.published === true,
       pinnedIn: [],
     },
     notes: strs(raw.notes),
