@@ -74,6 +74,8 @@ const DAY = 86_400_000
 /** Indexed pages are re-checked every two weeks, the rest every few days, failed checks daily. */
 function due(s: IndexStatus | undefined, now: number): boolean {
   if (!s) return true
+  // Results first fetched in Thai are re-read once in English.
+  if (/[\u0E00-\u0E7F]/.test(s.coverageState ?? '')) return true
   const age = now - new Date(s.checkedAt).getTime()
   if (s.error) return age > DAY
   if (s.verdict === 'PASS') return age > 14 * DAY
