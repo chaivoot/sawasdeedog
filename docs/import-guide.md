@@ -309,8 +309,8 @@ golden-retriever, labrador-retriever, shetland-sheepdog, shiba-inu, pembroke-wel
 ใส่ `"update": true` กับ `slug` ของร้านเดิม (ดูจาก URL `sawasdeedog.com/place/<slug>`) แล้วใส่**เฉพาะช่องที่จะแก้**
 ช่องที่ไม่ใส่จะคงเดิม ใส่ `null` หรือ `""` เพื่อลบค่าเดิม
 
-- แก้ได้: `description`, `hours`, `price`, `petFee`, `phone`, `line`, `instagram`, `facebook`, `website`, `agodaUrl`, `maxDogKg`, `maxDogs`, `type`, `attributes`, `published`, `checkedAt`
-- แก้ไม่ได้ (แอดมินแก้ในหน้าร้าน): ชื่อ, slug, หมวด, จังหวัด/เขต, พิกัด, รูป
+- แก้ได้: `description`, `hours`, `price`, `petFee`, `phone`, `line`, `instagram`, `facebook`, `website`, `mapsUrl`, `coords`, `agodaUrl`, `maxDogKg`, `maxDogs`, `type`, `attributes`, `published`, `checkedAt` (แก้ `mapsUrl` ให้ส่ง `coords` มาคู่กันเสมอ)
+- แก้ไม่ได้ (แอดมินแก้ในหน้าร้าน): ชื่อ, slug, หมวด, จังหวัด/เขต, รูป
 - `attributes` จะ**แทนที่ทั้งชุด** ต้องใส่ทุกข้อที่ยังใช้อยู่ ไม่ใช่แค่ข้อที่เพิ่ม
 - ใส่ `notes` และ `sources` เหมือนเดิม
 - วางรวมกับร้านใหม่ในก้อนเดียวกันได้ หน้านำเข้าจะแยกให้เอง และแสดงว่าแต่ละช่องเปลี่ยนจากอะไรเป็นอะไรก่อนกดบันทึก

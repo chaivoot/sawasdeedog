@@ -3,11 +3,12 @@ import { STAY_MIN_DOG_KG, takesWeightLimit } from '@/data/criteria'
 import { placeCategories, type Place } from '@/data/places'
 import { isAgodaUrl } from '@/lib/agoda'
 import { facebookUrl, instagramHandle, lineLink, websiteUrl } from '@/lib/contacts'
+import { parseLatLng } from '@/lib/geo'
 import type { PlaceRow } from '@/lib/places'
 
 // Updates to places already listed: research marked "update": true, matched by slug.
 // Only the fields given change; a field given as null or "" is cleared. Name, slug,
-// category, location and photos are never touched here (use the editor).
+// category, province/district and photos are never touched here (use the editor).
 
 export type PlacePatch = Partial<
   Pick<
@@ -28,6 +29,9 @@ export type PlacePatch = Partial<
     | 'attributes'
     | 'published'
     | 'checked_at'
+    | 'maps_url'
+    | 'lat'
+    | 'lng'
   >
 >
 
@@ -86,6 +90,24 @@ export function toPatch(raw: Record<string, unknown>, existing: Place[], today: 
   text('hours', 'hours', 'เวลาเปิด', place.hours)
   text('price', 'price', 'ราคา', place.price)
   text('phone', 'phone', 'เบอร์โทร', place.contacts.phone)
+
+  // Map link and pin: send both, so the pin matches the link.
+  if (has('mapsUrl')) {
+    const v = str(raw.mapsUrl)
+    if (v && !/^https:\/\//.test(v)) item.warnings.push('ลิงก์ Google Maps ไม่ถูกต้อง (ไม่ได้แก้)')
+    else set('maps_url', 'ลิงก์ Google Maps', v || null, place.mapsUrl)
+  }
+  if (has('coords')) {
+    const v = str(raw.coords)
+    const c = parseLatLng(v)
+    const before = place.lat != null && place.lng != null ? `${place.lat}, ${place.lng}` : ''
+    if (v && !c) item.warnings.push(`พิกัด "${v}" ไม่ถูกต้อง (ไม่ได้แก้)`)
+    else if (show(c ? `${c.lat}, ${c.lng}` : '') !== show(before)) {
+      item.patch.lat = c?.lat ?? null
+      item.patch.lng = c?.lng ?? null
+      item.changes.push({ label: 'พิกัด', from: show(before), to: show(c ? `${c.lat}, ${c.lng}` : '') })
+    }
+  }
 
   // Contacts in the same canonical form the editor stores.
   const contact = (
@@ -175,8 +197,8 @@ export function toPatch(raw: Record<string, unknown>, existing: Place[], today: 
     else set('published', 'แสดงบนเว็บ', raw.published, place.published !== false)
   }
 
-  // Changed after a fresh check: the check date moves too.
-  if (item.changes.length) {
+  // Changed after a fresh check: the check date moves too (a map fix alone is not a check).
+  if (item.changes.some((c) => c.label !== 'ลิงก์ Google Maps' && c.label !== 'พิกัด')) {
     const d = /^\d{4}-\d{2}-\d{2}$/.test(str(raw.checkedAt)) ? str(raw.checkedAt) : today
     if (d !== place.checkedAt) item.patch.checked_at = d
   }
