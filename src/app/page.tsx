@@ -104,7 +104,7 @@ export default async function HomePage() {
         <Link href="/criteria" className="callout">
           <Icon name="shield" size={22} strokeWidth={1.9} />
           <span className="callout__text">
-            <b className="mobile-only">คัดมาแล้ว ไม่ใช่มีครบ</b>
+            <b className="mobile-only">ทุกที่ผ่านการคัดแล้ว</b>
             <b className="desktop-only">เราคัดยังไง</b>
             <br />
             <span className="mobile-only">อ่านเกณฑ์การคัดเลือกของเรา</span>
