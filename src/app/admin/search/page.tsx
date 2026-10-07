@@ -1,3 +1,4 @@
+import { PendingSubmit } from '@/components/PendingSubmit'
 import { requireAdminPage } from '@/lib/admin-page'
 import { dueUrls, listIndexStatus, sitemapUrls, type IndexStatus } from '@/lib/index-status'
 import {
@@ -239,9 +240,9 @@ async function IndexSection({ site, checked, failed }: { site: string; checked?:
       {dueCount > 0 ? (
         <form action={inspectBatchAction} className="admin-notice">
           ถึงรอบตรวจ {dueCount} หน้า{' '}
-          <button type="submit" className="btn btn--secondary btn--sm">
-            ตรวจ (ครั้งละ 40 หน้า)
-          </button>
+          <PendingSubmit pending="กำลังตรวจทีละหน้ากับ Google ใช้เวลาราว 15–40 วินาที อย่าปิดหน้านี้">
+            ตรวจ (ครั้งละ 30 หน้า)
+          </PendingSubmit>
         </form>
       ) : (
         <p className="admin-hint">
