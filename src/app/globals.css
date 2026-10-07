@@ -3667,10 +3667,6 @@ a.guarantee:hover {
 .place__booking {
   margin-top: 10px;
 }
-.place__booking-btn {
-  width: 100%;
-  justify-content: center;
-}
 .place__booking-note {
   margin: 6px 2px 0;
   font-size: 12px;
