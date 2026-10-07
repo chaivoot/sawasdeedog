@@ -175,7 +175,7 @@ export async function inspectUrl(url: string): Promise<Inspection> {
   }>('https://searchconsole.googleapis.com/v1/urlInspection/index:inspect', {
     inspectionUrl: url,
     siteUrl: site,
-    languageCode: 'th',
+    languageCode: 'en-US',
   })
   const s = inspectionResult?.indexStatusResult ?? {}
   return {
