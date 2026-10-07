@@ -15,15 +15,25 @@ export function matchNearby(places: Place[], here: LatLng, area: Area | undefine
   const pinned = (p: Place) => p.lat != null && p.lng != null
   const local = area ? places.filter((p) => !pinned(p) && coversArea(p, area)) : []
   const isLocal = new Set(local.map((p) => p.slug))
-  const near = places
-    .filter((p) => !isLocal.has(p.slug))
+  const near = nearestTo(
+    places.filter((p) => !isLocal.has(p.slug)),
+    here,
+    NEAR_ME_KM,
+  )
+  return { local, near }
+}
+
+/**
+ * `places` within `maxKm` of `here`, closest first: exact for pins, to the
+ * nearest district otherwise.
+ */
+export function nearestTo(places: Place[], here: LatLng, maxKm: number): NearPlace[] {
+  return places
     .map((p) =>
-      pinned(p)
-        ? { place: p, km: distanceKm(here, { lat: p.lat!, lng: p.lng! }), approx: false }
+      p.lat != null && p.lng != null
+        ? { place: p, km: distanceKm(here, { lat: p.lat, lng: p.lng }), approx: false }
         : { place: p, km: approxDistanceKm(here, p), approx: true },
     )
-    .filter((x): x is NearPlace => x.km != null)
+    .filter((x): x is NearPlace => x.km != null && x.km <= maxKm)
     .sort((a, b) => a.km - b.km)
-    .filter((x) => x.km <= NEAR_ME_KM)
-  return { local, near }
 }

@@ -7,6 +7,7 @@ import { Checked } from '@/components/Checked'
 import { FarmBuyerNote } from '@/components/FarmBuyerNote'
 import { PedigreeBadge } from '@/components/PedigreeBadge'
 import { Icon, type IconName } from '@/components/Icon'
+import { NearStay } from '@/components/NearStay'
 import { PlaceGallery } from '@/components/PlaceGallery'
 import { RatingWidget } from '@/components/RatingWidget'
 import { RatingBadge } from '@/components/Stars'
@@ -268,6 +269,8 @@ export default async function PlacePage({ params }: Props) {
                 </div>
               </section>
             )}
+
+            {place.category === 'stay' && <NearStay place={place} />}
 
             {isFarm && <FarmBuyerNote className="place__section place__buyer-note" />}
 
