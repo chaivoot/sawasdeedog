@@ -45,6 +45,19 @@ const fromRow = (r: Row): IndexStatus => ({
   checkedAt: r.checked_at,
 })
 
+/** Which pages the admin is looking at: place detail pages only, or the whole sitemap. */
+export type IndexScope = 'place' | 'all'
+
+export function isPlaceUrl(url: string): boolean {
+  try {
+    return new URL(url).pathname.startsWith('/place/')
+  } catch {
+    return false
+  }
+}
+
+export const inScope = (url: string, scope: IndexScope) => scope === 'all' || isPlaceUrl(url)
+
 /** Every page we ask Google to index: the sitemap. */
 export async function sitemapUrls(): Promise<string[]> {
   return (await sitemap()).map((u) => u.url)
@@ -67,12 +80,16 @@ function due(s: IndexStatus | undefined, now: number): boolean {
   return age > 3 * DAY
 }
 
-/** URLs to check next: never checked first, then the oldest results. */
+/** URLs to check next: place pages before the rest, never-checked first, then the oldest results. */
 export function dueUrls(urls: string[], statuses: IndexStatus[], now = Date.now()): string[] {
   const byUrl = new Map(statuses.map((s) => [s.url, s]))
   return urls
     .filter((u) => due(byUrl.get(u), now))
-    .sort((a, b) => (byUrl.get(a)?.checkedAt ?? '').localeCompare(byUrl.get(b)?.checkedAt ?? ''))
+    .sort(
+      (a, b) =>
+        Number(isPlaceUrl(b)) - Number(isPlaceUrl(a)) ||
+        (byUrl.get(a)?.checkedAt ?? '').localeCompare(byUrl.get(b)?.checkedAt ?? ''),
+    )
 }
 
 /** Inspects up to `limit` URLs, a few at a time, and stores each result. Returns how many were checked. */
