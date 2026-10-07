@@ -18,6 +18,7 @@ import { categoryRule, placeWarnings } from '@/data/criteria'
 import { placeCategories, type Contacts, type Place } from '@/data/places'
 import { JsonLd } from '@/components/JsonLd'
 import { MIN_RATINGS_TO_SHOW } from '@/lib/limits'
+import { agodaLink } from '@/lib/agoda'
 import { contactLinks, splitPhones } from '@/lib/contacts'
 import { serviceAreaLabels } from '@/lib/geo'
 import { getPlace } from '@/lib/places'
@@ -168,6 +169,8 @@ export default async function PlacePage({ params }: Props) {
   const serviceAreas = serviceAreaLabels(place.serviceAreas ?? [])
 
   const isFarm = place.category === 'farm'
+  const agoda =
+    place.agodaUrl && placeCategories(place).includes('stay') ? agodaLink(place.agodaUrl) : undefined
   const listHref = isFarm
     ? place.breeds?.[0]
       ? `/farm/${place.breeds[0]}`
@@ -283,6 +286,23 @@ export default async function PlacePage({ params }: Props) {
                 <Icon name="nav" size={24} strokeWidth={2} />
                 <span>นำทางด้วย Google Maps</span>
               </a>
+            )}
+            {agoda && (
+              <div className="place__booking">
+                <a
+                  href={agoda}
+                  target="_blank"
+                  rel="noopener noreferrer sponsored"
+                  className="btn btn--secondary place__booking-btn"
+                  data-track="agoda_click"
+                  data-place={place.slug}
+                >
+                  เช็คราคาห้องพัก (Agoda)
+                </a>
+                <p className="place__booking-note">
+                  ลิงก์พันธมิตร เราอาจได้ค่าตอบแทนเมื่อคุณจอง ไม่มีผลต่อราคาและการคัดเลือก
+                </p>
+              </div>
             )}
             {serviceAreas.length > 0 && (
               <div className="service-areas place__navigate">

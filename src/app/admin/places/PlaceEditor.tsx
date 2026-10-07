@@ -45,6 +45,8 @@ export type PlaceDraft = {
   maxDogKg: string
   /** Stays: most dogs per room; empty = no limit. */
   maxDogs: string
+  /** Stays: the place's Agoda page. */
+  agodaUrl: string
   published: boolean
   /** Categories this place is pinned to the top of. */
   pinnedIn: string[]
@@ -382,6 +384,24 @@ export function PlaceEditor({ draft, fromSubmission }: { draft: PlaceDraft; from
                     inputMode="numeric"
                     defaultValue={draft.maxDogs}
                     placeholder="ไม่จำกัด"
+                  />
+                </Field>
+              )}
+              {isStay && (
+                <Field
+                  id="agodaUrl"
+                  label="ลิงก์ Agoda"
+                  hint="หน้าที่พักนี้ใน Agoda ขึ้นเป็นปุ่ม “เช็คราคาห้องพัก” · เว้นว่างถ้าไม่มีใน Agoda"
+                  error={e.agodaUrl}
+                  full
+                >
+                  <input
+                    id="agodaUrl"
+                    name="agodaUrl"
+                    className="input"
+                    inputMode="url"
+                    defaultValue={draft.agodaUrl}
+                    placeholder="https://www.agoda.com/..."
                   />
                 </Field>
               )}

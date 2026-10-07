@@ -26,6 +26,7 @@ export default async function NewPlace({ searchParams }: Props) {
     breeds: [],
     maxDogKg: '',
     maxDogs: '',
+    agodaUrl: '',
     photos: [],
     contacts: {},
     published: true,

@@ -23,6 +23,7 @@ import {
   type PlaceInput,
 } from '@/lib/admin-places'
 import { cleanServiceAreas, parseLatLng, resolveMapsLatLng } from '@/lib/geo'
+import { isAgodaUrl } from '@/lib/agoda'
 import { facebookUrl, instagramHandle, lineLink, websiteUrl } from '@/lib/contacts'
 import { MAX_PINS, MAX_PLACE_PHOTOS } from '@/lib/limits'
 import { removePlacePhotos } from '@/lib/place-photos'
@@ -153,6 +154,8 @@ export async function savePlaceAction(_prev: PlaceFormState, form: FormData): Pr
   const maxDogs = maxDogsText ? Number(maxDogsText) : null
   if (maxDogs !== null && (!Number.isInteger(maxDogs) || maxDogs <= 0))
     errors.maxDogs = 'ใส่เป็นจำนวนตัว เช่น 2'
+  const agodaUrl = isStay ? text(form, 'agodaUrl') : ''
+  if (agodaUrl && !isAgodaUrl(agodaUrl)) errors.agodaUrl = 'ใส่ลิงก์หน้าที่พักจาก agoda.com'
   const breedSlugs = new Set(breeds.map((b) => b.slug))
   const placeBreeds = isFarm
     ? form.getAll('breeds').filter((b): b is string => typeof b === 'string' && breedSlugs.has(b))
@@ -221,6 +224,7 @@ export async function savePlaceAction(_prev: PlaceFormState, form: FormData): Pr
     lng: coords?.lng ?? null,
     max_dog_kg: maxDogKg,
     max_dogs: maxDogs,
+    agoda_url: agodaUrl || null,
     photos,
     breeds: placeBreeds,
     published: form.get('published') === 'on',

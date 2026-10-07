@@ -36,6 +36,8 @@ export type Place = {
   /** Storefront coordinates, read from the Google Maps link. */
   lat?: number
   lng?: number
+  /** Stays: the place's Agoda page, for the "check room prices" button. */
+  agodaUrl?: string
   /** Stays: heaviest dog taken, in kg; unset means no limit. */
   maxDogKg?: number
   /** Stays: most dogs per room; unset means not limited (or not known). */
