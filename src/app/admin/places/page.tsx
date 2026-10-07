@@ -8,13 +8,19 @@ import { backfillCoordsAction } from '../actions'
 import { requireAdminPage } from '@/lib/admin-page'
 import { formatDay } from '@/lib/format'
 
-type Props = { searchParams: Promise<{ q?: string; c?: string; saved?: string; coords?: string }> }
+type Props = {
+  searchParams: Promise<{ q?: string; c?: string; h?: string; saved?: string; coords?: string }>
+}
 
 export default async function AdminPlaces({ searchParams }: Props) {
   await requireAdminPage()
-  const { q, c, saved, coords } = await searchParams
-  const all = await listAllPlaces(q)
-  const missingCoords = all.filter((p) => p.mapsUrl && p.lat == null).length
+  const { q, c, h, saved, coords } = await searchParams
+  const everything = await listAllPlaces(q)
+  // "Hidden only": the ones still being worked on before they go live.
+  const hiddenOnly = h === '1'
+  const hiddenCount = everything.filter((p) => p.published === false).length
+  const all = hiddenOnly ? everything.filter((p) => p.published === false) : everything
+  const missingCoords = everything.filter((p) => p.mapsUrl && p.lat == null).length
   // A place counts under every category it is listed in, main or extra.
   const current = getCategory(c ?? '')
   const places = current
@@ -28,10 +34,11 @@ export default async function AdminPlaces({ searchParams }: Props) {
         )
     : all
   const countIn = (slug: string) => all.filter((p) => placeCategories(p).includes(slug)).length
-  const tabHref = (slug?: string) => {
+  const tabHref = (slug?: string, hidden = hiddenOnly) => {
     const sp = new URLSearchParams()
     if (q) sp.set('q', q)
     if (slug) sp.set('c', slug)
+    if (hidden) sp.set('h', '1')
     return `/admin/places${sp.size ? `?${sp}` : ''}`
   }
   const [coordsFound, coordsTried] = (coords ?? '').split('-').map(Number)
@@ -70,6 +77,7 @@ export default async function AdminPlaces({ searchParams }: Props) {
       )}
       <form className="admin-search" role="search">
         {current && <input type="hidden" name="c" value={current.slug} />}
+        {hiddenOnly && <input type="hidden" name="h" value="1" />}
         <input
           name="q"
           defaultValue={q}
@@ -95,6 +103,15 @@ export default async function AdminPlaces({ searchParams }: Props) {
             {cat.name} {countIn(cat.slug)}
           </Link>
         ))}
+      </nav>
+      <nav className="admin-tabs" aria-label="สถานะ">
+        <Link
+          href={tabHref(current?.slug, !hiddenOnly)}
+          className="chip"
+          aria-current={hiddenOnly ? 'page' : undefined}
+        >
+          เฉพาะที่ซ่อนอยู่ {hiddenCount}
+        </Link>
       </nav>
       {places.length === 0 ? (
         <p className="admin-empty">ไม่มีรายการ</p>
