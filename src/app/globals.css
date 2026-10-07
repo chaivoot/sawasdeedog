@@ -3129,6 +3129,12 @@ a.guarantee:hover {
   gap: 10px;
   align-items: flex-start;
 }
+.admin-save {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+}
 .admin-reject {
   display: flex;
   gap: 8px;
