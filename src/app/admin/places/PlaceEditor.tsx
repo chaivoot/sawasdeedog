@@ -315,11 +315,7 @@ export function PlaceEditor({ draft, fromSubmission }: { draft: PlaceDraft; from
             />
           </Field>
           <div className="field">
-            <span className="field__label">การแสดงผล</span>
-            <label className="checkbox">
-              <input type="checkbox" name="published" defaultChecked={draft.published} />
-              แสดงบนเว็บ
-            </label>
+            <span className="field__label">ปักหมุด</span>
             {allCategories.map((c) => (
               <label key={c.slug} className="checkbox">
                 <input
@@ -637,9 +633,15 @@ export function PlaceEditor({ draft, fromSubmission }: { draft: PlaceDraft; from
         {(uploadError || e.photos) && <span className="field__error">{uploadError || e.photos}</span>}
       </fieldset>
 
-      <button type="submit" className="btn btn--primary btn--lg" disabled={pending || uploading}>
-        {pending ? 'กำลังบันทึก…' : 'บันทึก'}
-      </button>
+      <div className="admin-save">
+        <label className="checkbox">
+          <input type="checkbox" name="published" defaultChecked={draft.published} />
+          แสดงบนเว็บ
+        </label>
+        <button type="submit" className="btn btn--primary btn--lg" disabled={pending || uploading}>
+          {pending ? 'กำลังบันทึก…' : 'บันทึก'}
+        </button>
+      </div>
     </form>
   )
 }
