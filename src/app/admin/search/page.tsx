@@ -1,6 +1,14 @@
 import { PendingSubmit } from '@/components/PendingSubmit'
 import { requireAdminPage } from '@/lib/admin-page'
-import { dueUrls, listIndexStatus, sitemapUrls, type IndexStatus } from '@/lib/index-status'
+import Link from 'next/link'
+import {
+  dueUrls,
+  inScope,
+  listIndexStatus,
+  sitemapUrls,
+  type IndexScope,
+  type IndexStatus,
+} from '@/lib/index-status'
 import {
   inspectInConsoleUrl,
   isSearchConsoleConfigured,
@@ -15,7 +23,7 @@ import { inspectBatchAction } from './actions'
 // Inspecting a batch of pages takes a while.
 export const maxDuration = 60
 
-type Props = { searchParams: Promise<{ checked?: string; failed?: string }> }
+type Props = { searchParams: Promise<{ checked?: string; failed?: string; scope?: string }> }
 
 const num = (n: number) => Math.round(n).toLocaleString('th-TH')
 const pct = (n: number) => `${(n * 100).toLocaleString('th-TH', { maximumFractionDigits: 1 })}%`
@@ -37,7 +45,8 @@ function path(url: string) {
 
 export default async function AdminSearch({ searchParams }: Props) {
   await requireAdminPage()
-  const { checked, failed } = await searchParams
+  const { checked, failed, scope: scopeParam } = await searchParams
+  const scope: IndexScope = scopeParam === 'all' ? 'all' : 'place'
 
   if (!isSearchConsoleConfigured())
     return (
@@ -122,7 +131,7 @@ export default async function AdminSearch({ searchParams }: Props) {
         <SearchTable rows={pages} label="หน้า" link />
       </section>
 
-      <IndexSection site={site} checked={checked} failed={failed} />
+      <IndexSection site={site} scope={scope} checked={checked} failed={failed} />
     </>
   )
 }
@@ -163,7 +172,17 @@ function SearchTable({ rows, label, link }: { rows: SearchRow[]; label: string; 
   )
 }
 
-async function IndexSection({ site, checked, failed }: { site: string; checked?: string; failed?: string }) {
+async function IndexSection({
+  site,
+  scope,
+  checked,
+  failed,
+}: {
+  site: string
+  scope: IndexScope
+  checked?: string
+  failed?: string
+}) {
   if (!isSupabaseConfigured())
     return (
       <section className="admin-section" id="index">
@@ -176,6 +195,7 @@ async function IndexSection({ site, checked, failed }: { site: string; checked?:
   let statuses: IndexStatus[]
   try {
     ;[urls, statuses] = await Promise.all([sitemapUrls(), listIndexStatus()])
+    urls = urls.filter((u) => inScope(u, scope))
   } catch (e) {
     return (
       <section className="admin-section" id="index">
@@ -205,6 +225,14 @@ async function IndexSection({ site, checked, failed }: { site: string; checked?:
         กดลิงก์เพื่อเปิดใน Search Console แล้วกด &quot;ขอการจัดทำดัชนี&quot; (Request indexing) เอง
         ปุ่มนี้กดผ่าน API ไม่ได้
       </p>
+      <nav className="admin-tabs" aria-label="หน้าที่ตรวจ">
+        <Link href="/admin/search?scope=place#index" aria-current={scope === 'place' ? 'page' : undefined}>
+          หน้าร้าน (/place)
+        </Link>
+        <Link href="/admin/search?scope=all#index" aria-current={scope === 'all' ? 'page' : undefined}>
+          ทุกหน้า
+        </Link>
+      </nav>
       {failed && (
         <p className="admin-warning" role="alert">
           ตรวจไม่สำเร็จ: {failed}
@@ -239,6 +267,7 @@ async function IndexSection({ site, checked, failed }: { site: string; checked?:
 
       {dueCount > 0 ? (
         <form action={inspectBatchAction} className="admin-notice">
+          <input type="hidden" name="scope" value={scope} />
           ถึงรอบตรวจ {dueCount} หน้า{' '}
           <PendingSubmit pending="กำลังตรวจทีละหน้ากับ Google ใช้เวลาราว 15–40 วินาที อย่าปิดหน้านี้">
             ตรวจ (ครั้งละ 30 หน้า)
