@@ -222,8 +222,8 @@ async function IndexSection({
       <h2>หน้าที่ติด Google แล้วหรือยัง</h2>
       <p className="admin-hint">
         ตรวจทุกหน้าใน sitemap ทีละหน้าผ่าน URL Inspection API (ได้วันละ 2,000 หน้า) หน้าไหนยังไม่ติด
-        กดลิงก์เพื่อเปิดใน Search Console แล้วกด &quot;ขอการจัดทำดัชนี&quot; (Request indexing) เอง
-        ปุ่มนี้กดผ่าน API ไม่ได้
+        กดชื่อหน้าเพื่อเปิดหน้านั้นบนเว็บ หรือกด &quot;ตรวจใน Search Console&quot; แล้วกด
+        &quot;ขอการจัดทำดัชนี&quot; (Request indexing) เอง ปุ่มนี้กดผ่าน API ไม่ได้
       </p>
       <nav className="admin-tabs" aria-label="หน้าที่ตรวจ">
         <Link href="/admin/search?scope=place#index" aria-current={scope === 'place' ? 'page' : undefined}>
@@ -294,8 +294,17 @@ async function IndexSection({
               {[...notIndexed, ...errored].map(({ url, s }) => (
                 <tr key={url}>
                   <td>
-                    <a href={inspectInConsoleUrl(site, url)} target="_blank" rel="noreferrer">
+                    <a href={url} target="_blank" rel="noreferrer">
                       {url === home || url === `${home}/` ? '/' : path(url)}
+                    </a>
+                    <br />
+                    <a
+                      href={inspectInConsoleUrl(site, url)}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="admin-hint"
+                    >
+                      ตรวจใน Search Console →
                     </a>
                   </td>
                   <td>
@@ -319,7 +328,10 @@ async function IndexSection({
           <ul className="admin-files">
             {indexed.map(({ url, s }) => (
               <li key={url}>
-                {path(url)} · Google เข้ามาล่าสุด {date(s?.lastCrawlTime ?? null)}
+                <a href={url} target="_blank" rel="noreferrer">
+                  {path(url)}
+                </a>{' '}
+                · Google เข้ามาล่าสุด {date(s?.lastCrawlTime ?? null)}
               </li>
             ))}
           </ul>
