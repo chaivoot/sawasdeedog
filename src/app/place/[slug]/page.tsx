@@ -295,16 +295,17 @@ export default async function PlacePage({ params }: Props) {
               </a>
             )}
             {agoda && (
-              <div className="place__booking">
+              <div className="place__booking place__navigate">
                 <a
                   href={agoda}
                   target="_blank"
                   rel="noopener noreferrer sponsored"
-                  className="btn btn--secondary place__booking-btn"
+                  className="btn btn--primary btn--navigate"
                   data-track="agoda_click"
                   data-place={place.slug}
                 >
-                  เช็คราคาห้องพัก (Agoda)
+                  <Icon name="tag" size={24} strokeWidth={2} />
+                  <span>เช็คราคาห้องพัก (Agoda)</span>
                 </a>
                 <p className="place__booking-note">
                   จองแล้วแจ้งที่พักว่าพาน้องหมาไปด้วย และเลือกห้องที่รับน้องหมา
