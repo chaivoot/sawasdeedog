@@ -1,16 +1,22 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useActionState, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
+import type { Place } from '@/data/places'
 import { PlaceEditor } from '../PlaceEditor'
-import { findExisting, parseImport, type ExistingPlace, type ImportItem } from './parse'
+import { applyUpdatesAction, type UpdateState } from './actions'
+import { findExisting, parseImport, type ImportItem } from './parse'
+import { toPatch } from './patch'
 
 // The pasted text survives the save redirect, so a list can be worked through one by one.
 const KEY = 'sd_import'
 
-export function ImportPlaces({ today, existing }: { today: string; existing: ExistingPlace[] }) {
+export function ImportPlaces({ today, existing }: { today: string; existing: Place[] }) {
   const [text, setText] = useState('')
   const [items, setItems] = useState<ImportItem[]>([])
+  const [updates, setUpdates] = useState<Record<string, unknown>[]>([])
+  // Recomputed against the listed places, so a saved update shows as done.
+  const patches = useMemo(() => updates.map((u) => toPatch(u, existing, today)), [updates, existing, today])
   const [error, setError] = useState('')
   const [open, setOpen] = useState<number | null>(null)
 
@@ -29,11 +35,13 @@ export function ImportPlaces({ today, existing }: { today: string; existing: Exi
     if ('error' in r) {
       setError(r.error)
       setItems([])
+      setUpdates([])
       setOpen(null)
       return
     }
     setError('')
     setItems(r.items)
+    setUpdates(r.updates)
     setOpen(r.items.length === 1 ? 0 : null)
     try {
       sessionStorage.setItem(KEY, value)
@@ -43,6 +51,7 @@ export function ImportPlaces({ today, existing }: { today: string; existing: Exi
   function clear() {
     setText('')
     setItems([])
+    setUpdates([])
     setError('')
     setOpen(null)
     try {
@@ -90,6 +99,8 @@ export function ImportPlaces({ today, existing }: { today: string; existing: Exi
           )}
         </div>
       </form>
+
+      {patches.length > 0 && <UpdateList text={text} patches={patches} />}
 
       {items.length > 1 && (
         <ol className="admin-import__list">
@@ -165,5 +176,92 @@ export function ImportPlaces({ today, existing }: { today: string; existing: Exi
         </section>
       )}
     </>
+  )
+}
+
+function UpdateList({ text, patches }: { text: string; patches: ReturnType<typeof toPatch>[] }) {
+  const [state, action, pending] = useActionState<UpdateState, FormData>(applyUpdatesAction, {})
+  const ready = patches.filter((p) => p.id && p.changes.length)
+  return (
+    <section className="admin-section admin-import__updates" aria-label="แก้ร้านเดิม">
+      <h2>แก้ร้านเดิม {patches.length} ร้าน</h2>
+      <p className="admin-hint">
+        แก้เฉพาะช่องที่ส่งมา ช่องอื่นคงเดิม ชื่อ หมวด ที่ตั้ง และรูปแก้ในหน้าร้านเท่านั้น
+      </p>
+      {state.message && (
+        <p className="auth__error" role="alert">
+          {state.message}
+        </p>
+      )}
+      {state.updated != null && (
+        <p className="admin-notice" role="status">
+          บันทึกแล้ว {state.updated} ร้าน
+          {state.failed?.length ? ` · ไม่สำเร็จ: ${state.failed.join(', ')}` : ''}
+        </p>
+      )}
+      <form action={action}>
+        <input type="hidden" name="text" value={text} />
+        <button type="submit" className="btn btn--primary btn--sm" disabled={pending || !ready.length}>
+          {pending
+            ? 'กำลังบันทึก…'
+            : ready.length
+              ? `บันทึกการแก้ทั้งหมด (${ready.length} ร้าน)`
+              : 'ไม่มีอะไรต้องแก้แล้ว'}
+        </button>
+      </form>
+      <ol className="admin-import__list">
+        {patches.map((p, i) => (
+          <li key={`${p.slug}-${i}`} className="admin-import__update">
+            <b>{p.name}</b>{' '}
+            {p.id ? (
+              <Link href={`/admin/places/${p.id}`} target="_blank">
+                /{p.slug}
+              </Link>
+            ) : (
+              <span>/{p.slug}</span>
+            )}
+            {p.id && !p.changes.length && <span className="admin-badge">ไม่มีอะไรเปลี่ยน</span>}
+            {p.warnings.length > 0 && (
+              <ul className="auth__error">
+                {p.warnings.map((w) => (
+                  <li key={w}>{w}</li>
+                ))}
+              </ul>
+            )}
+            {p.changes.length > 0 && (
+              <div className="admin-table-wrap">
+                <table className="admin-table">
+                  <tbody>
+                    {p.changes.map((c) => (
+                      <tr key={c.label}>
+                        <th scope="row">{c.label}</th>
+                        <td>{c.from}</td>
+                        <td>→ {c.to}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+            {p.notes.length > 0 && (
+              <ul className="admin-hint">
+                {p.notes.map((n) => (
+                  <li key={n}>{n}</li>
+                ))}
+              </ul>
+            )}
+            {p.sources.length > 0 && (
+              <p className="admin-hint">
+                {p.sources.map((s) => (
+                  <Link key={s} href={s} target="_blank" rel="noopener noreferrer">
+                    {s.replace(/^https?:\/\/(www\.)?/, '').slice(0, 50)}{' '}
+                  </Link>
+                ))}
+              </p>
+            )}
+          </li>
+        ))}
+      </ol>
+    </section>
   )
 }

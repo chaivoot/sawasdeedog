@@ -87,6 +87,8 @@ function placeLd(place: Place, crumbs: Crumb[]) {
       ? serviceAreaLabels(place.serviceAreas).map((name) => ({ '@type': 'AdministrativeArea', name }))
       : undefined,
     priceRange: place.price,
+    // LodgingBusiness property: every stay listed here takes dogs.
+    petsAllowed: place.category === 'stay' ? true : undefined,
     address: area && {
       '@type': 'PostalAddress',
       addressLocality: area.district?.name,
@@ -169,8 +171,13 @@ export default async function PlacePage({ params }: Props) {
   const serviceAreas = serviceAreaLabels(place.serviceAreas ?? [])
 
   const isFarm = place.category === 'farm'
+  const isStay = placeCategories(place).includes('stay')
+  // A stay that only takes dogs on direct bookings gets no booking-site button.
   const agoda =
-    place.agodaUrl && placeCategories(place).includes('stay') ? agodaLink(place.agodaUrl) : undefined
+    place.agodaUrl && isStay && !place.attributes.includes('direct-booking-only')
+      ? agodaLink(place.agodaUrl)
+      : undefined
+  const petFee = isStay ? place.petFee : undefined
   const listHref = isFarm
     ? place.breeds?.[0]
       ? `/farm/${place.breeds[0]}`
@@ -300,6 +307,9 @@ export default async function PlacePage({ params }: Props) {
                   เช็คราคาห้องพัก (Agoda)
                 </a>
                 <p className="place__booking-note">
+                  จองแล้วแจ้งที่พักว่าพาน้องหมาไปด้วย และเลือกห้องที่รับน้องหมา
+                </p>
+                <p className="place__booking-note">
                   ลิงก์พันธมิตร เราอาจได้ค่าตอบแทนเมื่อคุณจอง ไม่มีผลต่อราคาและการคัดเลือก
                 </p>
               </div>
@@ -315,7 +325,7 @@ export default async function PlacePage({ params }: Props) {
             )}
             <Checked date={place.checkedAt} long className="place__checked desktop-only" />
 
-            {(place.hours || place.price) && (
+            {(place.hours || place.price || petFee) && (
               <div className="place__aside-section place__info">
                 <div className="info-box">
                   {place.hours && (
@@ -333,6 +343,15 @@ export default async function PlacePage({ params }: Props) {
                       <div className="info-row__text">
                         <span className="info-row__label">ราคา</span>
                         <span className="info-row__value">{place.price}</span>
+                      </div>
+                    </div>
+                  )}
+                  {petFee && (
+                    <div className="info-row">
+                      <Icon name="stay" size={22} strokeWidth={1.9} />
+                      <div className="info-row__text">
+                        <span className="info-row__label">ค่าน้องหมา</span>
+                        <span className="info-row__value">{petFee}</span>
                       </div>
                     </div>
                   )}

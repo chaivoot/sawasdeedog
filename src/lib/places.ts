@@ -40,6 +40,8 @@ export type PlaceRow = {
   max_dog_kg: number | null
   /** Added by 0011_agoda_url.sql. */
   agoda_url?: string | null
+  /** Added by 0012_pet_fee.sql. */
+  pet_fee?: string | null
   max_dogs: number | null
   photos: string[]
   breeds: string[]
@@ -79,6 +81,7 @@ export function rowToPlace(r: PlaceRow): Place {
     lng: r.lng ?? undefined,
     maxDogKg: r.max_dog_kg ?? undefined,
     agodaUrl: r.agoda_url ?? undefined,
+    petFee: r.pet_fee ?? undefined,
     maxDogs: r.max_dogs ?? undefined,
     photos: r.photos ?? [],
     breeds: r.breeds ?? [],

@@ -47,6 +47,8 @@ export type PlaceDraft = {
   maxDogs: string
   /** Stays: the place's Agoda page. */
   agodaUrl: string
+  /** Stays: what the place charges for a dog. */
+  petFee?: string
   published: boolean
   /** Categories this place is pinned to the top of. */
   pinnedIn: string[]
@@ -384,6 +386,22 @@ export function PlaceEditor({ draft, fromSubmission }: { draft: PlaceDraft; from
                     inputMode="numeric"
                     defaultValue={draft.maxDogs}
                     placeholder="ไม่จำกัด"
+                  />
+                </Field>
+              )}
+              {isStay && (
+                <Field
+                  id="petFee"
+                  label="ค่าน้องหมา"
+                  hint="เช่น ฟรี · 500 บาท/ตัว/คืน · ตัวแรกฟรี ตัวต่อไป 300 บาท ถ้าฟรีติ๊ก “ไม่มีค่าน้องหมา” ด้วย"
+                  full
+                >
+                  <input
+                    id="petFee"
+                    name="petFee"
+                    className="input"
+                    defaultValue={draft.petFee}
+                    placeholder="ไม่ทราบ"
                   />
                 </Field>
               )}
