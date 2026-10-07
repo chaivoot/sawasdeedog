@@ -136,12 +136,20 @@ export const categories: Category[] = [
     name: 'ที่พักหมาพักได้',
     schemaType: 'LodgingBusiness',
     listTitle: 'ที่พักหมาพักได้',
-    description: 'โรงแรม รีสอร์ท หมาพักได้ เจ้าของพักด้วยได้',
+    description: 'โรงแรม รีสอร์ท พูลวิลล่า หมาพักได้ เจ้าของพักด้วยได้',
     types: [
       { slug: 'hotel', label: 'โรงแรม' },
       { slug: 'resort', label: 'รีสอร์ท' },
+      { slug: 'villa', label: 'พูลวิลล่า/บ้านเหมาหลัง' },
+      { slug: 'glamping', label: 'แกลมปิ้ง/แคมป์' },
     ],
-    filters: [],
+    filters: [
+      { slug: 'no-pet-fee', label: 'ไม่มีค่าน้องหมา' },
+      { slug: 'dog-pool', label: 'มีสระที่น้องลงได้' },
+      { slug: 'fenced-yard', label: 'มีสนามหญ้าล้อมรั้ว' },
+      { slug: 'beach', label: 'พาน้องลงชายหาดได้' },
+      { slug: 'dog-amenities', label: 'มีที่นอน/ชามให้น้อง' },
+    ],
     // Every stay takes dogs of 15 kg or more (stayRule); its weight limit and these are shown as warnings.
     warnings: [
       { slug: 'no-restaurant', label: 'ห้ามน้องหมาเข้าร้านอาหาร' },

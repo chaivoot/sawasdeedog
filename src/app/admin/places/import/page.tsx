@@ -5,8 +5,8 @@ import { ImportPlaces } from './ImportPlaces'
 
 export default async function ImportPlacesPage() {
   await requireAdminPage()
-  // To flag pasted places that are already listed.
-  const existing = (await listAllPlaces()).map((p) => ({ id: p.id, slug: p.slug, name: p.name }))
+  // To flag pasted places that are already listed, and to show what an update changes.
+  const existing = await listAllPlaces()
   return (
     <>
       <h1>นำเข้าข้อมูล</h1>

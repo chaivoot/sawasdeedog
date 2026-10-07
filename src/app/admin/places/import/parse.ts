@@ -5,6 +5,7 @@ import { STAY_MIN_DOG_KG } from '@/data/criteria'
 import { isAgodaUrl } from '@/lib/agoda'
 import { cleanServiceAreas, parseLatLng } from '@/lib/geo'
 import type { PlaceDraft } from '../PlaceEditor'
+import { isUpdate } from './patch'
 
 // Turns pasted research (JSON: one place or a list) into editor drafts. Nothing
 // is saved here: each draft opens in the normal editor to be checked first.
@@ -134,6 +135,7 @@ function toItem(raw: Record<string, unknown>, today: string): ImportItem {
       maxDogKg: Number.isInteger(maxDogKg) && maxDogKg > 0 ? String(maxDogKg) : '',
       maxDogs: Number.isInteger(Number(raw.maxDogs)) && Number(raw.maxDogs) > 0 ? String(raw.maxDogs) : '',
       agodaUrl: isAgodaUrl(str(raw.agodaUrl)) ? str(raw.agodaUrl) : '',
+      petFee: str(raw.petFee) || undefined,
       // Shown by default; research can say "published": false to keep one hidden.
       published: raw.published !== false,
       pinnedIn: [],
@@ -144,7 +146,13 @@ function toItem(raw: Record<string, unknown>, today: string): ImportItem {
   }
 }
 
-export function parseImport(text: string, today: string): { items: ImportItem[] } | { error: string } {
+export type ParsedImport = {
+  items: ImportItem[]
+  /** Raw entries marked "update": true, for places already listed (see patch.ts). */
+  updates: Record<string, unknown>[]
+}
+
+export function parseImport(text: string, today: string): ParsedImport | { error: string } {
   const trimmed = text
     .trim()
     // Tolerate a fenced code block copied from chat.
@@ -160,7 +168,11 @@ export function parseImport(text: string, today: string): { items: ImportItem[] 
   const list = Array.isArray(data) ? data : [data]
   if (!list.length || list.some((x) => !x || typeof x !== 'object' || Array.isArray(x)))
     return { error: 'รูปแบบไม่ถูกต้อง ต้องเป็นข้อมูลร้าน 1 ร้าน หรือรายการของหลายร้าน' }
-  return { items: list.map((x) => toItem(x as Record<string, unknown>, today)) }
+  const raws = list as Record<string, unknown>[]
+  return {
+    items: raws.filter((x) => !isUpdate(x)).map((x) => toItem(x, today)),
+    updates: raws.filter(isUpdate),
+  }
 }
 
 export type ExistingPlace = { id?: string; slug: string; name: string }

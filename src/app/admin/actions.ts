@@ -156,6 +156,7 @@ export async function savePlaceAction(_prev: PlaceFormState, form: FormData): Pr
     errors.maxDogs = 'ใส่เป็นจำนวนตัว เช่น 2'
   const agodaUrl = isStay ? text(form, 'agodaUrl') : ''
   if (agodaUrl && !isAgodaUrl(agodaUrl)) errors.agodaUrl = 'ใส่ลิงก์หน้าที่พักจาก agoda.com'
+  const petFee = isStay ? text(form, 'petFee') : ''
   const breedSlugs = new Set(breeds.map((b) => b.slug))
   const placeBreeds = isFarm
     ? form.getAll('breeds').filter((b): b is string => typeof b === 'string' && breedSlugs.has(b))
@@ -225,6 +226,7 @@ export async function savePlaceAction(_prev: PlaceFormState, form: FormData): Pr
     max_dog_kg: maxDogKg,
     max_dogs: maxDogs,
     agoda_url: agodaUrl || null,
+    pet_fee: petFee || null,
     photos,
     breeds: placeBreeds,
     published: form.get('published') === 'on',
