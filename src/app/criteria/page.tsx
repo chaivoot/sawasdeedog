@@ -7,7 +7,7 @@ import { dogFriendly, farmRule, forceFreeDefinition, serviceRule, stayRule } fro
 export const metadata: Metadata = {
   title: 'เกณฑ์การคัดเลือก',
   alternates: { canonical: '/criteria' },
-  description: `คัดมาแล้ว ไม่ใช่มีครบ เราลิสต์เฉพาะที่ที่เป็น ${dogFriendly.name} ไม่มีเงื่อนไขแอบแฝง`,
+  description: `ทุกที่ผ่านการคัดแล้ว เราลิสต์เฉพาะที่ที่เป็น ${dogFriendly.name} ไม่มีเงื่อนไขแอบแฝง`,
 }
 
 const rules = [
@@ -55,7 +55,7 @@ export default function CriteriaPage() {
       <main className="prose-page">
         <div className="prose-page__intro">
           <span className="eyebrow">เกณฑ์การคัดเลือก</span>
-          <h1>คัดมาแล้ว ไม่ใช่มีครบ</h1>
+          <h1>ทุกที่ผ่านการคัดแล้ว</h1>
           <p>เราอยากให้ทุกที่ที่ลิสต์ไว้ เป็นที่ที่คุณพาหมาไปได้อย่างสบายใจ นี่คือวิธีที่เราคัด</p>
         </div>
 
