@@ -9,6 +9,7 @@ import { categories, featuredCategories, type Category } from '@/data/categories
 import { AREA_COOKIE, NEAR_ME, areaPath, parseAreaCookie, type Area } from '@/data/areas'
 import { activeSponsor, listIndexEntries } from '@/lib/places'
 import { todayInBangkok } from '@/lib/format'
+import { listPublishedProducts } from '@/lib/products'
 import type { Sponsor } from '@/data/sponsors'
 import { JsonLd } from '@/components/JsonLd'
 import { SITE_DESCRIPTION, SITE_NAME, SOCIAL_PROFILES, absoluteUrl, siteUrl } from '@/lib/site'
@@ -55,6 +56,8 @@ export default async function HomePage() {
   const area = parseAreaCookie(areaCookie)
   const today = todayInBangkok()
   const sponsor = activeSponsor(today)
+  // The shopping callout shows once there is something to show.
+  const hasProducts = (await listPublishedProducts()).length > 0
   // Listings per category, countrywide (a place counts under each category it is listed in).
   const counts = new Map<string, number>()
   for (const e of await listIndexEntries())
@@ -100,6 +103,18 @@ export default async function HomePage() {
             />
           ))}
         </div>
+
+        {hasProducts && (
+          <Link href="/shopping" className="callout callout--shop">
+            <Icon name="tag" size={22} strokeWidth={1.9} />
+            <span className="callout__text">
+              <b>หมาเราต้องมี</b>
+              <br />
+              <span>ของใช้ อาหาร และขนมที่ทีมคัด บอกเหตุผลทุกชิ้น</span>
+            </span>
+            <Icon name="right" size={20} strokeWidth={2} />
+          </Link>
+        )}
 
         <Link href="/criteria" className="callout">
           <Icon name="shield" size={22} strokeWidth={1.9} />

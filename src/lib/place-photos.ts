@@ -1,6 +1,7 @@
 import 'server-only'
 import sharp from 'sharp'
 import { articleImageUrls } from './articles'
+import { productImageUrls } from './products'
 import { THUMB_EDGE, isThumbPath, placePhotoPath, thumbPathOf } from './photo-urls'
 import { PLACE_PHOTOS_BUCKET, db } from './supabase'
 
@@ -12,15 +13,20 @@ const ORPHAN_MIN_AGE_MS = 24 * 60 * 60 * 1000
 
 const bucket = () => db().storage.from(PLACE_PHOTOS_BUCKET)
 
-/** Every photo any place (published or not) or article uses. */
+/** Every photo any place (published or not), article or product uses. */
 async function usedPhotoPaths(): Promise<Set<string>> {
-  const [{ data, error }, articleUrls] = await Promise.all([
+  const [{ data, error }, articleUrls, productUrls] = await Promise.all([
     db().from('places').select('photos'),
     articleImageUrls(),
+    productImageUrls(),
   ])
   if (error) throw error
   const used = new Set<string>()
-  const urls = [...(data as { photos: string[] | null }[]).flatMap((r) => r.photos ?? []), ...articleUrls]
+  const urls = [
+    ...(data as { photos: string[] | null }[]).flatMap((r) => r.photos ?? []),
+    ...articleUrls,
+    ...productUrls,
+  ]
   for (const url of urls) {
     const path = placePhotoPath(url)
     if (path) used.add(path)

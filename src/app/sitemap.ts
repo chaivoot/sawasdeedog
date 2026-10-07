@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next'
 import { areaCategories } from '@/data/categories'
 import { findArea } from '@/data/areas'
 import { listPublishedArticles, type Article } from '@/lib/articles'
+import { listPublishedProducts, type Product } from '@/lib/products'
 import { breedsWithFarms, listIndexEntries, type IndexEntry } from '@/lib/places'
 import { areaKeys } from '@/lib/geo'
 import { absoluteUrl } from '@/lib/site'
@@ -14,11 +15,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let entries: IndexEntry[] = []
   let farmBreeds: { slug: string }[] = []
   let articles: Article[] = []
+  let products: Product[] = []
   try {
-    ;[entries, farmBreeds, articles] = await Promise.all([
+    ;[entries, farmBreeds, articles, products] = await Promise.all([
       listIndexEntries(),
       breedsWithFarms(),
       listPublishedArticles(),
+      listPublishedProducts(),
     ])
   } catch (e) {
     console.error('sitemap: could not load places', e)
@@ -32,6 +35,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: absoluteUrl('/contact'), changeFrequency: 'yearly', priority: 0.3 },
     { url: absoluteUrl('/farm'), changeFrequency: 'weekly', priority: 0.7 },
   ]
+
+  if (products.length > 0)
+    urls.push({
+      url: absoluteUrl('/shopping'),
+      lastModified: latest(products),
+      changeFrequency: 'weekly',
+      priority: 0.5,
+    })
 
   if (articles.length > 0) {
     urls.push({
