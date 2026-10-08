@@ -4,7 +4,7 @@ import { useActionState, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import type { Place } from '@/data/places'
 import { PlaceEditor } from '../PlaceEditor'
-import { applyUpdatesAction, type UpdateState } from './actions'
+import { applyUpdatesAction, saveAllNewAction, type SaveAllState, type UpdateState } from './actions'
 import { findExisting, parseImport, type ImportItem } from './parse'
 import { toPatch } from './patch'
 
@@ -103,6 +103,10 @@ export function ImportPlaces({ today, existing }: { today: string; existing: Pla
       {patches.length > 0 && <UpdateList text={text} patches={patches} />}
 
       {items.length > 1 && (
+        <SaveAll text={text} fresh={items.filter((it) => !findExisting(it.draft, existing)).length} />
+      )}
+
+      {items.length > 1 && (
         <ol className="admin-import__list">
           {items.map((it, i) => (
             <li key={i}>
@@ -176,6 +180,56 @@ export function ImportPlaces({ today, existing }: { today: string; existing: Pla
         </section>
       )}
     </>
+  )
+}
+
+/** Saves every new place in the list as pasted; each one can still be opened and edited later. */
+function SaveAll({ text, fresh }: { text: string; fresh: number }) {
+  const [state, action, pending] = useActionState<SaveAllState, FormData>(saveAllNewAction, {})
+  return (
+    <section className="admin-section admin-import__saveall" aria-label="บันทึกทั้งหมด">
+      <form
+        action={action}
+        onSubmit={(ev) => {
+          if (
+            !window.confirm(`บันทึกร้านใหม่ ${fresh} ร้านตามข้อมูลที่วางเลยไหม (ร้านที่มีในระบบแล้วจะข้าม)`)
+          )
+            ev.preventDefault()
+        }}
+      >
+        <input type="hidden" name="text" value={text} />
+        <button type="submit" className="btn btn--primary btn--sm" disabled={pending || !fresh}>
+          {pending ? 'กำลังบันทึก…' : fresh ? `บันทึกทั้งหมด (${fresh} ร้านใหม่)` : 'บันทึกครบแล้ว'}
+        </button>
+      </form>
+      <p className="admin-hint">
+        บันทึกตามข้อมูลที่วางโดยไม่ต้องเปิดทีละร้าน รูปและรายละเอียดอื่นค่อยเข้าไปเพิ่มในหน้าร้านทีหลัง
+      </p>
+      {state.message && (
+        <p className="auth__error" role="alert">
+          {state.message}
+        </p>
+      )}
+      {state.saved && (
+        <div className="admin-notice" role="status">
+          บันทึกแล้ว {state.saved.length} ร้าน
+          {state.skipped?.length ? ` · ข้าม ${state.skipped.length} ร้านที่มีในระบบแล้ว` : ''}
+          {state.failed?.length ? (
+            <>
+              {' '}
+              · ไม่สำเร็จ {state.failed.length} ร้าน (เปิดแก้ทีละร้านด้านล่าง)
+              <ul>
+                {state.failed.map((f) => (
+                  <li key={f.name}>
+                    <b>{f.name}</b>: {f.reason}
+                  </li>
+                ))}
+              </ul>
+            </>
+          ) : null}
+        </div>
+      )}
+    </section>
   )
 }
 
