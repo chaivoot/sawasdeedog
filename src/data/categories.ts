@@ -227,7 +227,7 @@ export const categories: Category[] = [
     tone: ['#e9ecf1', '#4b5a6e'],
     name: 'การเดินทางครั้งสุดท้าย',
     schemaType: 'LocalBusiness',
-    listTitle: 'ฌาปนกิจสัตว์เลี้ยง & พิธีส่งน้องหมา',
+    listTitle: 'เตาเผาสุนัข & วัดรับเผาสุนัข',
     shortName: 'ที่ฌาปนกิจ',
     description: 'ฌาปนกิจ และพิธีส่งน้องอย่างอบอุ่น',
     filters: [],
