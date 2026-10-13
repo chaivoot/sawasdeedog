@@ -1911,9 +1911,7 @@ a.guarantee:hover {
 }
 
 .place-grid {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 12px;
+  position: relative;
   height: 420px;
 }
 .place-grid .photo {
@@ -1921,17 +1919,7 @@ a.guarantee:hover {
   height: 100%;
   border-radius: var(--radius-featured);
 }
-.place-grid__side {
-  display: grid;
-  grid-template-rows: 1fr 1fr;
-  gap: 12px;
-  min-height: 0;
-}
-.place-grid__more {
-  position: relative;
-  min-height: 0;
-}
-.place-grid__more button {
+.place-grid button {
   position: absolute;
   right: 14px;
   bottom: 14px;
