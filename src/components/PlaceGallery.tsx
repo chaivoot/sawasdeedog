@@ -7,7 +7,7 @@ import { Photo } from './Photo'
 
 type Props = { photos: string[]; name: string; back: string }
 
-/** Swipeable photos on mobile (M-Place), 1+2 grid on desktop (D-Place). */
+/** Swipeable photos on mobile (M-Place), one photo plus "all photos" on desktop (D-Place). */
 export function PlaceGallery({ photos, name, back }: Props) {
   const [index, setIndex] = useState(0)
   const dialogRef = useRef<HTMLDialogElement>(null)
@@ -47,20 +47,14 @@ export function PlaceGallery({ photos, name, back }: Props) {
 
       <div className="place-grid">
         <Photo src={photos[0]} alt={`รูป${name} 1`} iconSize={40} />
-        <div className="place-grid__side">
-          <Photo src={photos[1]} alt={`รูป${name} 2`} iconSize={40} />
-          <div className="place-grid__more">
-            <Photo src={photos[2]} alt={`รูป${name} 3`} iconSize={40} />
-            {photos.length > 3 && (
-              <button type="button" onClick={() => dialogRef.current?.showModal()}>
-                ดูรูปทั้งหมด ({photos.length})
-              </button>
-            )}
-          </div>
-        </div>
+        {photos.length > 1 && (
+          <button type="button" onClick={() => dialogRef.current?.showModal()}>
+            ดูรูปทั้งหมด ({photos.length})
+          </button>
+        )}
       </div>
 
-      {photos.length > 3 && (
+      {photos.length > 1 && (
         <dialog
           ref={dialogRef}
           className="sheet photo-dialog"
