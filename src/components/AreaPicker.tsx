@@ -18,6 +18,11 @@ type Props = {
 
 const pickable = provinces.filter((p) => p.districts.length > 0)
 
+/** "อำเภอ หาดใหญ่" → "หาดใหญ่": people type the prefix and spaces, the names have neither. */
+function normalize(text: string) {
+  return text.replace(/\s+/g, '').replace(/^(อำเภอ|อ\.|เขต|ข\.|จังหวัด|จ\.)/, '')
+}
+
 export function AreaPicker({ province, district, category, near }: Props) {
   const router = useRouter()
   const dialogRef = useRef<HTMLDialogElement>(null)
@@ -30,8 +35,18 @@ export function AreaPicker({ province, district, category, near }: Props) {
   const [nearError, setNearError] = useState('')
 
   const selectedProvince = pickable.find((p) => p.slug === provinceSlug) ?? pickable[0]
-  const q = query.trim()
+  const q = normalize(query)
   const districts = selectedProvince.districts.filter((d) => !q || d.name.includes(q))
+  // Typing searches every province, so a district outside the chosen one is still one tap away.
+  const elsewhere = q
+    ? pickable
+        .filter((p) => p.slug !== provinceSlug)
+        .flatMap((p) => [
+          ...(p.name.includes(q) ? [{ province: p, district: undefined }] : []),
+          ...p.districts.filter((d) => d.name.includes(q)).map((d) => ({ province: p, district: d })),
+        ])
+        .slice(0, 20)
+    : []
   const selected = findArea(provinceSlug, districtSlug || undefined)
   // Popular provinces as chips, plus the chosen one if it came from the dropdown.
   const chipProvinces = pickable.filter((p) => popularProvinces.includes(p.slug) || p.slug === provinceSlug)
@@ -40,6 +55,13 @@ export function AreaPicker({ province, district, category, near }: Props) {
     setProvinceSlug(slug)
     setDistrictSlug('')
     setQuery('')
+  }
+
+  /** Keeps the picked district as the search, so it stays in view with its check mark. */
+  function pickElsewhere(province: string, district?: { slug: string; name: string }) {
+    setProvinceSlug(province)
+    setDistrictSlug(district?.slug ?? '')
+    setQuery(district?.name ?? '')
   }
 
   function setCookie(value: string) {
@@ -215,7 +237,7 @@ export function AreaPicker({ province, district, category, near }: Props) {
             <span className="sr-only">ค้นหาเขต</span>
             <input
               type="search"
-              placeholder="พิมพ์ชื่อเขต"
+              placeholder="พิมพ์ชื่อเขต / อำเภอ"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />
@@ -244,7 +266,24 @@ export function AreaPicker({ province, district, category, near }: Props) {
                 {districtSlug === d.slug && <Icon name="check" size={20} strokeWidth={2.4} />}
               </button>
             ))}
-            {q && districts.length === 0 && <p className="sheet__empty">ไม่พบเขตที่ชื่อ “{q}”</p>}
+            {q && districts.length === 0 && (
+              <p className="sheet__empty">
+                ไม่พบ “{q}” ใน{selectedProvince.name}
+              </p>
+            )}
+            {elsewhere.length > 0 && <p className="sheet__sublabel">ในจังหวัดอื่น</p>}
+            {elsewhere.map(({ province: p, district: d }) => (
+              <button
+                key={`${p.slug}/${d?.slug ?? ''}`}
+                type="button"
+                className="sheet__option"
+                aria-pressed={false}
+                onClick={() => pickElsewhere(p.slug, d)}
+              >
+                <span>{d ? d.name : `ทุกอำเภอใน${p.name}`}</span>
+                <span className="muted">{p.name}</span>
+              </button>
+            ))}
           </div>
         </div>
 

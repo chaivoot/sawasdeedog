@@ -525,6 +525,12 @@ p {
 .sheet__option[aria-pressed='true'] span {
   color: var(--color-ink);
 }
+.sheet__sublabel {
+  padding: 12px 14px 4px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-muted);
+}
 .sheet__empty {
   padding: 12px 14px;
   font-size: 15px;
