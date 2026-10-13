@@ -5,17 +5,20 @@ import { useRef, useState } from 'react'
 import { Icon } from './Icon'
 import { Photo } from './Photo'
 
-type Props = { photos: string[]; name: string; back: string }
+type Props = { photos: string[]; name: string; back: string; view: 'mobile' | 'desktop' }
 
-/** Swipeable photos on mobile (M-Place), one photo plus "all photos" on desktop (D-Place). */
-export function PlaceGallery({ photos, name, back }: Props) {
+/**
+ * Swipeable photos on mobile (M-Place); on desktop (D-Place) one 4:3 photo at the top of the
+ * main column, beside the aside, with "all photos" when there are more.
+ */
+export function PlaceGallery({ photos, name, back, view }: Props) {
   const [index, setIndex] = useState(0)
   const dialogRef = useRef<HTMLDialogElement>(null)
   const slides: (string | undefined)[] = photos.length ? photos : [undefined]
   const total = slides.length
 
-  return (
-    <>
+  if (view === 'mobile')
+    return (
       <div className="place-gallery">
         <div
           className="place-gallery__track"
@@ -44,7 +47,10 @@ export function PlaceGallery({ photos, name, back }: Props) {
           </>
         )}
       </div>
+    )
 
+  return (
+    <>
       <div className="place-grid">
         <Photo src={photos[0]} alt={`รูป${name} 1`} iconSize={40} />
         {photos.length > 1 && (

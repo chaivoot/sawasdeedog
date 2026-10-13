@@ -1912,7 +1912,7 @@ a.guarantee:hover {
 
 .place-grid {
   position: relative;
-  height: 420px;
+  aspect-ratio: 4 / 3;
 }
 .place-grid .photo {
   width: 100%;

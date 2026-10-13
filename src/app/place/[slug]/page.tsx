@@ -205,9 +205,10 @@ export default async function PlacePage({ params }: Props) {
       <AdminEditButton href={place.id ? `/admin/places/${place.id}` : '/admin/places'} />
       <main className="page page--place">
         <Breadcrumb items={crumbs} />
-        <PlaceGallery photos={place.photos} name={place.name} back={listHref} />
+        <PlaceGallery photos={place.photos} name={place.name} back={listHref} view="mobile" />
         <div className="place">
           <div className="place__main">
+            <PlaceGallery photos={place.photos} name={place.name} back={listHref} view="desktop" />
             <div className="place__head">
               <span className="place__eyebrow">
                 {category?.name}
