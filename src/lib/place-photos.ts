@@ -2,7 +2,7 @@ import 'server-only'
 import sharp from 'sharp'
 import { articleImageUrls } from './articles'
 import { THUMB_EDGE, isThumbPath, placePhotoPath, thumbPathOf } from './photo-urls'
-import { PLACE_PHOTOS_BUCKET, db } from './supabase'
+import { PLACE_PHOTOS_BUCKET, allRows, db } from './supabase'
 
 // Housekeeping for the place-photos bucket: files go when their place or photo does,
 // and card-sized copies are made for photos uploaded before copies existed.
@@ -14,13 +14,14 @@ const bucket = () => db().storage.from(PLACE_PHOTOS_BUCKET)
 
 /** Every photo any place (published or not) or article uses. */
 async function usedPhotoPaths(): Promise<Set<string>> {
-  const [{ data, error }, articleUrls] = await Promise.all([
-    db().from('places').select('photos'),
+  const [rows, articleUrls] = await Promise.all([
+    allRows<{ photos: string[] | null }>((from, to) =>
+      db().from('places').select('photos').order('id').range(from, to),
+    ),
     articleImageUrls(),
   ])
-  if (error) throw error
   const used = new Set<string>()
-  const urls = [...(data as { photos: string[] | null }[]).flatMap((r) => r.photos ?? []), ...articleUrls]
+  const urls = [...rows.flatMap((r) => r.photos ?? []), ...articleUrls]
   for (const url of urls) {
     const path = placePhotoPath(url)
     if (path) used.add(path)

@@ -7,7 +7,7 @@ import { sponsors, type Sponsor } from '@/data/sponsors'
 import type { Area } from '@/data/areas'
 import { coversArea, areaKeys } from './geo'
 import { ratingStats } from './ratings'
-import { db, isSupabaseConfigured } from './supabase'
+import { allRows, db, isSupabaseConfigured } from './supabase'
 import { todayInBangkok } from './format'
 
 // All reads of listings go through here. With Supabase configured they come
@@ -146,23 +146,24 @@ async function listPlacesUncached(q: PlaceQuery): Promise<Place[]> {
       .filter((p) => (q.filters ?? []).every((f) => p.attributes.includes(f)))
     return dailyOrder(places, q.category)
   }
-  // Category slugs are fixed identifiers from data/categories, safe to put in the filter string.
-  let query = db()
-    .from('places')
-    .select('*')
-    .eq('published', true)
-    .or(`category.eq.${q.category},extra_categories.cs.{${q.category}}`)
-  // Area is matched below: a place shows up by its address or by its service areas.
-  // The type column is the main category's; extra categories keep theirs in the attributes.
-  if (q.type)
-    query = query.or(
-      `and(category.eq.${q.category},type.eq.${q.type}),attributes.cs.{"${extraTypeToken(q.category, q.type)}"}`,
-    )
-  if (q.trainerStyle) query = query.eq('trainer_style', q.trainerStyle)
-  if (q.filters?.length) query = query.contains('attributes', q.filters)
-  const { data, error } = await query
-  if (error) throw error
-  const places = (data as PlaceRow[]).map(rowToPlace).filter((p) => !q.area || coversArea(p, q.area))
+  const rows = await allRows<PlaceRow>((from, to) => {
+    // Category slugs are fixed identifiers from data/categories, safe to put in the filter string.
+    let query = db()
+      .from('places')
+      .select('*')
+      .eq('published', true)
+      .or(`category.eq.${q.category},extra_categories.cs.{${q.category}}`)
+    // Area is matched below: a place shows up by its address or by its service areas.
+    // The type column is the main category's; extra categories keep theirs in the attributes.
+    if (q.type)
+      query = query.or(
+        `and(category.eq.${q.category},type.eq.${q.type}),attributes.cs.{"${extraTypeToken(q.category, q.type)}"}`,
+      )
+    if (q.trainerStyle) query = query.eq('trainer_style', q.trainerStyle)
+    if (q.filters?.length) query = query.contains('attributes', q.filters)
+    return query.order('id').range(from, to)
+  })
+  const places = rows.map(rowToPlace).filter((p) => !q.area || coversArea(p, q.area))
   return withRatings(dailyOrder(places, q.category))
 }
 
@@ -172,9 +173,10 @@ export const listPlaces = cache(listPlacesUncached)
 /** Every published place, unordered and without ratings (for counting). */
 export const listAllPlaces = cache(async (): Promise<Place[]> => {
   if (!isSupabaseConfigured()) return samplePlaces
-  const { data, error } = await db().from('places').select('*').eq('published', true)
-  if (error) throw error
-  return (data as PlaceRow[]).map(rowToPlace)
+  const rows = await allRows<PlaceRow>((from, to) =>
+    db().from('places').select('*').eq('published', true).order('id').range(from, to),
+  )
+  return rows.map(rowToPlace)
 })
 
 /** Published place by slug (public pages). Cached per request. */
@@ -198,9 +200,10 @@ export type BreedWithCount = Breed & { farmCount: number }
 
 async function farms(): Promise<Place[]> {
   if (!isSupabaseConfigured()) return samplePlaces.filter((p) => p.category === 'farm')
-  const { data, error } = await db().from('places').select('*').eq('published', true).eq('category', 'farm')
-  if (error) throw error
-  return (data as PlaceRow[]).map(rowToPlace)
+  const rows = await allRows<PlaceRow>((from, to) =>
+    db().from('places').select('*').eq('published', true).eq('category', 'farm').order('id').range(from, to),
+  )
+  return rows.map(rowToPlace)
 }
 
 /** Breeds that have at least one farm, ก–ฮ by Thai name. */
@@ -248,22 +251,23 @@ export const listIndexEntries = cache(async (): Promise<IndexEntry[]> => {
       updatedAt: p.checkedAt,
     }))
   }
-  const { data, error } = await db()
-    .from('places')
-    .select('slug, category, extra_categories, province, district, service_areas, updated_at')
-    .eq('published', true)
-  if (error) throw error
-  return (
-    data as {
-      slug: string
-      category: string
-      extra_categories: string[] | null
-      province: string
-      district: string | null
-      service_areas: string[] | null
-      updated_at: string
-    }[]
-  ).map((r) => ({
+  const rows = await allRows<{
+    slug: string
+    category: string
+    extra_categories: string[] | null
+    province: string
+    district: string | null
+    service_areas: string[] | null
+    updated_at: string
+  }>((from, to) =>
+    db()
+      .from('places')
+      .select('slug, category, extra_categories, province, district, service_areas, updated_at')
+      .eq('published', true)
+      .order('id')
+      .range(from, to),
+  )
+  return rows.map((r) => ({
     slug: r.slug,
     categories: [r.category, ...(r.extra_categories ?? [])],
     province: r.province,
