@@ -2,17 +2,18 @@ import 'server-only'
 import type { Place } from '@/data/places'
 import { samplePlaces } from '@/data/places'
 import { rowToPlace, type PlaceRow } from './places'
-import { db, isSupabaseConfigured } from './supabase'
+import { allRows, db, isSupabaseConfigured } from './supabase'
 
 /** Every place, published or not, newest edits first (admin only). */
 export async function listAllPlaces(search?: string): Promise<Place[]> {
   if (!isSupabaseConfigured()) return samplePlaces
-  let q = db().from('places').select('*').order('updated_at', { ascending: false }).limit(500)
   const term = search?.trim().replace(/[%,()]/g, ' ')
-  if (term) q = q.or(`name.ilike.%${term}%,slug.ilike.%${term}%`)
-  const { data, error } = await q
-  if (error) throw error
-  return (data as PlaceRow[]).map(rowToPlace)
+  const rows = await allRows<PlaceRow>((from, to) => {
+    let q = db().from('places').select('*')
+    if (term) q = q.or(`name.ilike.%${term}%,slug.ilike.%${term}%`)
+    return q.order('updated_at', { ascending: false }).order('id').range(from, to)
+  })
+  return rows.map(rowToPlace)
 }
 
 export async function getPlaceById(id: string): Promise<Place | undefined> {

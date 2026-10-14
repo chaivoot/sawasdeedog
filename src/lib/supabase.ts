@@ -18,3 +18,20 @@ export function db(): SupabaseClient {
   })
   return client
 }
+
+type Page<T> = PromiseLike<{ data: T[] | null; error: unknown }>
+
+/**
+ * Every row a query matches. One request returns at most the API's row cap (1000 by default on
+ * Supabase), so this pages with range() until a page comes back empty. The query needs a stable,
+ * unique order (end it with `.order('id')`) or rows can repeat or go missing between pages.
+ */
+export async function allRows<T>(query: (from: number, to: number) => Page<T>): Promise<T[]> {
+  const rows: T[] = []
+  for (;;) {
+    const { data, error } = await query(rows.length, rows.length + 999)
+    if (error) throw error
+    if (!data?.length) return rows
+    rows.push(...data)
+  }
+}
