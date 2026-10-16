@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
-import { Icon } from '@/components/Icon'
+import { EmptyState } from '@/components/EmptyState'
+import { ProductFilter } from '@/components/ProductFilter'
 import { SiteHeader } from '@/components/SiteHeader'
 import { itemCategories } from '@/data/item-categories'
 import { listPublishedProducts } from '@/lib/products'
@@ -20,10 +20,12 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
-/** Directory of item groups, each with how many picks it has. */
+/** Every recommended item, narrowed with group and type chips. */
 export default async function ItemsPage() {
-  const counts = new Map<string, number>()
-  for (const p of await listPublishedProducts()) counts.set(p.category, (counts.get(p.category) ?? 0) + 1)
+  const products = await listPublishedProducts()
+  // Group order follows the group list, so the "ทั้งหมด" view reads like the chips.
+  const order = new Map(itemCategories.map((c, i) => [c.slug, i]))
+  const sorted = [...products].sort((a, b) => (order.get(a.category) ?? 99) - (order.get(b.category) ?? 99))
 
   return (
     <>
@@ -34,21 +36,17 @@ export default async function ItemsPage() {
           <h1>ไอเทมน้องหมา ครูฝึกแนะนำ</h1>
           <p>{DESCRIPTION}</p>
         </div>
-        <div className="item-groups">
-          {itemCategories.map((c) => {
-            const n = counts.get(c.slug) ?? 0
-            return (
-              <Link key={c.slug} href={`/items/${c.slug}`} className="item-group">
-                <span className="item-group__text">
-                  <b>{c.name}</b>
-                  <span>{c.blurb}</span>
-                  <span className="item-group__count">{n > 0 ? `${n} รายการ` : 'เร็ว ๆ นี้'}</span>
-                </span>
-                <Icon name="right" size={20} strokeWidth={2} />
-              </Link>
-            )
-          })}
-        </div>
+        {sorted.length > 0 ? (
+          <ProductFilter products={sorted} groups={itemCategories} />
+        ) : (
+          <EmptyState
+            compact
+            title="ครูกำลังคัดอยู่"
+            body="ระหว่างนี้ อ่านเรื่องหมาๆ ก่อนได้"
+            primary={{ href: '/stories', label: 'อ่านเรื่องหมาๆ' }}
+            secondary={{ href: '/', label: 'กลับหน้าแรก' }}
+          />
+        )}
       </main>
     </>
   )
