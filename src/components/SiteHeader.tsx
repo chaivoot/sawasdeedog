@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { AddPlaceButton } from './AddPlaceButton'
+import { BottomNav } from './BottomNav'
 import { Brand } from './Logo'
 import { Icon } from './Icon'
 import { SiteNav } from './SiteNav'
@@ -30,6 +31,7 @@ export function SiteHeader({ back, desktopOnly }: Props) {
               </Link>
             </div>
           )}
+          <BottomNav />
         </>
       )}
       <header className="site-header--desktop">
