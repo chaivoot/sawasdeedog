@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ConfirmSubmit } from '@/components/ConfirmSubmit'
 import { requireAdminPage } from '@/lib/admin-page'
-import { getProductById } from '@/lib/products'
+import { getProductById, productPath } from '@/lib/products'
 import { deleteItemAction } from '../actions'
 import { ItemEditor } from '../ItemEditor'
 
@@ -19,7 +19,7 @@ export default async function EditItem({ params, searchParams }: Props) {
       <div className="admin-titlebar">
         <h1>แก้ไขไอเทม</h1>
         {p.published && (
-          <Link href={`/items/${p.category}#item-${p.id}`} className="btn btn--secondary btn--sm">
+          <Link href={productPath(p)} className="btn btn--secondary btn--sm">
             ดูบนเว็บ
           </Link>
         )}
@@ -29,6 +29,7 @@ export default async function EditItem({ params, searchParams }: Props) {
         key={p.updatedAt}
         id={p.id}
         draft={{
+          slug: p.slug ?? '',
           name: p.name,
           brand: p.brand ?? '',
           category: p.category,

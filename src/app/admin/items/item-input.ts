@@ -4,6 +4,7 @@ import { isHttpsUrl } from '@/lib/shop-links'
 
 /** Item fields as typed in the editor or pasted as JSON. */
 export type ItemFields = {
+  slug: string
   name: string
   brand: string
   category: string
@@ -18,6 +19,7 @@ export type ItemFields = {
 }
 
 export const ITEM_TEXT_FIELDS = [
+  'slug',
   'name',
   'brand',
   'category',
@@ -42,6 +44,27 @@ export function fieldsFromJson(obj: Record<string, unknown>): Partial<ItemFields
   return out
 }
 
+export const SLUG_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/
+
+/** A page address from the Latin words in the brand and name ("Hosttail" + "… Safe Step 6 มม." → hosttail-safe-step-6). */
+export function suggestSlug(brand: string, name: string): string {
+  return `${brand} ${name}`
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 60)
+    .replace(/-+$/, '')
+}
+
+/** Makes a slug unique among `taken` by adding -2, -3…; falls back to "item" when there is none. */
+export function uniqueSlug(base: string, taken: Set<string>): string {
+  const root = base || 'item'
+  let slug = root
+  for (let n = 2; taken.has(slug); n++) slug = `${root}-${n}`
+  taken.add(slug)
+  return slug
+}
+
 /** Checks the fields; returns errors by field, or the row to save. */
 export function validateItem(
   f: Partial<ItemFields>,
@@ -60,12 +83,16 @@ export function validateItem(
   if (imageUrl && !isHttpsUrl(imageUrl)) errors.imageUrl = 'ลิงก์รูปต้องขึ้นต้นด้วย https://'
   const buyUrl = t('buyUrl')
   if (buyUrl && !isHttpsUrl(buyUrl)) errors.buyUrl = 'ลิงก์ซื้อต้องขึ้นต้นด้วย https://'
+  const slug = t('slug').toLowerCase()
+  if (slug && !SLUG_RE.test(slug)) errors.slug = 'ใช้ a-z 0-9 และขีด - เช่น hosttail-safe-step'
   const sortText = t('sort')
   const sort = sortText ? Number(sortText) : 0
   if (!Number.isInteger(sort)) errors.sort = 'ใส่เป็นจำนวนเต็ม'
   if (Object.keys(errors).length) return { errors }
   return {
     row: {
+      // Empty means "make one from the brand and name" when saving.
+      slug,
       name,
       brand: t('brand') || null,
       category,

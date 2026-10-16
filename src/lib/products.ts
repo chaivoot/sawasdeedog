@@ -4,6 +4,8 @@ import { allRows, db, isSupabaseConfigured } from './supabase'
 
 export type Product = {
   id: string
+  /** Page address; older items without one are linked by id. */
+  slug?: string
   name: string
   brand?: string
   category: string
@@ -20,6 +22,7 @@ export type Product = {
 
 type ProductRow = {
   id: string
+  slug: string | null
   name: string
   brand: string | null
   category: string
@@ -37,6 +40,7 @@ type ProductRow = {
 function rowToProduct(r: ProductRow): Product {
   return {
     id: r.id,
+    slug: r.slug ?? undefined,
     name: r.name,
     brand: r.brand ?? undefined,
     category: r.category,
@@ -76,6 +80,19 @@ export const listPublishedProducts = cache(async (): Promise<Product[]> => {
   }
 })
 
+/** A published item by its page address (slug, or id for items saved before slugs). */
+export async function getPublishedProduct(category: string, key: string): Promise<Product | undefined> {
+  const key2 = decodeURIComponent(key)
+  return (await listPublishedProducts()).find(
+    (p) => p.category === category && (p.slug === key2 || (!p.slug && p.id === key2)),
+  )
+}
+
+/** Where an item's page lives. */
+export function productPath(p: Pick<Product, 'id' | 'slug' | 'category'>): string {
+  return `/items/${p.category}/${p.slug ?? p.id}`
+}
+
 // Admin ---------------------------------------------------------------------
 
 export async function listAllProducts(): Promise<Product[]> {
@@ -100,6 +117,7 @@ export async function getProductById(id: string): Promise<Product | undefined> {
 }
 
 export type ProductInput = {
+  slug: string
   name: string
   brand: string | null
   category: string
@@ -121,6 +139,14 @@ export async function upsertProduct(input: ProductInput, id?: string): Promise<s
   const { data, error } = await q
   if (error) throw error
   return (data as { id: string }).id
+}
+
+/** Slugs already used by other items, so new ones can be made unique. */
+export async function takenProductSlugs(exceptId?: string): Promise<Set<string>> {
+  const rows = await allRows<{ id: string; slug: string | null }>((from, to) =>
+    db().from('products').select('id, slug').order('id').range(from, to),
+  )
+  return new Set(rows.flatMap((r) => (r.slug && r.id !== exceptId ? [r.slug] : [])))
 }
 
 export async function insertProducts(inputs: ProductInput[]): Promise<void> {

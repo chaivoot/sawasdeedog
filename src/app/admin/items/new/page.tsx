@@ -8,6 +8,7 @@ export default async function NewItem() {
       <h1>เพิ่มไอเทม</h1>
       <ItemEditor
         draft={{
+          slug: '',
           name: '',
           brand: '',
           category: '',
