@@ -65,6 +65,7 @@ export function PlaceEditor({ draft, fromSubmission }: { draft: PlaceDraft; from
   const [extras, setExtras] = useState(draft.extraCategories)
   const [farmBreeds, setFarmBreeds] = useState(draft.breeds)
   const [breedQuery, setBreedQuery] = useState('')
+  const [name, setName] = useState(draft.name)
   const [facebook, setFacebook] = useState(draft.contacts.facebook ?? '')
   const facebookHref = facebookUrl(facebook)
   const category = getCategory(categorySlug)
@@ -136,7 +137,26 @@ export function PlaceEditor({ draft, fromSubmission }: { draft: PlaceDraft; from
         <legend>ข้อมูลหลัก</legend>
         <div className="form__grid--stack">
           <Field id="name" label="ชื่อ" error={e.name}>
-            <input id="name" name="name" className="input" defaultValue={draft.name} required />
+            <input
+              id="name"
+              name="name"
+              className="input"
+              value={name}
+              onChange={(ev) => setName(ev.target.value)}
+              required
+            />
+            {name.trim() && (
+              <a
+                className="btn btn--secondary btn--sm field__action"
+                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                  [name.trim(), provinces.find((p) => p.slug === province)?.name].filter(Boolean).join(' '),
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                ค้นหาใน Google Maps ↗
+              </a>
+            )}
           </Field>
           <Field
             id="slug"
