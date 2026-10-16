@@ -14,6 +14,7 @@ import { breedMatches, breeds, breedsByName } from '@/data/breeds'
 import { categoryRule, STAY_MIN_DOG_KG, takesWeightLimit } from '@/data/criteria'
 import type { Contacts } from '@/data/places'
 import { Icon } from '@/components/Icon'
+import { facebookUrl } from '@/lib/contacts'
 import { cleanServiceAreas, serviceAreaLabels } from '@/lib/geo'
 import { MAX_PINS, MAX_PLACE_PHOTOS } from '@/lib/limits'
 import { uploadPhotos } from '@/lib/upload-client'
@@ -64,6 +65,8 @@ export function PlaceEditor({ draft, fromSubmission }: { draft: PlaceDraft; from
   const [extras, setExtras] = useState(draft.extraCategories)
   const [farmBreeds, setFarmBreeds] = useState(draft.breeds)
   const [breedQuery, setBreedQuery] = useState('')
+  const [facebook, setFacebook] = useState(draft.contacts.facebook ?? '')
+  const facebookHref = facebookUrl(facebook)
   const category = getCategory(categorySlug)
   const extraOptions = extraCategoryOptions(categorySlug)
   // Drop extras that stop being valid when the main category changes.
@@ -568,8 +571,19 @@ export function PlaceEditor({ draft, fromSubmission }: { draft: PlaceDraft; from
               name="facebook"
               inputMode="url"
               className="input"
-              defaultValue={draft.contacts.facebook}
+              value={facebook}
+              onChange={(ev) => setFacebook(ev.target.value)}
             />
+            {facebookHref && (
+              <a
+                className="btn btn--secondary btn--sm field__action"
+                href={facebookHref}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                เปิดเพจ Facebook ↗
+              </a>
+            )}
           </Field>
           <Field id="website" label="เว็บไซต์" hint="ไม่ต้องใส่ https:// ก็ได้" error={e.website} full>
             <input
