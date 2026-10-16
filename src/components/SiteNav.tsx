@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 
 const links = [
   { href: '/', label: 'หมวดทั้งหมด' },
+  { href: '/items', label: 'ไอเทม' },
   { href: '/stories', label: 'เรื่องหมาๆ' },
   { href: '/contact', label: 'ติดต่อเรา' },
 ]
@@ -14,7 +15,13 @@ export function SiteNav() {
   return (
     <nav className="site-nav" aria-label="เมนูหลัก">
       {links.map((l) => (
-        <Link key={l.href} href={l.href} aria-current={pathname === l.href ? 'page' : undefined}>
+        <Link
+          key={l.href}
+          href={l.href}
+          aria-current={
+            pathname === l.href || (l.href !== '/' && pathname.startsWith(`${l.href}/`)) ? 'page' : undefined
+          }
+        >
           {l.label}
         </Link>
       ))}

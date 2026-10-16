@@ -2,6 +2,8 @@ import type { MetadataRoute } from 'next'
 import { areaCategories } from '@/data/categories'
 import { findArea } from '@/data/areas'
 import { listPublishedArticles, type Article } from '@/lib/articles'
+import { itemCategories } from '@/data/item-categories'
+import { listPublishedProducts, type Product } from '@/lib/products'
 import { breedsWithFarms, listIndexEntries, type IndexEntry } from '@/lib/places'
 import { areaKeys } from '@/lib/geo'
 import { absoluteUrl } from '@/lib/site'
@@ -14,11 +16,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let entries: IndexEntry[] = []
   let farmBreeds: { slug: string }[] = []
   let articles: Article[] = []
+  let products: Product[] = []
   try {
-    ;[entries, farmBreeds, articles] = await Promise.all([
+    ;[entries, farmBreeds, articles, products] = await Promise.all([
       listIndexEntries(),
       breedsWithFarms(),
       listPublishedArticles(),
+      listPublishedProducts(),
     ])
   } catch (e) {
     console.error('sitemap: could not load places', e)
@@ -47,6 +51,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         changeFrequency: 'monthly',
         priority: 0.6,
       })
+  }
+
+  // Item pages, only once they have picks (empty ones are noindex).
+  if (products.length > 0) {
+    urls.push({
+      url: absoluteUrl('/items'),
+      lastModified: latest(products),
+      changeFrequency: 'weekly',
+      priority: 0.6,
+    })
+    for (const c of itemCategories) {
+      const inCat = products.filter((p) => p.category === c.slug)
+      if (inCat.length === 0) continue
+      urls.push({
+        url: absoluteUrl(`/items/${c.slug}`),
+        lastModified: latest(inCat),
+        changeFrequency: 'weekly',
+        priority: 0.6,
+      })
+    }
   }
 
   for (const b of farmBreeds) {
