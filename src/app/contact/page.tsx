@@ -107,8 +107,8 @@ export default function ContactPage() {
             ทีมงานไม่ใช่สัตวแพทย์ และตอบเรื่องอาการทางโทรศัพท์ไม่ได้ ถ้าน้องไม่สบาย พาไปหาหมอดีที่สุด
             ดูโรงพยาบาลสัตว์ใกล้คุณ หรือที่เปิด 24 ชม. ได้ที่นี่
           </p>
-          <Link href="/vet" className="btn btn--secondary btn--sm contact-topic__action">
-            หาโรงพยาบาลสัตว์
+          <Link href="/vet?near=1" className="btn btn--secondary btn--sm contact-topic__action">
+            หาโรงพยาบาลสัตว์ใกล้ฉัน
             <Icon name="right" size={16} strokeWidth={2.2} />
           </Link>
         </section>
