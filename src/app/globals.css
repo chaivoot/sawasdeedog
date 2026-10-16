@@ -2574,6 +2574,9 @@ a.guarantee:hover {
   font-size: 13px;
   color: var(--color-muted);
 }
+.field__action {
+  align-self: flex-start;
+}
 .field__error {
   font-size: 13px;
   color: var(--color-error);
