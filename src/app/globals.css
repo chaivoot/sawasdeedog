@@ -3751,42 +3751,6 @@ body:has(.bottom-nav) {
 
 /* ---------- Items directory ---------- */
 
-.item-groups {
-  display: grid;
-  gap: 10px;
-}
-.item-group {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 16px;
-  border: 1px solid var(--color-line);
-  border-radius: var(--radius-card);
-  background: var(--color-surface);
-  color: var(--color-ink);
-  text-decoration: none;
-}
-.item-group:hover {
-  border-color: var(--color-primary-100);
-}
-.item-group__text {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  font-size: 14px;
-  color: var(--color-ink-2);
-}
-.item-group__text b {
-  font-family: var(--font-heading);
-  font-size: 17px;
-  font-weight: 500;
-  color: var(--color-ink);
-}
-.item-group__count {
-  font-size: 13px;
-  color: var(--color-muted);
-}
 a.chip {
   text-decoration: none;
 }
@@ -3916,9 +3880,6 @@ a.chip {
   color: var(--color-muted);
 }
 @media (min-width: 640px) {
-  .item-groups {
-    grid-template-columns: repeat(2, 1fr);
-  }
   .product-list {
     grid-template-columns: repeat(3, 1fr);
   }
