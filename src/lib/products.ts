@@ -2,6 +2,8 @@ import 'server-only'
 import { cache } from 'react'
 import { allRows, db, isSupabaseConfigured } from './supabase'
 
+export { productPath } from './product-path'
+
 export type Product = {
   id: string
   /** Page address; older items without one are linked by id. */
@@ -86,11 +88,6 @@ export async function getPublishedProduct(category: string, key: string): Promis
   return (await listPublishedProducts()).find(
     (p) => p.category === category && (p.slug === key2 || (!p.slug && p.id === key2)),
   )
-}
-
-/** Where an item's page lives. */
-export function productPath(p: Pick<Product, 'id' | 'slug' | 'category'>): string {
-  return `/items/${p.category}/${p.slug ?? p.id}`
 }
 
 // Admin ---------------------------------------------------------------------
