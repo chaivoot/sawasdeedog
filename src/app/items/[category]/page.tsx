@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { Breadcrumb } from '@/components/Breadcrumb'
 import { EmptyState } from '@/components/EmptyState'
-import { ProductCard } from '@/components/ProductCard'
+import { ProductFilter } from '@/components/ProductFilter'
 import { SiteHeader } from '@/components/SiteHeader'
 import { findItemCategory, itemCategories } from '@/data/item-categories'
 import { listPublishedProducts } from '@/lib/products'
@@ -27,25 +27,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-/** Picks in one group; groups with subtypes (food: kibble, wet…) list them under their own headings. */
+/** Every pick in one group; groups with subtypes (food: kibble, wet…) can be narrowed with chips. */
 export default async function ItemCategoryPage({ params }: Props) {
   const c = findItemCategory((await params).category)
   if (!c) notFound()
   const products = (await listPublishedProducts()).filter((p) => p.category === c.slug)
-  const sections = c.subcategories.length
-    ? [
-        ...c.subcategories.map((s) => ({
-          key: s.slug,
-          title: s.name,
-          items: products.filter((p) => p.subcategory === s.slug),
-        })),
-        {
-          key: 'other',
-          title: 'อื่น ๆ',
-          items: products.filter((p) => !c.subcategories.some((s) => s.slug === p.subcategory)),
-        },
-      ].filter((s) => s.items.length > 0)
-    : [{ key: 'all', title: '', items: products }]
 
   return (
     <>
@@ -60,27 +46,7 @@ export default async function ItemCategoryPage({ params }: Props) {
           <p>{c.blurb}</p>
         </div>
         {products.length > 0 ? (
-          <>
-            {sections.length > 1 && (
-              <nav className="chip-row" aria-label="ประเภท">
-                {sections.map((s) => (
-                  <a key={s.key} href={`#${s.key}`} className="chip">
-                    {s.title} ({s.items.length})
-                  </a>
-                ))}
-              </nav>
-            )}
-            {sections.map((s) => (
-              <section key={s.key} id={s.key} className="product-section">
-                {sections.length > 1 && <h2>{s.title}</h2>}
-                <div className="product-list">
-                  {s.items.map((p) => (
-                    <ProductCard key={p.id} product={p} />
-                  ))}
-                </div>
-              </section>
-            ))}
-          </>
+          <ProductFilter products={products} types={c.subcategories} />
         ) : (
           <EmptyState
             compact

@@ -1,5 +1,6 @@
 import Link from 'next/link'
-import { productPath, type Product } from '@/lib/products'
+import { productPath } from '@/lib/product-path'
+import type { Product } from '@/lib/products'
 import { Icon } from './Icon'
 
 /** Item tile in a group list: photo and name; the review is on the item's own page. */

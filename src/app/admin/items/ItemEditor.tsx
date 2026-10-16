@@ -97,7 +97,7 @@ export function ItemEditor({ id, draft }: { id?: string; draft: ItemFields }) {
           rows={3}
           value={json}
           onChange={(ev) => setJson(ev.target.value)}
-          placeholder='{"name": "...", "category": "walk", "subcategory": "harness", "reason": "..."}'
+          placeholder='{"name": "...", "category": "gear", "subcategory": "harness", "reason": "..."}'
           aria-label="JSON ไอเทม"
         />
         {jsonError && <span className="field__error">{jsonError}</span>}
