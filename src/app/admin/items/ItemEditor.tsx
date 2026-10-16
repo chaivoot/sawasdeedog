@@ -116,6 +116,11 @@ export function ItemEditor({ id, draft }: { id?: string; draft: ItemFields }) {
         <div className="form__grid--stack">
           {text('name', 'ชื่อสินค้า (ระบุรุ่น)')}
           {text('brand', 'แบรนด์')}
+          {text(
+            'slug',
+            'slug (ลิงก์หน้าไอเทม)',
+            'a-z 0-9 และขีด - · เว้นว่าง = สร้างจากแบรนด์และชื่อให้อัตโนมัติ',
+          )}
           <Field id="category" label="หมวด" error={e.category}>
             <select
               id="category"
@@ -152,9 +157,18 @@ export function ItemEditor({ id, draft }: { id?: string; draft: ItemFields }) {
               </select>
             </Field>
           )}
-          {text('reason', 'ทำไมครูเลือก', 'จากประสบการณ์ใช้จริง 1–3 ประโยค ห้ามแต่งเพิ่ม', 4)}
+          {text(
+            'reason',
+            'รีวิวจากครู',
+            'จากประสบการณ์ใช้จริง ห้ามแต่งเพิ่ม · เว้นบรรทัดว่างระหว่างย่อหน้า · ขึ้นต้นย่อหน้าด้วย "ข้อควรรู้:" ให้เป็นกล่องเตือน',
+            8,
+          )}
           {text('recommendedBy', 'ครูที่แนะนำ', 'เช่น ครูวุฒิ · เว้นว่าง = ไม่ระบุชื่อ')}
-          {text('priceNote', 'ราคา', 'เช่น ประมาณ 590 บาท')}
+          {text(
+            'priceNote',
+            'ระดับราคา (ไม่บังคับ)',
+            'ไม่ต้องใส่ตัวเลข ราคาเปลี่ยนบ่อย เช่น "ราคาสูงกว่าทั่วไป แต่คุ้ม"',
+          )}
           {text('buyUrl', 'ลิงก์ซื้อ', 'ลิงก์ affiliate จาก Shopee หรือร้านค้า (https://)')}
           <Field id="imageUrl" label="รูป" error={e.imageUrl}>
             <input

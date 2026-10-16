@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { Breadcrumb } from '@/components/Breadcrumb'
 import { EmptyState } from '@/components/EmptyState'
-import { AffiliateNote, ProductCard } from '@/components/ProductCard'
+import { ProductCard } from '@/components/ProductCard'
 import { SiteHeader } from '@/components/SiteHeader'
 import { findItemCategory, itemCategories } from '@/data/item-categories'
 import { listPublishedProducts } from '@/lib/products'
@@ -80,7 +80,6 @@ export default async function ItemCategoryPage({ params }: Props) {
                 </div>
               </section>
             ))}
-            <AffiliateNote />
           </>
         ) : (
           <EmptyState

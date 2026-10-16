@@ -3,9 +3,22 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { requireAdmin } from '@/lib/admin'
-import { deleteProduct, insertProducts, upsertProduct, type ProductInput } from '@/lib/products'
+import {
+  deleteProduct,
+  insertProducts,
+  takenProductSlugs,
+  upsertProduct,
+  type ProductInput,
+} from '@/lib/products'
 import { isSupabaseConfigured } from '@/lib/supabase'
-import { ITEM_TEXT_FIELDS, fieldsFromJson, validateItem, type ItemFields } from './item-input'
+import {
+  ITEM_TEXT_FIELDS,
+  fieldsFromJson,
+  suggestSlug,
+  uniqueSlug,
+  validateItem,
+  type ItemFields,
+} from './item-input'
 
 export type ItemFormState = { errors?: Record<string, string>; message?: string }
 export type ImportState = { errors?: string[]; message?: string }
@@ -30,7 +43,11 @@ export async function saveItemAction(_prev: ItemFormState, form: FormData): Prom
   if ('errors' in checked) return { errors: checked.errors }
   let saved: string
   try {
-    saved = await upsertProduct(checked.row, id)
+    const taken = await takenProductSlugs(id)
+    const row = checked.row
+    if (row.slug && taken.has(row.slug)) return { errors: { slug: 'slug นี้มีไอเทมอื่นใช้แล้ว' } }
+    if (!row.slug) row.slug = uniqueSlug(suggestSlug(row.brand ?? '', row.name), taken)
+    saved = await upsertProduct(row, id)
   } catch (e) {
     console.error(e)
     return { message: MISSING_TABLE }
@@ -66,6 +83,11 @@ export async function importItemsAction(_prev: ImportState, form: FormData): Pro
   if (errors.length) return { errors }
   if (rows.length === 0) return { errors: ['ไม่มีรายการ'] }
   try {
+    const taken = await takenProductSlugs()
+    for (const r of rows) {
+      if (r.slug && taken.has(r.slug)) return { errors: [`slug "${r.slug}" มีไอเทมอื่นใช้แล้ว`] }
+      r.slug = r.slug ? (taken.add(r.slug), r.slug) : uniqueSlug(suggestSlug(r.brand ?? '', r.name), taken)
+    }
     await insertProducts(rows)
   } catch (e) {
     console.error(e)

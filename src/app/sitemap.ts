@@ -3,7 +3,7 @@ import { areaCategories } from '@/data/categories'
 import { findArea } from '@/data/areas'
 import { listPublishedArticles, type Article } from '@/lib/articles'
 import { itemCategories } from '@/data/item-categories'
-import { listPublishedProducts, type Product } from '@/lib/products'
+import { listPublishedProducts, productPath, type Product } from '@/lib/products'
 import { breedsWithFarms, listIndexEntries, type IndexEntry } from '@/lib/places'
 import { areaKeys } from '@/lib/geo'
 import { absoluteUrl } from '@/lib/site'
@@ -71,6 +71,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.6,
       })
     }
+    for (const p of products)
+      urls.push({
+        url: absoluteUrl(productPath(p)),
+        lastModified: p.updatedAt,
+        changeFrequency: 'monthly',
+        priority: 0.6,
+      })
   }
 
   for (const b of farmBreeds) {
