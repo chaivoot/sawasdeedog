@@ -6,6 +6,7 @@ import { JsonLd } from '@/components/JsonLd'
 import { SiteHeader } from '@/components/SiteHeader'
 import { readingMinutes } from '@/lib/article-body'
 import { getPublishedArticle } from '@/lib/articles'
+import { authorProfile } from '@/lib/authors'
 import { formatDay } from '@/lib/format'
 import { SITE_NAME, absoluteUrl } from '@/lib/site'
 
@@ -34,6 +35,7 @@ export default async function StoryPage({ params }: Props) {
   const a = await getPublishedArticle((await params).slug)
   if (!a) notFound()
   const url = absoluteUrl(`/stories/${a.slug}`)
+  const profile = authorProfile(a.author)
 
   return (
     <>
@@ -46,7 +48,12 @@ export default async function StoryPage({ params }: Props) {
           image: a.coverUrl ? [a.coverUrl] : undefined,
           datePublished: a.publishedAt,
           dateModified: a.updatedAt,
-          author: { '@type': a.author ? 'Person' : 'Organization', name: a.author ?? SITE_NAME },
+          author: {
+            '@type': a.author ? 'Person' : 'Organization',
+            name: a.author ?? SITE_NAME,
+            url: profile?.url,
+            sameAs: profile?.sameAs,
+          },
           publisher: { '@type': 'Organization', name: SITE_NAME },
           mainEntityOfPage: url,
         }}
@@ -63,11 +70,16 @@ export default async function StoryPage({ params }: Props) {
         <header className="article__head">
           <h1>{a.title}</h1>
           <span className="article__meta">
-            {[
-              a.author,
-              a.publishedAt && formatDay(a.publishedAt.slice(0, 10)),
-              `อ่าน ${readingMinutes(a.body)} นาที`,
-            ]
+            {a.author &&
+              (profile ? (
+                <a href={profile.url} target="_blank" rel="noopener author">
+                  {a.author}
+                </a>
+              ) : (
+                a.author
+              ))}
+            {a.author && ' · '}
+            {[a.publishedAt && formatDay(a.publishedAt.slice(0, 10)), `อ่าน ${readingMinutes(a.body)} นาที`]
               .filter(Boolean)
               .join(' · ')}
           </span>
