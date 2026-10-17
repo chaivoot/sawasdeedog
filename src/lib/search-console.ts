@@ -191,7 +191,10 @@ export async function inspectUrl(url: string): Promise<Inspection> {
   }
 }
 
-/** Opens the page in Search Console's URL inspection, where "Request indexing" lives. */
-export function inspectInConsoleUrl(site: string, url: string) {
-  return `https://search.google.com/search-console/inspect?resource_id=${encodeURIComponent(site)}&id=${encodeURIComponent(url)}`
+/**
+ * The property in Search Console. Its inspection page no longer takes a page URL in the link
+ * (it uses its own ids), so the admin pastes the URL into the inspect bar at the top.
+ */
+export function searchConsoleUrl(site: string) {
+  return `https://search.google.com/search-console?resource_id=${encodeURIComponent(site)}`
 }
