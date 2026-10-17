@@ -1,4 +1,5 @@
 import { PendingSubmit } from '@/components/PendingSubmit'
+import { InspectLink } from './InspectLink'
 import { requireAdminPage } from '@/lib/admin-page'
 import Link from 'next/link'
 import {
@@ -10,10 +11,10 @@ import {
   type IndexStatus,
 } from '@/lib/index-status'
 import {
-  inspectInConsoleUrl,
   isSearchConsoleConfigured,
   searchAnalytics,
   searchConsoleProperty,
+  searchConsoleUrl,
   type SearchRow,
 } from '@/lib/search-console'
 import { siteUrl } from '@/lib/site'
@@ -298,14 +299,7 @@ async function IndexSection({
                       {url === home || url === `${home}/` ? '/' : path(url)}
                     </a>
                     <br />
-                    <a
-                      href={inspectInConsoleUrl(site, url)}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="admin-hint"
-                    >
-                      ตรวจใน Search Console →
-                    </a>
+                    <InspectLink consoleUrl={searchConsoleUrl(site)} url={url} />
                   </td>
                   <td>
                     {s?.error ? `ตรวจไม่สำเร็จ: ${s.error}` : (s?.coverageState ?? s?.verdict)}
