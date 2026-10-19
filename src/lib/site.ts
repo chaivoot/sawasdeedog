@@ -29,3 +29,10 @@ export function absoluteUrl(path: string) {
 
 /** Share image used when a page has no photo of its own. */
 export const DEFAULT_OG_IMAGE = { url: '/logo-full.jpg', width: 480, height: 480, alt: SITE_NAME }
+
+/**
+ * Area listing pages (category + province/district) with fewer places than this are thin
+ * and largely repeat their parent page: kept out of the index and the sitemap so a new
+ * site's limited crawl goes to place pages first.
+ */
+export const MIN_INDEXED_AREA_PLACES = 3

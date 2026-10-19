@@ -15,7 +15,7 @@ import { getCategory, type Category, type TrainerStyle } from '@/data/categories
 import { areaName, areaPath, findArea, type Area } from '@/data/areas'
 import { JsonLd } from '@/components/JsonLd'
 import { areaCounts, listPlaces } from '@/lib/places'
-import { DEFAULT_OG_IMAGE, absoluteUrl } from '@/lib/site'
+import { DEFAULT_OG_IMAGE, MIN_INDEXED_AREA_PLACES, absoluteUrl } from '@/lib/site'
 
 type Props = {
   params: Promise<{ category: string; area?: string[] }>
@@ -72,8 +72,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description,
     // Filtered views (?type=, ?f=) all point at the unfiltered page.
     alternates: { canonical: path },
-    // Empty area pages are thin content; keep them out of the index until they have places.
-    robots: r.area && places.length === 0 ? { index: false, follow: true } : undefined,
+    // Area pages with only a place or two are thin and repeat their parent page; keep them out
+    // of the index (links still followed) until they list enough places.
+    robots: r.area && places.length < MIN_INDEXED_AREA_PLACES ? { index: false, follow: true } : undefined,
     openGraph: { title, description, url: path, images: [DEFAULT_OG_IMAGE] },
   }
 }
