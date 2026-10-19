@@ -6,7 +6,7 @@ import { itemCategories } from '@/data/item-categories'
 import { listPublishedProducts, productPath, type Product } from '@/lib/products'
 import { breedsWithFarms, listIndexEntries, type IndexEntry } from '@/lib/places'
 import { areaKeys } from '@/lib/geo'
-import { absoluteUrl } from '@/lib/site'
+import { MIN_INDEXED_AREA_PLACES, absoluteUrl } from '@/lib/site'
 
 // Rebuilt hourly; admin saves also revalidate the whole site.
 export const revalidate = 3600
@@ -84,7 +84,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     urls.push({ url: absoluteUrl(`/farm/${b.slug}`), changeFrequency: 'weekly', priority: 0.6 })
   }
 
-  // Category pages, and area pages only where there is something to show.
+  // Category pages, and area pages only where they list enough places to stand on their own.
   for (const c of areaCategories) {
     const inCat = entries.filter((e) => e.categories.includes(c.slug))
     urls.push({
@@ -101,6 +101,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }
     }
     for (const [path, list] of areas) {
+      if (list.length < MIN_INDEXED_AREA_PLACES) continue
       urls.push({
         url: absoluteUrl(`/${c.slug}/${path}`),
         lastModified: latest(list),
