@@ -41,6 +41,21 @@ function freshSpec(param: string, today = todayInBangkok()): string {
   return `spec=${specDate(start)}.${specDate(start + nights * DAY_MS)}.${m[7]}`
 }
 
+/**
+ * Traveloka's named hotel pages (/<locale>/hotel/<country>/<name>-<id>) are not served in
+ * every locale, and some 404 outright; the detail page works for any hotel id. A named
+ * page becomes the detail page for that hotel, one night from today.
+ */
+function travelokaDetail(u: URL, today = todayInBangkok()): URL {
+  const m = /^\/[a-z]{2}-[a-z]{2}\/hotel\/[a-z-]+\/(.+)-(\d{6,})\/?$/.exec(u.pathname)
+  if (!m) return u
+  const [y, mo, d] = today.split('-').map(Number)
+  const start = Date.UTC(y, mo - 1, d)
+  const name = encodeURIComponent(m[1].replace(/-+/g, ' ').trim())
+  const spec = `${specDate(start)}.${specDate(start + DAY_MS)}.1.1.HOTEL.${m[2]}.${name}.2`
+  return new URL(`https://www.traveloka.com/th-th/hotel/detail?spec=${spec}`)
+}
+
 function httpsUrl(raw: string): URL | undefined {
   try {
     const u = new URL(raw)
@@ -62,11 +77,13 @@ export function isBookingUrl(raw: string): boolean {
  * Involve Asia link for is sent through it, without its search and session parameters.
  */
 export function bookingLink(raw: string): { href: string; name?: string; affiliate: boolean } | undefined {
-  const u = httpsUrl(raw)
-  if (!u || !isBookingUrl(raw)) return undefined
-  if (AFFILIATE_HOSTS.some((h) => h.test(u.hostname))) return { href: raw, affiliate: true }
-  const site = SITES.find((s) => s.host.test(u.hostname))!
+  const parsed = httpsUrl(raw)
+  if (!parsed || !isBookingUrl(raw)) return undefined
+  const host = parsed.hostname
+  if (AFFILIATE_HOSTS.some((h) => h.test(host))) return { href: raw, affiliate: true }
+  const site = SITES.find((s) => s.host.test(host))!
   if (!site.affiliate) return { href: raw, name: site.name, affiliate: false }
+  const u = site.name === 'Traveloka' ? travelokaDetail(parsed) : parsed
   // Kept as written: re-encoding would turn the %20s in Traveloka's spec into +.
   const kept = u.search
     .slice(1)
