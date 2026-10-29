@@ -3,6 +3,7 @@ import { provinces } from '@/data/areas'
 import { breeds } from '@/data/breeds'
 import { STAY_MIN_DOG_KG } from '@/data/criteria'
 import { isAgodaUrl } from '@/lib/agoda'
+import { isBookingUrl } from '@/lib/booking'
 import { cleanServiceAreas, parseLatLng } from '@/lib/geo'
 import type { PlaceDraft } from '../PlaceEditor'
 import { isUpdate } from './patch'
@@ -69,6 +70,8 @@ function toItem(raw: Record<string, unknown>, today: string): ImportItem {
 
   if (str(raw.agodaUrl) && !isAgodaUrl(str(raw.agodaUrl)))
     warnings.push('ลิงก์ Agoda ไม่ใช่หน้า agoda.com (ไม่ได้ใส่)')
+  if (str(raw.bookingUrl) && !isBookingUrl(str(raw.bookingUrl)))
+    warnings.push('ลิงก์จองไม่ใช่ลิงก์ Involve Asia หรือ Traveloka/Trip.com/Booking.com (ไม่ได้ใส่)')
   const extraCategories = strs(raw.extraCategories).filter((c) => getCategory(c) && c !== category?.slug)
   const trainerStyle = str(raw.trainerStyle)
 
@@ -135,6 +138,7 @@ function toItem(raw: Record<string, unknown>, today: string): ImportItem {
       maxDogKg: Number.isInteger(maxDogKg) && maxDogKg > 0 ? String(maxDogKg) : '',
       maxDogs: Number.isInteger(Number(raw.maxDogs)) && Number(raw.maxDogs) > 0 ? String(raw.maxDogs) : '',
       agodaUrl: isAgodaUrl(str(raw.agodaUrl)) ? str(raw.agodaUrl) : '',
+      bookingUrl: isBookingUrl(str(raw.bookingUrl)) ? str(raw.bookingUrl) : '',
       petFee: str(raw.petFee) || undefined,
       // Shown by default; research can say "published": false to keep one hidden.
       published: raw.published !== false,

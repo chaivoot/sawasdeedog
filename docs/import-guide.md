@@ -85,6 +85,7 @@
 | `website` | ✅ ต้องหา | ลิงก์เว็บไซต์ |
 | `attributes` | ✅ ต้องหา | ตัวกรอง/คำเตือนของหมวด (หัวข้อ 5) เช่น `["dog-menu", "parking"]` |
 | `agodaUrl` | ✅ ที่พัก ต้องหา | ลิงก์หน้าที่พักนั้นใน agoda.com ขึ้นเป็นปุ่ม "เช็คราคาห้องพัก" (รหัสพาร์ทเนอร์ระบบเติมให้เอง) |
+| `bookingUrl` | ที่พัก (ไม่บังคับ) | ลิงก์จองแบบ affiliate จาก Involve Asia (`https://invl.me/...`) หรือหน้าที่พักใน Traveloka, Trip.com, Booking.com ถ้ามี ปุ่ม "เช็คราคาห้องพัก" จะใช้ลิงก์นี้แทน Agoda |
 | `maxDogKg` | ที่พัก/บริการสัตว์เลี้ยง | น้ำหนักสูงสุดที่รับ เป็นตัวเลข เช่น `25` (ไม่มีลิมิตไม่ต้องใส่) |
 | `maxDogs` | ที่พัก | จำนวนหมาสูงสุดต่อห้อง เช่น `2` |
 | `petFee` | ที่พัก | ค่าน้องหมา เช่น `"ฟรี"`, `"500 บาท/ตัว/คืน"`, `"ตัวแรกฟรี ตัวต่อไป 300 บาท/คืน"` (ไม่รู้ไม่ต้องใส่) |
@@ -336,7 +337,7 @@ golden-retriever, labrador-retriever, shetland-sheepdog, shiba-inu, pembroke-wel
 ใส่ `"update": true` กับ `slug` ของร้านเดิม (ดูจาก URL `sawasdeedog.com/place/<slug>`) แล้วใส่**เฉพาะช่องที่จะแก้**
 ช่องที่ไม่ใส่จะคงเดิม ใส่ `null` หรือ `""` เพื่อลบค่าเดิม
 
-- แก้ได้: `description`, `hours`, `price`, `petFee`, `phone`, `line`, `instagram`, `facebook`, `website`, `mapsUrl`, `coords`, `agodaUrl`, `maxDogKg`, `maxDogs`, `type`, `attributes`, `published`, `checkedAt` (แก้ `mapsUrl` ให้ส่ง `coords` มาคู่กันเสมอ)
+- แก้ได้: `description`, `hours`, `price`, `petFee`, `phone`, `line`, `instagram`, `facebook`, `website`, `mapsUrl`, `coords`, `agodaUrl`, `bookingUrl`, `maxDogKg`, `maxDogs`, `type`, `attributes`, `published`, `checkedAt` (แก้ `mapsUrl` ให้ส่ง `coords` มาคู่กันเสมอ)
 - แก้ไม่ได้ (แอดมินแก้ในหน้าร้าน): ชื่อ, slug, หมวด, จังหวัด/เขต, รูป
 - `attributes` จะ**แทนที่ทั้งชุด** ต้องใส่ทุกข้อที่ยังใช้อยู่ ไม่ใช่แค่ข้อที่เพิ่ม
 - ใส่ `notes` และ `sources` เหมือนเดิม
