@@ -124,30 +124,51 @@ export function AreaPicker({ province, district, category, near }: Props) {
 
   return (
     <>
-      <button type="button" className="area-button" onClick={open} aria-haspopup="dialog">
-        <Icon name="pin" size={20} strokeWidth={2} />
-        <span className="area-button__value">
-          <span className="muted">ย่าน</span>
-          {near ? (
-            <b>ใกล้ฉัน</b>
-          ) : current ? (
-            <>
-              <b>{current.province.name}</b>
-              {current.district && (
-                <>
-                  <span className="muted" aria-hidden="true">
-                    ›
-                  </span>
-                  <b>{current.district.name}</b>
-                </>
-              )}
-            </>
-          ) : (
-            <b>ทุกย่าน</b>
-          )}
-        </span>
-        <span className="area-button__action">{current || near ? 'เปลี่ยน' : 'เลือก'}</span>
-      </button>
+      <div className="area-row">
+        {/* One tap for "ใกล้ฉัน": what people searching "…ใกล้ฉัน" came for. */}
+        <button
+          type="button"
+          className="near-chip"
+          onClick={useMyLocation}
+          disabled={locating}
+          aria-pressed={near}
+        >
+          <Icon name="nav" size={20} strokeWidth={2} />
+          <span>{locating ? 'กำลังหา…' : 'ใกล้ฉัน'}</span>
+        </button>
+        <button type="button" className="area-button" onClick={open} aria-haspopup="dialog">
+          <Icon name="pin" size={20} strokeWidth={2} />
+          <span className="area-button__value">
+            <span className="muted">ย่าน</span>
+            {near ? (
+              <b>ใกล้ฉัน</b>
+            ) : current ? (
+              <>
+                {/* Phones show just the district when there is one: the row also holds "ใกล้ฉัน". */}
+                <b className={current.district ? 'area-button__province' : undefined}>
+                  {current.province.name}
+                </b>
+                {current.district && (
+                  <>
+                    <span className="muted area-button__province" aria-hidden="true">
+                      ›
+                    </span>
+                    <b>{current.district.name}</b>
+                  </>
+                )}
+              </>
+            ) : (
+              <b>ทุกย่าน</b>
+            )}
+          </span>
+          <span className="area-button__action">{current || near ? 'เปลี่ยน' : 'เลือก'}</span>
+        </button>
+      </div>
+      {nearError && (
+        <p className="area-row__error" role="alert">
+          {nearError}
+        </p>
+      )}
 
       <dialog
         ref={dialogRef}
