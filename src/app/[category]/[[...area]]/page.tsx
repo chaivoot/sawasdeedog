@@ -144,6 +144,10 @@ export default async function CategoryPage({ params, searchParams }: Props) {
     <>
       <JsonLd data={breadcrumbLd} />
       {listLd && <JsonLd data={listLd} />}
+      {/* Temporary: Travelpayouts site verification on /stay. Remove once the site is verified. */}
+      {category.slug === 'stay' && !area && (
+        <script async src="https://tp-em.com/NTkyNzc4.js?t=592778" data-cmp-ab="2" />
+      )}
       <SiteHeader back="/" />
       <main className="page">
         <Breadcrumb items={crumbs} />
