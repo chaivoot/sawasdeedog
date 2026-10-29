@@ -11,11 +11,17 @@ export function isAgodaUrl(raw: string): boolean {
 /** Partner-portal links (partnersearch.aspx?hid=…) carry the hotel in their query. */
 const KEEP_PARTNER_PARAMS = ['pcs', 'hid', 'hl']
 
+/** Our Agoda partner id, when AGODA_CID holds one. Without it links are plain, not affiliate. */
+export function agodaPartnerId(): string | undefined {
+  const cid = process.env.AGODA_CID?.trim()
+  return cid && /^\d+$/.test(cid) ? cid : undefined
+}
+
 /**
  * The link users follow: tracking and date parameters pasted with the page are dropped
  * (Agoda asks for dates itself), and our partner id is added when AGODA_CID is set.
  */
-export function agodaLink(raw: string, cid = process.env.AGODA_CID?.trim()): string | undefined {
+export function agodaLink(raw: string, cid = agodaPartnerId()): string | undefined {
   if (!isAgodaUrl(raw)) return undefined
   const u = new URL(raw)
   const kept = u.pathname.startsWith('/partners/')

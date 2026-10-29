@@ -19,7 +19,7 @@ import { categoryRule, placeWarnings } from '@/data/criteria'
 import { placeCategories, type Contacts, type Place } from '@/data/places'
 import { JsonLd } from '@/components/JsonLd'
 import { MIN_RATINGS_TO_SHOW } from '@/lib/limits'
-import { agodaLink } from '@/lib/agoda'
+import { agodaLink, agodaPartnerId } from '@/lib/agoda'
 import { contactLinks, splitPhones } from '@/lib/contacts'
 import { serviceAreaLabels } from '@/lib/geo'
 import { getPlace } from '@/lib/places'
@@ -178,6 +178,8 @@ export default async function PlacePage({ params }: Props) {
     place.agodaUrl && isStay && !place.attributes.includes('direct-booking-only')
       ? agodaLink(place.agodaUrl)
       : undefined
+  // Only an affiliate link is marked sponsored and carries the disclosure.
+  const agodaAffiliate = Boolean(agodaPartnerId())
   const petFee = isStay ? place.petFee : undefined
   const listHref = isFarm
     ? place.breeds?.[0]
@@ -303,7 +305,7 @@ export default async function PlacePage({ params }: Props) {
                 <a
                   href={agoda}
                   target="_blank"
-                  rel="noopener noreferrer sponsored"
+                  rel={agodaAffiliate ? 'noopener noreferrer sponsored' : 'noopener noreferrer'}
                   className="btn btn--navigate btn--booking"
                   data-track="agoda_click"
                   data-place={place.slug}
@@ -314,9 +316,11 @@ export default async function PlacePage({ params }: Props) {
                 <p className="place__booking-note">
                   จองแล้วแจ้งที่พักว่าพาน้องหมาไปด้วย และเลือกห้องที่รับน้องหมา
                 </p>
-                <p className="place__booking-note">
-                  ลิงก์พันธมิตร เราอาจได้ค่าตอบแทนเมื่อคุณจอง ไม่มีผลต่อราคาและการคัดเลือก
-                </p>
+                {agodaAffiliate && (
+                  <p className="place__booking-note">
+                    ลิงก์พันธมิตร เราอาจได้ค่าตอบแทนเมื่อคุณจอง ไม่มีผลต่อราคาและการคัดเลือก
+                  </p>
+                )}
               </div>
             )}
             {serviceAreas.length > 0 && (
