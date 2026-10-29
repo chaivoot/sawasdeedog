@@ -1,17 +1,24 @@
 /** Affiliate short links from Involve Asia; they redirect to the booking site. */
 const AFFILIATE_HOSTS = [/(^|\.)invl\.(me|io)$/, /(^|\.)invol\.co$/]
 
-/** Booking sites a stay's booking link may point to directly. Agoda has its own field. */
-const SITES = [
-  { host: /(^|\.)traveloka\.com$/, name: 'Traveloka' },
+/**
+ * Booking sites a stay's booking link may point to directly. Agoda has its own field.
+ * `affiliate` is our Involve Asia link for the site: given `?url=<page>` it tracks a
+ * click to that page under our publisher id, so plain pages need no link of their own.
+ */
+const SITES: { host: RegExp; name: string; affiliate?: string }[] = [
+  { host: /(^|\.)traveloka\.com$/, name: 'Traveloka', affiliate: 'https://invl.me/clo6fk7' },
   { host: /(^|\.)trip\.com$/, name: 'Trip.com' },
   { host: /(^|\.)booking\.com$/, name: 'Booking.com' },
 ]
 
-function httpsHost(raw: string): string | undefined {
+/** Query parameters a booking page keeps; the rest is search and session tracking. */
+const KEEP_PARAMS = ['spec']
+
+function httpsUrl(raw: string): URL | undefined {
   try {
     const u = new URL(raw)
-    return u.protocol === 'https:' ? u.hostname : undefined
+    return u.protocol === 'https:' ? u : undefined
   } catch {
     return undefined
   }
@@ -19,19 +26,31 @@ function httpsHost(raw: string): string | undefined {
 
 /** A stay's booking link: an Involve Asia short link or a page on a known booking site. */
 export function isBookingUrl(raw: string): boolean {
-  const host = httpsHost(raw)
+  const host = httpsUrl(raw)?.hostname
   return !!host && (AFFILIATE_HOSTS.some((h) => h.test(host)) || SITES.some((s) => s.host.test(host)))
 }
 
 /**
- * What the button says about a booking link: the site's name when the link shows it,
- * and whether it is an affiliate link (which carries the disclosure).
+ * The booking button for a link: where it goes, the site's name when known, and whether
+ * it is an affiliate link (which carries the disclosure). A page on a site we have an
+ * Involve Asia link for is sent through it, without its search and session parameters.
  */
-export function bookingSite(raw: string): { name?: string; affiliate: boolean } | undefined {
-  const host = httpsHost(raw)
-  if (!host || !isBookingUrl(raw)) return undefined
+export function bookingLink(raw: string): { href: string; name?: string; affiliate: boolean } | undefined {
+  const u = httpsUrl(raw)
+  if (!u || !isBookingUrl(raw)) return undefined
+  if (AFFILIATE_HOSTS.some((h) => h.test(u.hostname))) return { href: raw, affiliate: true }
+  const site = SITES.find((s) => s.host.test(u.hostname))!
+  if (!site.affiliate) return { href: raw, name: site.name, affiliate: false }
+  // Kept as written: re-encoding would turn the %20s in Traveloka's spec into +.
+  const kept = u.search
+    .slice(1)
+    .split('&')
+    .filter((p) => KEEP_PARAMS.includes(p.split('=')[0]))
+  u.hash = ''
+  u.search = kept.length ? `?${kept.join('&')}` : ''
   return {
-    name: SITES.find((s) => s.host.test(host))?.name,
-    affiliate: AFFILIATE_HOSTS.some((h) => h.test(host)),
+    href: `${site.affiliate}?url=${encodeURIComponent(u.toString())}`,
+    name: site.name,
+    affiliate: true,
   }
 }

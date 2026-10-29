@@ -20,7 +20,7 @@ import { placeCategories, type Contacts, type Place } from '@/data/places'
 import { JsonLd } from '@/components/JsonLd'
 import { MIN_RATINGS_TO_SHOW } from '@/lib/limits'
 import { agodaLink, agodaPartnerId } from '@/lib/agoda'
-import { bookingSite } from '@/lib/booking'
+import { bookingLink } from '@/lib/booking'
 import { contactLinks, splitPhones } from '@/lib/contacts'
 import { serviceAreaLabels } from '@/lib/geo'
 import { getPlace } from '@/lib/places'
@@ -178,11 +178,11 @@ export default async function PlacePage({ params }: Props) {
   // booking link wins over the Agoda page; only an affiliate link is marked sponsored
   // and carries the disclosure.
   const bookable = isStay && !place.attributes.includes('direct-booking-only')
-  const bookingInfo = bookable && place.bookingUrl ? bookingSite(place.bookingUrl) : undefined
+  const bookingInfo = bookable && place.bookingUrl ? bookingLink(place.bookingUrl) : undefined
   const agodaHref = bookable && !bookingInfo && place.agodaUrl ? agodaLink(place.agodaUrl) : undefined
   const booking = bookingInfo
     ? {
-        href: place.bookingUrl!,
+        href: bookingInfo.href,
         site: bookingInfo.name,
         affiliate: bookingInfo.affiliate,
         track: 'booking_click',
