@@ -36,10 +36,26 @@ function title(category: Category, area?: Area) {
   return area ? `${base} ${areaName(area)}` : base
 }
 
-/** Page title for search results, e.g. "คาเฟ่หมาเข้าได้ ลาดกระบัง กรุงเทพฯ". */
+/** Categories people search for "…ใกล้ฉัน"; a stay is chosen by trip, not by distance. */
+const NEAR_ME_CATEGORIES = new Set([
+  'vet',
+  'grooming',
+  'cafe',
+  'boarding',
+  'sitter',
+  'park',
+  'rehab',
+  'trainer',
+  'farewell',
+])
+
+/**
+ * Page title for search results, e.g. "คาเฟ่หมาเข้าได้ ลาดกระบัง กรุงเทพฯ". The all-areas page
+ * answers "…ใกล้ฉัน" searches (its button sorts by distance), so it says so.
+ */
 function seoTitle(category: Category, area?: Area) {
   const base = category.listTitle ?? category.name
-  if (!area) return base
+  if (!area) return NEAR_ME_CATEGORIES.has(category.slug) ? `${base}ใกล้ฉัน` : base
   return area.district
     ? `${base} ${area.district.name} ${area.province.name}`
     : `${base} ${area.province.name}`
@@ -56,7 +72,8 @@ function seoDescription(category: Category, area: Area | undefined, count: numbe
   const lead =
     count > 0 ? `รวม ${count} ${noun}${where ? `ใน${where}` : ''}` : `${noun}${where ? `ใน${where}` : ''}`
   const rule = categoryRule(category.slug)?.banner ?? category.description
-  return `${lead} ที่ทีม SawasdeeDog คัดแล้ว · ${rule}`
+  const near = !area && NEAR_ME_CATEGORIES.has(category.slug) ? ' · กด “ใกล้ฉัน” ดูที่ใกล้คุณที่สุด' : ''
+  return `${lead} ที่ทีม SawasdeeDog คัดแล้ว${near} · ${rule}`
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

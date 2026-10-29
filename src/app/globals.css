@@ -431,6 +431,58 @@ p {
   }
 }
 
+/* "ใกล้ฉัน" beside the area button: one tap, no picker. */
+.area-row {
+  display: flex;
+  gap: 8px;
+}
+.area-row .area-button {
+  flex: 1;
+  min-width: 0;
+}
+.near-chip {
+  flex-shrink: 0;
+  height: 48px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--color-primary);
+  border: 1.5px solid var(--color-primary);
+  border-radius: var(--radius-button);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.near-chip:hover {
+  filter: brightness(1.05);
+}
+.near-chip:disabled {
+  opacity: 0.7;
+  cursor: progress;
+}
+.near-chip[aria-pressed='true'] {
+  background: var(--color-surface);
+  color: var(--color-primary);
+}
+@media (max-width: 899px) {
+  .area-row .area-button__province {
+    display: none;
+  }
+}
+.area-row__error {
+  margin: 8px 2px 0;
+  font-size: 14px;
+  color: var(--color-ink-2);
+}
+@media (min-width: 900px) {
+  .near-chip {
+    height: 52px;
+  }
+}
+
 .sheet {
   margin: auto 0 0;
   width: 100%;
