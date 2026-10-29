@@ -20,6 +20,7 @@ import { placeCategories, type Contacts, type Place } from '@/data/places'
 import { JsonLd } from '@/components/JsonLd'
 import { MIN_RATINGS_TO_SHOW } from '@/lib/limits'
 import { agodaLink, agodaPartnerId } from '@/lib/agoda'
+import { bookingLink } from '@/lib/booking'
 import { contactLinks, splitPhones } from '@/lib/contacts'
 import { serviceAreaLabels } from '@/lib/geo'
 import { getPlace } from '@/lib/places'
@@ -173,13 +174,22 @@ export default async function PlacePage({ params }: Props) {
 
   const isFarm = place.category === 'farm'
   const isStay = placeCategories(place).includes('stay')
-  // A stay that only takes dogs on direct bookings gets no booking-site button.
-  const agoda =
-    place.agodaUrl && isStay && !place.attributes.includes('direct-booking-only')
-      ? agodaLink(place.agodaUrl)
+  // A stay that only takes dogs on direct bookings gets no booking-site button. Our own
+  // booking link wins over the Agoda page; only an affiliate link is marked sponsored
+  // and carries the disclosure.
+  const bookable = isStay && !place.attributes.includes('direct-booking-only')
+  const bookingInfo = bookable && place.bookingUrl ? bookingLink(place.bookingUrl) : undefined
+  const agodaHref = bookable && !bookingInfo && place.agodaUrl ? agodaLink(place.agodaUrl) : undefined
+  const booking = bookingInfo
+    ? {
+        href: bookingInfo.href,
+        site: bookingInfo.name,
+        affiliate: bookingInfo.affiliate,
+        track: 'booking_click',
+      }
+    : agodaHref
+      ? { href: agodaHref, site: 'Agoda', affiliate: Boolean(agodaPartnerId()), track: 'agoda_click' }
       : undefined
-  // Only an affiliate link is marked sponsored and carries the disclosure.
-  const agodaAffiliate = Boolean(agodaPartnerId())
   const petFee = isStay ? place.petFee : undefined
   const listHref = isFarm
     ? place.breeds?.[0]
@@ -300,23 +310,23 @@ export default async function PlacePage({ params }: Props) {
                 <span>นำทางด้วย Google Maps</span>
               </a>
             )}
-            {agoda && (
+            {booking && (
               <div className="place__booking place__navigate">
                 <a
-                  href={agoda}
+                  href={booking.href}
                   target="_blank"
-                  rel={agodaAffiliate ? 'noopener noreferrer sponsored' : 'noopener noreferrer'}
+                  rel={booking.affiliate ? 'noopener noreferrer sponsored' : 'noopener noreferrer'}
                   className="btn btn--navigate btn--booking"
-                  data-track="agoda_click"
+                  data-track={booking.track}
                   data-place={place.slug}
                 >
                   <Icon name="tag" size={24} strokeWidth={2} />
-                  <span>เช็คราคาห้องพัก (Agoda)</span>
+                  <span>เช็คราคาห้องพัก{booking.site ? ` (${booking.site})` : ''}</span>
                 </a>
                 <p className="place__booking-note">
                   จองแล้วแจ้งที่พักว่าพาน้องหมาไปด้วย และเลือกห้องที่รับน้องหมา
                 </p>
-                {agodaAffiliate && (
+                {booking.affiliate && (
                   <p className="place__booking-note">
                     ลิงก์พันธมิตร เราอาจได้ค่าตอบแทนเมื่อคุณจอง ไม่มีผลต่อราคาและการคัดเลือก
                   </p>

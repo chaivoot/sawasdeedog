@@ -38,6 +38,8 @@ export type Place = {
   lng?: number
   /** Stays: the place's Agoda page, for the "check room prices" button. */
   agodaUrl?: string
+  /** Stays: an affiliate booking link (Involve Asia short link or a booking site page); wins over agodaUrl. */
+  bookingUrl?: string
   /** Stays: what the place charges for a dog, e.g. "ฟรี" or "500 บาท/ตัว/คืน". */
   petFee?: string
   /** Stays: heaviest dog taken, in kg; unset means no limit. */

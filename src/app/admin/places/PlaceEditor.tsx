@@ -48,6 +48,8 @@ export type PlaceDraft = {
   maxDogs: string
   /** Stays: the place's Agoda page. */
   agodaUrl: string
+  /** Stays: affiliate booking link; wins over the Agoda one. */
+  bookingUrl?: string
   /** Stays: what the place charges for a dog. */
   petFee?: string
   published: boolean
@@ -439,6 +441,24 @@ export function PlaceEditor({ draft, fromSubmission }: { draft: PlaceDraft; from
                     inputMode="url"
                     defaultValue={draft.agodaUrl}
                     placeholder="https://www.agoda.com/..."
+                  />
+                </Field>
+              )}
+              {isStay && (
+                <Field
+                  id="bookingUrl"
+                  label="ลิงก์จอง (affiliate)"
+                  hint="ลิงก์จาก Involve Asia (invl.me/…) ที่สร้างจากหน้าที่พักนี้ · ถ้ามี ปุ่ม “เช็คราคาห้องพัก” จะใช้ลิงก์นี้แทน Agoda"
+                  error={e.bookingUrl}
+                  full
+                >
+                  <input
+                    id="bookingUrl"
+                    name="bookingUrl"
+                    className="input"
+                    inputMode="url"
+                    defaultValue={draft.bookingUrl}
+                    placeholder="https://invl.me/..."
                   />
                 </Field>
               )}

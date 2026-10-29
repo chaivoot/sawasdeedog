@@ -14,6 +14,7 @@ import type { Place } from '@/data/places'
 import { getPlaceById, pinCount, slugTaken, type PlaceInput } from '@/lib/admin-places'
 import { cleanServiceAreas, parseLatLng, resolveMapsLatLng } from '@/lib/geo'
 import { isAgodaUrl } from '@/lib/agoda'
+import { isBookingUrl } from '@/lib/booking'
 import { facebookUrl, instagramHandle, lineLink, websiteUrl } from '@/lib/contacts'
 import { MAX_PINS, MAX_PLACE_PHOTOS } from '@/lib/limits'
 import type { PlaceDraft } from './places/PlaceEditor'
@@ -145,6 +146,10 @@ export async function readPlaceForm(form: FormData): Promise<ReadPlace> {
     errors.maxDogs = 'ใส่เป็นจำนวนตัว เช่น 2'
   const agodaUrl = isStay ? text(form, 'agodaUrl') : ''
   if (agodaUrl && !isAgodaUrl(agodaUrl)) errors.agodaUrl = 'ใส่ลิงก์หน้าที่พักจาก agoda.com'
+  const bookingUrl = isStay ? text(form, 'bookingUrl') : ''
+  if (bookingUrl && !isBookingUrl(bookingUrl))
+    errors.bookingUrl =
+      'ใส่ลิงก์จาก Involve Asia (invl.me/…) หรือหน้าที่พักใน Traveloka, Trip.com, Booking.com'
   const petFee = isStay ? text(form, 'petFee') : ''
   const breedSlugs = new Set(breeds.map((b) => b.slug))
   const placeBreeds = isFarm
@@ -215,6 +220,7 @@ export async function readPlaceForm(form: FormData): Promise<ReadPlace> {
     max_dog_kg: maxDogKg,
     max_dogs: maxDogs,
     agoda_url: agodaUrl || null,
+    booking_url: bookingUrl || null,
     pet_fee: petFee || null,
     photos,
     breeds: placeBreeds,
@@ -260,6 +266,7 @@ export function draftToForm(draft: PlaceDraft): FormData {
   set('maxDogKg', draft.maxDogKg)
   set('maxDogs', draft.maxDogs)
   set('agodaUrl', draft.agodaUrl)
+  set('bookingUrl', draft.bookingUrl)
   set('petFee', draft.petFee)
   if (draft.published) set('published', 'on')
   add('pinnedIn', draft.pinnedIn)

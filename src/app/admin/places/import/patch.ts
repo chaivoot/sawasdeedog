@@ -2,6 +2,7 @@ import { getCategory } from '@/data/categories'
 import { STAY_MIN_DOG_KG, takesWeightLimit } from '@/data/criteria'
 import { placeCategories, type Place } from '@/data/places'
 import { isAgodaUrl } from '@/lib/agoda'
+import { isBookingUrl } from '@/lib/booking'
 import { facebookUrl, instagramHandle, lineLink, websiteUrl } from '@/lib/contacts'
 import { parseLatLng } from '@/lib/geo'
 import type { PlaceRow } from '@/lib/places'
@@ -23,6 +24,7 @@ export type PlacePatch = Partial<
     | 'facebook'
     | 'website'
     | 'agoda_url'
+    | 'booking_url'
     | 'max_dog_kg'
     | 'max_dogs'
     | 'type'
@@ -135,6 +137,12 @@ export function toPatch(raw: Record<string, unknown>, existing: Place[], today: 
     const v = str(raw.agodaUrl)
     if (v && !isAgodaUrl(v)) item.warnings.push('ลิงก์ Agoda ไม่ใช่หน้า agoda.com (ไม่ได้แก้)')
     else set('agoda_url', 'ลิงก์ Agoda', v || null, place.agodaUrl)
+  }
+  if (stayOnly('bookingUrl')) {
+    const v = str(raw.bookingUrl)
+    if (v && !isBookingUrl(v))
+      item.warnings.push('ลิงก์จองไม่ใช่ลิงก์ Involve Asia หรือเว็บจองที่รู้จัก (ไม่ได้แก้)')
+    else set('booking_url', 'ลิงก์จอง', v || null, place.bookingUrl)
   }
   if (stayOnly('maxDogs')) {
     const n = raw.maxDogs == null || raw.maxDogs === '' ? null : Number(raw.maxDogs)
