@@ -68,6 +68,8 @@ export default async function HomePage() {
   return (
     <>
       <JsonLd data={siteLd} />
+      {/* Temporary: Travelpayouts site verification. Remove once the site is verified. */}
+      <script async src="https://tp-em.com/NTkyNzc4.js?t=592778" data-cmp-ab="2" />
       <SiteHeader />
       <main className="page page--home">
         <div className="home-intro">
