@@ -1,7 +1,13 @@
 import Link from 'next/link'
 import { requireAdminPage } from '@/lib/admin-page'
-import { listAllArticles, type Article } from '@/lib/articles'
-import { formatDay } from '@/lib/format'
+import { isScheduled, listAllArticles, type Article } from '@/lib/articles'
+import { formatDateTime, formatDay } from '@/lib/format'
+
+function status(a: Article) {
+  if (!a.published) return 'ฉบับร่าง'
+  if (isScheduled(a)) return `ตั้งเวลา ${formatDateTime(a.publishedAt!)}`
+  return 'เผยแพร่แล้ว'
+}
 
 export default async function AdminArticles() {
   await requireAdminPage()
@@ -36,8 +42,7 @@ export default async function AdminArticles() {
                 <span className="admin-row__main">
                   <b>{a.title}</b>
                   <span>
-                    {a.published ? 'เผยแพร่แล้ว' : 'ฉบับร่าง'} · แก้ล่าสุด{' '}
-                    {formatDay(a.updatedAt.slice(0, 10))}
+                    {status(a)} · แก้ล่าสุด {formatDay(a.updatedAt.slice(0, 10))}
                   </span>
                 </span>
               </Link>

@@ -13,11 +13,14 @@ export type ArticleDraft = {
   body: string
   author: string
   published: boolean
+  /** Go-live time as a datetime-local value in Bangkok time; empty = when published. */
+  publishAt: string
 }
 
-const FIELDS = ['slug', 'title', 'excerpt', 'coverUrl', 'body', 'author'] as const
+const FIELDS = ['slug', 'title', 'excerpt', 'coverUrl', 'body', 'author', 'publishAt'] as const
 
-export function ArticleEditor({ draft }: { draft: ArticleDraft }) {
+/** `nextSlot`: the next free day to schedule into (datetime-local, Bangkok time). */
+export function ArticleEditor({ draft, nextSlot }: { draft: ArticleDraft; nextSlot?: string }) {
   const [state, action, pending] = useActionState<ArticleFormState, FormData>(saveArticleAction, {})
   const [values, setValues] = useState(draft)
   const [json, setJson] = useState('')
@@ -28,7 +31,7 @@ export function ArticleEditor({ draft }: { draft: ArticleDraft }) {
   const e = state.errors ?? {}
   const set = (k: keyof ArticleDraft, v: string | boolean) => setValues((prev) => ({ ...prev, [k]: v }))
 
-  // Fills the form from pasted JSON: { title, slug, excerpt, coverUrl, author, body, published }.
+  // Fills the form from pasted JSON: { title, slug, excerpt, coverUrl, author, body, published, publishAt }.
   function applyJson() {
     try {
       const raw = JSON.parse(json) as Record<string, unknown>
@@ -217,6 +220,30 @@ export function ArticleEditor({ draft }: { draft: ArticleDraft }) {
             />
             เผยแพร่บนเว็บ (ไม่ติ๊ก = เก็บเป็นฉบับร่าง)
           </label>
+          <Field
+            id="publishAt"
+            label="เวลาขึ้นเว็บ (เวลาไทย)"
+            hint="เว้นว่าง = ขึ้นทันทีที่บันทึก · ใส่เวลาล่วงหน้า + ติ๊กเผยแพร่ = ตั้งเวลา (ขึ้นเว็บช้าได้ไม่เกิน 1 ชม.)"
+            error={e.publishAt}
+          >
+            <input
+              id="publishAt"
+              name="publishAt"
+              type="datetime-local"
+              className="input"
+              value={values.publishAt}
+              onChange={(ev) => set('publishAt', ev.target.value)}
+            />
+          </Field>
+          {nextSlot && (
+            <button
+              type="button"
+              className="btn btn--secondary btn--sm"
+              onClick={() => setValues((prev) => ({ ...prev, publishAt: nextSlot, published: true }))}
+            >
+              ต่อคิว: ตั้งเวลาวันว่างถัดไป ({nextSlot.replace('T', ' ')})
+            </button>
+          )}
         </div>
       </fieldset>
 
