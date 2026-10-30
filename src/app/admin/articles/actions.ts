@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { requireAdmin } from '@/lib/admin'
 import { articleSlugTaken, deleteArticle, upsertArticle } from '@/lib/articles'
+import { formatDateTime, fromBangkokInput } from '@/lib/format'
 import { isSupabaseConfigured } from '@/lib/supabase'
 
 export type ArticleFormState = { errors?: Record<string, string>; message?: string }
@@ -38,6 +39,9 @@ export async function saveArticleAction(_prev: ArticleFormState, form: FormData)
   const body = text(form, 'body')
   if (!body) errors.body = 'ยังไม่มีเนื้อหา'
   const published = form.get('published') === 'on'
+  const publishAtRaw = text(form, 'publishAt')
+  const publishAt = publishAtRaw ? fromBangkokInput(publishAtRaw) : undefined
+  if (publishAtRaw && !publishAt) errors.publishAt = 'เลือกวันและเวลาให้ครบ'
 
   if (Object.keys(errors).length) return { errors }
   let saved: string
@@ -52,6 +56,7 @@ export async function saveArticleAction(_prev: ArticleFormState, form: FormData)
         body,
         author: text(form, 'author') || null,
         published,
+        publish_at: publishAt?.toISOString(),
         updated_by: admin.name,
       },
       id,
@@ -63,7 +68,12 @@ export async function saveArticleAction(_prev: ArticleFormState, form: FormData)
   revalidatePath('/stories', 'layout')
   revalidatePath('/sitemap.xml')
   if (!id) redirect(`/admin/articles/${saved}?saved=1`)
-  return { message: published ? 'บันทึกและเผยแพร่แล้ว' : 'บันทึกฉบับร่างแล้ว' }
+  if (!published) return { message: 'บันทึกฉบับร่างแล้ว' }
+  if (publishAt && publishAt.getTime() > Date.now())
+    return {
+      message: `ตั้งเวลาแล้ว ขึ้นเว็บ ${formatDateTime(publishAt.toISOString())} (ช้าได้ไม่เกิน 1 ชม.)`,
+    }
+  return { message: 'บันทึกและเผยแพร่แล้ว' }
 }
 
 export async function deleteArticleAction(form: FormData) {

@@ -3,7 +3,8 @@ import { notFound } from 'next/navigation'
 import { ArticleBody } from '@/components/ArticleBody'
 import { ConfirmSubmit } from '@/components/ConfirmSubmit'
 import { requireAdminPage } from '@/lib/admin-page'
-import { getArticleById } from '@/lib/articles'
+import { getArticleById, isScheduled, nextArticleSlot } from '@/lib/articles'
+import { formatDateTime, toBangkokInput } from '@/lib/format'
 import { deleteArticleAction } from '../actions'
 import { ArticleEditor } from '../ArticleEditor'
 
@@ -14,18 +15,23 @@ export default async function EditArticle({ params, searchParams }: Props) {
   const a = await getArticleById((await params).id)
   if (!a) notFound()
   const { saved } = await searchParams
+  const scheduled = isScheduled(a)
+  // Only offered while the article is not live yet.
+  const live = a.published && !scheduled
+  const nextSlot = live ? undefined : toBangkokInput(await nextArticleSlot())
 
   return (
     <>
       <div className="admin-titlebar">
         <h1>แก้ไขบทความ</h1>
-        {a.published && (
+        {live && (
           <Link href={`/stories/${a.slug}`} className="btn btn--secondary btn--sm">
             ดูบนเว็บ
           </Link>
         )}
       </div>
       {saved && <p className="admin-notice">บันทึกแล้ว</p>}
+      {scheduled && <p className="admin-notice">ตั้งเวลาไว้ ขึ้นเว็บ {formatDateTime(a.publishedAt!)}</p>}
       <ArticleEditor
         key={a.updatedAt}
         draft={{
@@ -37,7 +43,9 @@ export default async function EditArticle({ params, searchParams }: Props) {
           body: a.body,
           author: a.author ?? '',
           published: a.published,
+          publishAt: a.publishedAt ? toBangkokInput(a.publishedAt) : '',
         }}
+        nextSlot={nextSlot}
       />
       <section className="admin-fieldset admin-article-preview">
         <h2>ตัวอย่าง (จากที่บันทึกล่าสุด)</h2>
