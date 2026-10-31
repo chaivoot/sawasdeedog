@@ -1,6 +1,7 @@
 // Article bodies are plain text with a little markup, so the team can write them in a
 // textarea (or paste them as JSON) and nothing they type is ever run as HTML:
 //   ## Heading / ### Subheading   - list item   ![alt](image url)   [[place:slug]]
+//   [[places:category/province/district|count]]: that many places picked at random (area and count optional)
 //   **bold** and [link text](url) inside paragraphs and list items.
 // Blocks are separated by a blank line.
 
@@ -12,8 +13,14 @@ export type Block =
   | { kind: 'list'; items: Inline[][] }
   | { kind: 'image'; src: string; alt: string }
   | { kind: 'place'; slug: string }
+  | { kind: 'places'; category: string; province?: string; district?: string; count: number }
 
 const PLACE_RE = /^\[\[place:([a-z0-9]+(?:-[a-z0-9]+)*)\]\]$/
+const SLUG = '[a-z0-9]+(?:-[a-z0-9]+)*'
+const PLACES_RE = new RegExp(`^\\[\\[places:(${SLUG})(?:/(${SLUG}))?(?:/(${SLUG}))?(?:\\|(\\d+))?\\]\\]$`)
+/** How many places a random block shows when it names no count, and at most. */
+const PLACES_DEFAULT = 3
+const PLACES_MAX = 6
 const IMAGE_RE = /^!\[([^\]]*)\]\((https?:\/\/[^\s)]+)\)$/
 
 /** **bold** and [text](url) runs; anything else is plain text. */
@@ -39,11 +46,20 @@ export function parseBody(body: string): Block[] {
       .filter(Boolean)
     if (lines.length === 0) continue
     // A run of special lines (images, places) inside one chunk each become their own block.
-    if (lines.every((l) => PLACE_RE.test(l) || IMAGE_RE.test(l))) {
+    if (lines.every((l) => PLACE_RE.test(l) || PLACES_RE.test(l) || IMAGE_RE.test(l))) {
       for (const l of lines) {
         const place = l.match(PLACE_RE)
+        const random = l.match(PLACES_RE)
         const image = l.match(IMAGE_RE)
         if (place) blocks.push({ kind: 'place', slug: place[1] })
+        else if (random)
+          blocks.push({
+            kind: 'places',
+            category: random[1],
+            province: random[2],
+            district: random[3],
+            count: Math.min(PLACES_MAX, Math.max(1, Number(random[4] ?? PLACES_DEFAULT))),
+          })
         else if (image) blocks.push({ kind: 'image', alt: image[1], src: image[2] })
       }
       continue
@@ -60,7 +76,7 @@ export function parseBody(body: string): Block[] {
   return blocks
 }
 
-/** Places an article shows as cards. */
+/** Places an article names as cards (random blocks not included). */
 export function placeSlugsIn(body: string): string[] {
   return parseBody(body).flatMap((b) => (b.kind === 'place' ? [b.slug] : []))
 }
@@ -72,7 +88,7 @@ export function imageUrlsIn(body: string): string[] {
 
 /** Plain-text length, for a reading-time estimate. */
 export function readingMinutes(body: string): number {
-  const chars = body.replace(/!\[[^\]]*\]\([^)]*\)|\[\[place:[^\]]*\]\]|[#*\-[\]()]/g, '').length
+  const chars = body.replace(/!\[[^\]]*\]\([^)]*\)|\[\[places?:[^\]]*\]\]|[#*\-[\]()]/g, '').length
   // Thai reads at roughly 500–600 characters a minute.
   return Math.max(1, Math.round(chars / 550))
 }

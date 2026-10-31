@@ -3670,7 +3670,8 @@ a.guarantee:hover {
   flex-direction: column;
   gap: 6px;
 }
-.article-body a {
+/* Place cards are links too, styled as cards. */
+.article-body a:not(.listing-card) {
   color: var(--color-primary);
   text-decoration: underline;
 }
@@ -3691,6 +3692,14 @@ a.guarantee:hover {
 }
 .article-body__place .listing-card {
   margin: 0;
+}
+.article-body__places {
+  display: grid;
+  gap: 12px;
+}
+.article-body a.article-body__more {
+  justify-self: start;
+  font-weight: 600;
 }
 @media (min-width: 768px) {
   .story-list {

@@ -187,7 +187,7 @@ export function ArticleEditor({ draft, nextSlot }: { draft: ArticleDraft; nextSl
           <Field
             id="body"
             label="เนื้อหา"
-            hint="เว้นบรรทัดว่างระหว่างย่อหน้า · ## หัวข้อ · ### หัวข้อย่อย · - รายการ · **ตัวหนา** · [ข้อความ](ลิงก์) · [[place:slug]] = การ์ดร้านในเว็บ"
+            hint="เว้นบรรทัดว่างระหว่างย่อหน้า · ## หัวข้อ · ### หัวข้อย่อย · - รายการ · **ตัวหนา** · [ข้อความ](ลิงก์) · [[place:slug]] = การ์ดร้านในเว็บ · [[places:farewell/bangkok]] = สุ่ม 3 ที่จากหมวดและย่านนั้น (ใส่ |5 ท้าย = 5 ที่)"
             error={e.body}
           >
             <textarea

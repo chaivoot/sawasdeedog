@@ -173,6 +173,19 @@ async function listPlacesUncached(q: PlaceQuery): Promise<Place[]> {
 /** Cached per request so generateMetadata and the page share one query. */
 export const listPlaces = cache(listPlacesUncached)
 
+/**
+ * Up to `count` places from a category (and area) in random order, leaving out `exclude`.
+ * Article pages are re-rendered hourly, so the pick changes about once an hour.
+ */
+export async function randomPlaces(q: PlaceQuery, count: number, exclude: string[] = []): Promise<Place[]> {
+  const pool = (await listPlaces(q)).filter((p) => !exclude.includes(p.slug))
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[pool[i], pool[j]] = [pool[j], pool[i]]
+  }
+  return pool.slice(0, count)
+}
+
 /** Every published place, unordered and without ratings (for counting). */
 export const listAllPlaces = cache(async (): Promise<Place[]> => {
   if (!isSupabaseConfigured()) return samplePlaces
