@@ -7,7 +7,7 @@ import { SiteHeader } from '@/components/SiteHeader'
 import { findItemCategory, findItemSubcategory } from '@/data/item-categories'
 import { authorProfile } from '@/lib/authors'
 import { getPublishedProduct, listPublishedProducts, productPath } from '@/lib/products'
-import { shopName } from '@/lib/shop-links'
+import { shopName, shopeeAffiliateLink } from '@/lib/shop-links'
 
 type Props = { params: Promise<{ category: string; slug: string }> }
 
@@ -98,7 +98,7 @@ export default async function ItemPage({ params }: Props) {
             {p.buyUrl && (
               <a
                 className="btn btn--primary"
-                href={p.buyUrl}
+                href={shopeeAffiliateLink(p.buyUrl, 'item')}
                 target="_blank"
                 rel="sponsored nofollow noopener"
               >

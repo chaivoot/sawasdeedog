@@ -40,3 +40,27 @@ export function isSponsoredUrl(raw: string): boolean {
     return false
   }
 }
+
+/** Our Shopee affiliate id (not a secret: it appears in every affiliate link). */
+const SHOPEE_AFFILIATE_ID = '15309190191'
+
+/**
+ * A Shopee page link sent through Shopee's affiliate redirect with our id, so the click
+ * counts for us (help.shopee.co.th article 172214). `subId` tags where on the site it was.
+ * Short links (s.shopee.co.th, shope.ee) are already someone's affiliate link and other
+ * links are returned as they are.
+ */
+export function shopeeAffiliateLink(raw: string, subId = 'sawasdeedog'): string {
+  try {
+    const u = new URL(raw)
+    if (u.protocol !== 'https:' || !/^(www\.)?shopee\.co\.th$/.test(u.hostname)) return raw
+    const params = new URLSearchParams({
+      origin_link: u.toString(),
+      affiliate_id: SHOPEE_AFFILIATE_ID,
+      sub_id: subId,
+    })
+    return `https://s.shopee.co.th/an_redir?${params}`
+  } catch {
+    return raw
+  }
+}
