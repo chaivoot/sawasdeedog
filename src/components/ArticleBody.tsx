@@ -4,7 +4,7 @@ import { getCategory } from '@/data/categories'
 import type { Place } from '@/data/places'
 import { parseBody, type Block, type Inline } from '@/lib/article-body'
 import { getPlace, randomPlaces } from '@/lib/places'
-import { isSponsoredUrl } from '@/lib/shop-links'
+import { isSponsoredUrl, shopeeAffiliateLink } from '@/lib/shop-links'
 import { ListingCard } from './ListingCard'
 
 function Text({ parts }: { parts: Inline[] }) {
@@ -19,7 +19,7 @@ function Text({ parts }: { parts: Inline[] }) {
           ) : (
             <a
               key={i}
-              href={p.href}
+              href={shopeeAffiliateLink(p.href, 'article')}
               target="_blank"
               rel={isSponsoredUrl(p.href) ? 'sponsored nofollow noopener' : 'noopener noreferrer'}
             >
