@@ -17,3 +17,26 @@ export function isHttpsUrl(raw: string): boolean {
     return false
   }
 }
+
+/**
+ * Shops and booking sites whose links may carry our affiliate id (Shopee, Lazada, Involve
+ * Asia, Agoda, Traveloka). Google asks for rel="sponsored" on such links.
+ */
+const SPONSORED_HOSTS = [
+  /(^|\.)shopee\.co\.th$/,
+  /^shope\.ee$/,
+  /(^|\.)lazada\.co\.th$/,
+  /(^|\.)invl\.(me|io)$/,
+  /(^|\.)invol\.co$/,
+  /(^|\.)agoda\.com$/,
+  /(^|\.)traveloka\.com$/,
+]
+
+export function isSponsoredUrl(raw: string): boolean {
+  try {
+    const host = new URL(raw).hostname.replace(/^www\./, '')
+    return SPONSORED_HOSTS.some((h) => h.test(host))
+  } catch {
+    return false
+  }
+}
