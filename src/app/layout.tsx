@@ -1,19 +1,19 @@
 import type { Metadata, Viewport } from 'next'
-import { IBM_Plex_Sans_Thai_Looped, Mitr } from 'next/font/google'
+import { Anuphan, Prompt } from 'next/font/google'
 import { DEFAULT_OG_IMAGE, SITE_DESCRIPTION, SITE_NAME, siteUrl } from '@/lib/site'
 import './globals.css'
 
-const mitr = Mitr({
+// Both by Cadson Demak: Prompt for headings, Anuphan (a variable font, every weight) for text.
+const prompt = Prompt({
   subsets: ['thai', 'latin'],
   weight: ['400', '500', '600'],
-  variable: '--font-mitr',
+  variable: '--font-prompt',
   display: 'swap',
 })
 
-const plexThaiLooped = IBM_Plex_Sans_Thai_Looped({
+const anuphan = Anuphan({
   subsets: ['thai', 'latin'],
-  weight: ['400', '500', '600'],
-  variable: '--font-plex-thai-looped',
+  variable: '--font-anuphan',
   display: 'swap',
 })
 
@@ -44,7 +44,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="th" className={`${mitr.variable} ${plexThaiLooped.variable}`}>
+    <html lang="th" className={`${prompt.variable} ${anuphan.variable}`}>
       <body>{children}</body>
     </html>
   )
