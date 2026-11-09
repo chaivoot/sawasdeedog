@@ -30,8 +30,8 @@
   --shadow-nav: 0 6px 16px rgba(10, 76, 147, 0.28);
   --scrim: rgba(10, 25, 45, 0.45);
 
-  --font-heading: var(--font-mitr), 'Noto Sans Thai', system-ui, sans-serif;
-  --font-body: var(--font-plex-thai-looped), 'Noto Sans Thai', system-ui, sans-serif;
+  --font-heading: var(--font-prompt), 'Noto Sans Thai', system-ui, sans-serif;
+  --font-body: var(--font-anuphan), 'Noto Sans Thai', system-ui, sans-serif;
 
   --radius-chip: 999px;
   --radius-button: 14px;
