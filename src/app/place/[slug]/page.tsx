@@ -24,6 +24,7 @@ import { bookingLink } from '@/lib/booking'
 import { contactLinks, splitPhones } from '@/lib/contacts'
 import { serviceAreaLabels } from '@/lib/geo'
 import { getPlace } from '@/lib/places'
+import { placeDescription, placeTitle } from '@/lib/place-meta'
 import { DEFAULT_OG_IMAGE, absoluteUrl } from '@/lib/site'
 
 type Props = { params: Promise<{ slug: string }> }
@@ -37,17 +38,8 @@ export const revalidate = 3600
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const place = await getPlace((await params).slug)
   if (!place) return {}
-  const category = getCategory(place.category)
-  const area = findArea(place.province, place.district)
-  const where = area
-    ? area.district
-      ? `${area.district.name} ${area.province.name}`
-      : area.province.name
-    : ''
-  const title = `${place.name} · ${category?.name ?? ''}${where ? ` ${where}` : ''}`
-  const description =
-    place.description ??
-    `${place.name} ${category?.name ?? ''}${where ? `ใน${where}` : ''} ที่ทีม SawasdeeDog คัดแล้ว`
+  const title = placeTitle(place)
+  const description = placeDescription(place)
   const path = `/place/${place.slug}`
   return {
     title,
