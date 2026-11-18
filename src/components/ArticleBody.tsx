@@ -93,16 +93,14 @@ export async function ArticleBody({ body }: { body: string }) {
                 <Text parts={b.parts} />
               </p>
             )
-          case 'list':
-            return (
-              <ul key={i}>
-                {b.items.map((item, j) => (
-                  <li key={j}>
-                    <Text parts={item} />
-                  </li>
-                ))}
-              </ul>
-            )
+          case 'list': {
+            const items = b.items.map((item, j) => (
+              <li key={j}>
+                <Text parts={item} />
+              </li>
+            ))
+            return b.ordered ? <ol key={i}>{items}</ol> : <ul key={i}>{items}</ul>
+          }
           case 'image':
             return (
               <figure key={i} className="article-body__image">
