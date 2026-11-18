@@ -3950,3 +3950,107 @@ a.chip {
     grid-template-columns: repeat(4, 1fr);
   }
 }
+
+/* ---------- Site footer (every public page) ---------- */
+
+.site-footer {
+  margin-top: 24px;
+  border-top: 1px solid var(--color-line);
+  background: var(--color-surface);
+  color: var(--color-ink-2);
+  font-size: 14px;
+}
+.site-footer__inner {
+  padding: 28px var(--gutter) 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px 16px;
+}
+.site-footer__brand {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.site-footer__logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  width: fit-content;
+  font-family: var(--font-heading);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-primary);
+  text-decoration: none;
+}
+.site-footer__social a {
+  font-weight: 600;
+}
+.site-footer__col h2 {
+  margin-bottom: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+.site-footer__col ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.site-footer__col a {
+  display: inline-block;
+  padding: 5px 0;
+  color: var(--color-ink-2);
+  text-decoration: none;
+}
+.site-footer__col a:hover {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+/* Places is the longest list: full width on phones, in two columns. */
+.site-footer__col:nth-of-type(1) {
+  grid-column: 1 / -1;
+}
+.site-footer__col:nth-of-type(1) ul {
+  columns: 2;
+  column-gap: 16px;
+}
+.site-footer__bottom {
+  padding: 16px var(--gutter) 24px;
+  border-top: 1px solid var(--color-line);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--color-muted);
+}
+@media (min-width: 900px) {
+  .site-footer {
+    margin-top: 40px;
+  }
+  .site-footer__inner {
+    max-width: calc(var(--content-max) + 2 * 24px);
+    margin: 0 auto;
+    padding: 40px 24px 28px;
+    grid-template-columns: 1.3fr 1.6fr 1fr 1fr;
+    gap: 32px;
+  }
+  .site-footer__brand,
+  .site-footer__col:nth-of-type(1) {
+    grid-column: auto;
+  }
+  .site-footer__bottom {
+    max-width: calc(var(--content-max) + 2 * 24px);
+    margin: 0 auto;
+    padding: 16px 24px 32px;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 24px;
+  }
+}
+/* Plain text credit link: same colour as the line around it, no underline. */
+.site-footer__credit,
+.site-footer__credit:hover {
+  color: inherit;
+  text-decoration: none;
+}

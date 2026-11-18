@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Anuphan, Prompt } from 'next/font/google'
+import { HideOnAdmin } from '@/components/HideOnAdmin'
+import { SiteFooter } from '@/components/SiteFooter'
 import { DEFAULT_OG_IMAGE, SITE_DESCRIPTION, SITE_NAME, siteUrl } from '@/lib/site'
 import './globals.css'
 
@@ -45,7 +47,12 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="th" className={`${prompt.variable} ${anuphan.variable}`}>
-      <body>{children}</body>
+      <body>
+        {children}
+        <HideOnAdmin>
+          <SiteFooter />
+        </HideOnAdmin>
+      </body>
     </html>
   )
 }
