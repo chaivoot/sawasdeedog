@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { categoryRule } from '@/data/criteria'
+import { getCategoryGuide } from '@/data/category-guides'
+import { ArticleBody } from '@/components/ArticleBody'
 import { AreaPicker } from '@/components/AreaPicker'
 import { Breadcrumb, type Crumb } from '@/components/Breadcrumb'
 import { EmptyState } from '@/components/EmptyState'
@@ -132,6 +134,8 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   const count = `พบ ${places.length} ที่ ที่ผ่านเกณฑ์`
   const filtered = lp.filters.length > 0 || !!lp.type
   const noun = category.shortName ?? category.name
+  // The guide is for the category and province pages; district pages stay a plain list.
+  const guide = area?.district ? undefined : getCategoryGuide(category.slug)
 
   const breadcrumbLd = {
     '@context': 'https://schema.org',
@@ -192,6 +196,12 @@ export default async function CategoryPage({ params, searchParams }: Props) {
             />
           </div>
         </div>
+
+        {guide && (
+          <p className="category-lede">
+            {guide.lede.replace('{where}', area ? `ใน${area.province.name}` : '')}
+          </p>
+        )}
 
         {rule && (
           <Link href={`/criteria#${rule.anchor}`} className="guarantee mobile-only">
@@ -258,6 +268,12 @@ export default async function CategoryPage({ params, searchParams }: Props) {
             </div>
           </div>
         </div>
+
+        {guide && (
+          <section className="category-guide" aria-label="คู่มือเลือกบริการ">
+            <ArticleBody body={guide.body} />
+          </section>
+        )}
 
         {nearby.links.length > 0 && (
           <nav className="area-links" aria-labelledby="area-links-title">

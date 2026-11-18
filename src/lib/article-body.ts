@@ -10,7 +10,7 @@ export type Inline = { text: string; bold?: boolean; href?: string }
 export type Block =
   | { kind: 'h2' | 'h3'; text: string }
   | { kind: 'p'; parts: Inline[] }
-  | { kind: 'list'; items: Inline[][] }
+  | { kind: 'list'; items: Inline[][]; ordered?: boolean }
   | { kind: 'image'; src: string; alt: string }
   | { kind: 'place'; slug: string }
   | { kind: 'places'; category: string; province?: string; district?: string; count: number }
@@ -71,6 +71,13 @@ export function parseBody(body: string): Block[] {
       blocks.push({ kind: 'h2', text: first.slice(3).trim() })
     else if (lines.every((l) => /^[-•*]\s+/.test(l)))
       blocks.push({ kind: 'list', items: lines.map((l) => parseInline(l.replace(/^[-•*]\s+/, ''))) })
+    // "1. …" lines: a numbered list (steps, questions to ask).
+    else if (lines.every((l) => /^\d+[.)]\s+/.test(l)))
+      blocks.push({
+        kind: 'list',
+        ordered: true,
+        items: lines.map((l) => parseInline(l.replace(/^\d+[.)]\s+/, ''))),
+      })
     else blocks.push({ kind: 'p', parts: parseInline(lines.join(' ')) })
   }
   return blocks
